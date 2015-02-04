@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<!-- saved from url=(0057)http://www.ralphphillips.com/youtube/cascading-menus.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Cascading Menus</title>
+	<meta charset="utf-8">
+	<meta name="author" content="Ralph Phillips">
+	
+	<!-- internal styles -->
+	<style>
+	* {
+		margin: 0px;
+		padding: 0px;
+		}
+		
+	body {
+		font-family: verdana;
+		background-color: #ABC;
+		padding: 50px;
+		}
+		
+	h1 {
+		text-align: center;
+		border-bottom: 2px solid #009;
+		margin-bottom: 50px;
+		}
+		
+	/* rules for navigation menu */
+	/* ========================================== */
+	
+	ul#navmenu, ul.sub1, ul.sub2 {
+		list-style-type: none;
+		font-size: 9pt;
+		}
+		
+	ul#navmenu li {
+		width: 125px;
+		text-align: center;
+		position: relative;
+		float: left;
+		margin-right: 4px;
+		}
+		
+	ul#navmenu a {
+		text-decoration: none;
+		display: block;
+		width: 125px;
+		height: 25px;
+		line-height: 25px;
+		background-color: #FFF;
+		border: 1px solid #CCC;
+		border-radius: 5px;
+		}
+		
+	ul#navmenu .sub1 li {
+		}
+		
+	ul#navmenu .sub1 a {
+		margin-top: 5px;
+		}
+		
+	ul#navmenu .sub2 a {
+		margin-left: 3px;
+		}
+		
+	ul#navmenu li:hover > a {
+		background-color: #CFC;
+		}
+		
+	ul#navmenu li:hover a:hover {
+		background-color: #FF0;
+		}
+		
+	ul#navmenu ul.sub1 {
+		display: none;
+		position: absolute;
+		top: 26px;
+		left: 0px;
+		}
+		
+	ul#navmenu ul.sub2 {
+		display: none;
+		position: absolute;
+		top: 0px;
+		left: 126px;
+		}
+		
+	ul#navmenu li:hover .sub1 {
+		display: block;
+		}
+		
+	ul#navmenu .sub1 li:hover .sub2 {
+		display: block;
+		}
+		
+	.darrow {
+		font-size: 11pt;
+		position: absolute;
+		top: 5px;
+		right: 4px;
+		}
+		
+	.rarrow {
+		font-size: 13pt;
+		position: absolute;
+		top: 6px;
+		right: 4px;
+		}
+	
+	</style>
+<script type="text/javascript" src="chrome-extension://aadgmnobpdmgmigaicncghmmoeflnamj/ng-inspector.js"></script></head>
+<body>
+
+<h1>Navigation Menu</h1>
+
+
+<ul id="navmenu">
+	<li><a href="#">INCOME</a></li>
+	<li><a href="#">RACE/ETHNICITY</a><span class="darrow">▼</span>
+		<ul class="sub1">
+			<li><a href="#">LATINO</a></li>
+			<li><a href="#">WHITE</a></li>
+			<li><a href="#">ASIAN</a><span class="rarrow">▶</span>
+				<ul class="sub2">
+					<li><a href="#">ASIAN INDIAN</a></li>
+					<li><a href="#">BANGLADESHI</a></li>
+					<li><a href="#">CAMBODIAN</a></li>
+				</ul>
+			</li>
+		</ul>
+	</li>
+	<li><a href="#">hyperlink 3</a></li>
+		<ul class="sub1">
+			<li><a href="#">hyperlink 4.1</a></li>
+			<li><a href="#">hyperlink 4.2</a></li>
+			<li><a href="#">hyperlink 4.3</a><span class="rarrow">▶</span>
+				<ul class="sub2">
+					<li><a href="#">hyperlink 4.3.1</a></li>
+					<li><a href="#">hyperlink 4.3.3</a></li>
+				</ul>
+			</li>
+		</ul>
+	</li>
+	<li><a href="http://www.ralphphillips.com/youtube/cascading-menus.html#">hyperlink 5</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body></html>
