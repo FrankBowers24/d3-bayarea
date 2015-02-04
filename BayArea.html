@@ -151,6 +151,10 @@
           Mixed Race
         </option>
       </select> <select id="asianList" class="hidden">
+        <option value="0">
+          All
+        </option>
+
         <option value="1">
           Asian Indian
         </option>
@@ -607,16 +611,6 @@
   })();
 
 
-
-  /**  TEST **/
-  /** THIS IS A HACK TO GET THE PIECHART SIZE BIG ENOUGH */
-  /*
-  var svg = d3.select("#tipInfo").append("svg")
-    .attr("width", 5)
-    .attr("height", 5)
-    .append("g");
-    */
-
   </script> <script type="text/javascript">
 
         var zipCodeMap = (function() {
@@ -627,7 +621,7 @@
 
             //Define map projection
             var projection = d3.geo.albersUsa()
-                                   .translate([w/2+16650, h/2+1700])
+                                   .translate([w/2+16650, h/2+1800])
                                    .scale([51000]);
 
             //Define path generator
@@ -644,11 +638,17 @@
                         .attr("width", w)
                         .attr("height", h);
 
-            var statIndex = 1;  
+            var statIndex = 6;  
+
+            var statType = "income";
 
             var statData;
 
             var geometry;
+
+            var setStatType = function(newStatType) {
+                statType = newStatType;
+            }
 
             var setStatIndex = function(newStatIndex) {
                 statIndex = newStatIndex;
@@ -656,7 +656,7 @@
 
             function getStatValue(d, stats) {
                     var zip = d.properties.GEOID10;
-                    var counts = stats[zip]["asian"];
+                    var counts = stats[zip][statType];
                     if (counts) {
                         /*  CHANGE THIS FOR EACH RACE/INCOME LEVEL */
                         return +counts[statIndex]/+counts[0];
@@ -674,7 +674,7 @@
             function setToolTip(d, stats) {
                     d3.select(".tooltip").classed("hidden", false);
                     var zip = d.properties.GEOID10;
-                    var counts = stats[zip]["asian"].slice(1);
+                    var counts = stats[zip][statType].slice(1);
 
                     incomePie.change(counts);
                 }   
@@ -840,6 +840,7 @@
         });
 
        return {
+          setStatType: setStatType,
           setStatIndex: setStatIndex,
           updateStats: updateStats,
           selectByData: selectByData
@@ -848,23 +849,41 @@
 
   d3.select("#statList")
     .on("change", function() {
-      var statIndex = d3.select("#statList").node().value;
-      var raceIndex = d3.select("#raceList").node().value;
-      d3.select("#raceList").classed("hidden", +statIndex === 0);
-      d3.select("#asianList").classed("hidden", +statIndex === 0 || +raceIndex !== 5);
+      var statIndex = +d3.select("#statList").node().value;
+      var raceIndex = +d3.select("#raceList").node().value;
+      d3.select("#raceList").classed("hidden", statIndex === 0);
+      d3.select("#asianList").classed("hidden", statIndex === 0 || raceIndex !== 5);
+      if (statIndex === 0) {
+        zipCodeMap.setStatType("income");
+        zipCodeMap.setStatIndex(6);
+      } else if (statIndex === 1) {
+        zipCodeMap.setStatType("race");
+        zipCodeMap.setStatIndex(raceIndex);
+      }
+      zipCodeMap.updateStats();
     });
 
   d3.select("#raceList")
     .on("change", function() {
-      var raceIndex = d3.select("#raceList").node().value;
-      d3.select("#asianList").classed("hidden", +raceIndex !== 5);
+      var raceIndex = +d3.select("#raceList").node().value;
+      d3.select("#asianList").classed("hidden", raceIndex !== 5);
+      zipCodeMap.setStatType("race");
+      zipCodeMap.setStatIndex(raceIndex);
+      zipCodeMap.updateStats();
     });  
 
   d3.select("#asianList")
     .on("change", function() {
-        var statIndex = d3.select("#asianList").node().value;
-        zipCodeMap.setStatIndex(statIndex);
-        zipCodeMap.updateStats();
+        var statIndex = +d3.select("#asianList").node().value;
+        if (statIndex === 0) {
+          zipCodeMap.setStatType("race");
+          zipCodeMap.setStatIndex(5);
+          zipCodeMap.updateStats();
+        } else {
+          zipCodeMap.setStatType("asian");
+          zipCodeMap.setStatIndex(statIndex);
+          zipCodeMap.updateStats();
+        }
     });
 
 
