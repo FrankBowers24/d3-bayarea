@@ -7,6 +7,10 @@
   <title>D3: Bay Area Income by Zip Code</title>
   <script src="../d3/d3.v3.js" type="text/javascript"></script>
   <style type="text/css">
+
+         header, #controlForm {
+          border: solid 1px;
+         }
          text {
             color: black;
             fill: black;
@@ -30,8 +34,6 @@
             }
             #controlForm {
                 padding: 15px;
-                margin: 15px;
-
             } 
             #statList {
             	margin-bottom: 10px;
@@ -849,7 +851,7 @@
 
                      /*  TODO: find a way to unselect tooltip when selecting off a zip code region */       
 
-                     d3.select("body").on("click", function() {
+                     d3.select(".rightSide").on("click", function() {
                         if (d3.event.x !== lastZipClick[0]  && d3.event.y !== lastZipClick[1]) {
                           d3.select(".selected").classed("selected", false);
                           d3.select(".tooltip").classed("hidden", true);
@@ -920,6 +922,24 @@
         var value = d3.select("#selectInput").node().value;
         zipCodeMap.selectByData("city", value); //GEOID10
     })
+
+  d3.select("#selectInput")
+    .on("keyup", function(){
+      window.event.stopPropagation();
+      var value = d3.select("#selectInput").node().value;
+      var key = value.match(/[0-9]/) ? "GEOID10" : "city";
+      zipCodeMap.selectByData(key, value); //GEOID10
+
+    });
+
+  d3.select("#selectInput")
+    .on("change", function(){
+      window.event.stopPropagation();
+      var value = d3.select("#selectInput").node().value;
+      var key = value.match(/[0-9]/) ? "GEOID10" : "city";
+      zipCodeMap.selectByData(key, value); //GEOID10
+
+    });
 
                 
             
