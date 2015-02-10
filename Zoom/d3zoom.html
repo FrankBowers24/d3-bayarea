@@ -54,25 +54,29 @@ var raster = svg.append("g");
 
 var vector = svg.append("path");
 
-d3.json("Bay_Area.json", function(error, json) {
+
+d3.json("Bay_Area_topo.json", function(error, us) {
   svg.call(zoom);
-  //vector.attr("d", path(topojson.mesh(us, us.objects.Bay_Area)));
-//vector.attr("d", path(json.features);
-
-  // vector.datum({type: "FeatureCollection", features: features})
-  //   .attr("d", path);
-  
-// added by Frank:
-/*
-           vector
-             .data(json.features)
-             .enter()
-             //.append("path")
-             .attr("d", path);
-             */
-
+  vector.attr("d", path(topojson.mesh(us, us.objects.Bay_Area)));
   zoomed();
 });
+
+
+function clicked(d) {
+  var centroid = path.centroid(d),
+      translate = projection.translate();
+
+  projection.translate([
+    translate[0] - centroid[0] + width / 2,
+    translate[1] - centroid[1] + height / 2
+  ]);
+
+  zoom.translate(projection.translate());
+
+  g.selectAll("path").transition()
+      .duration(700)
+      .attr("d", path);
+}
 
 function zoomed() {
   var tiles = tile

@@ -31,24 +31,17 @@ var width = 960,
     height = 500;
 
 var projection = d3.geo.albersUsa()
-    .scale((1 << 18) / 2 / Math.PI)
+    .scale(1070)
     .translate([width / 2, height / 2]);
-
-
-var center = projection([-122, 37.8]);    
 
 var path = d3.geo.path()
     .projection(projection);
 
 var zoom = d3.behavior.zoom()
-    .scale(projection.scale() * 2 * Math.PI)
-    .scaleExtent([1 << 17, 1 << 19])
-    .translate([width - center[0], height - center[1]])
+    .translate(projection.translate())
+    .scale(projection.scale())
+    .scaleExtent([height, 80 * height])
     .on("zoom", zoomed);
-
-// projection
-//     .scale(1 / 2 / Math.PI)
-//     .translate([0, 0]);    
 
 var svg = d3.select("body").append("svg")
     .attr("width", width)
@@ -57,38 +50,66 @@ var svg = d3.select("body").append("svg")
 var g = svg.append("g")
     .call(zoom);
 
+
 g.append("rect")
     .attr("class", "background")
     .attr("width", width)
     .attr("height", height);
+    
 
-d3.json("map-topo.json", function(error, us) {
-  var centerPath;
-
-  var center = d3.geo.centroid(us.objects.collection.geometries);
+d3.json("Bay_Area_topo.json", function(error, ba) {
+  
 
   g.append("g")
       .attr("id", "states")
     .selectAll("path")
-      .data(topojson.feature(us, us.objects.collection).features)
+      .data(topojson.feature(ba, ba.objects.Bay_Area).features)
     .enter().append("path")
       .attr("d", path)
-      .attr("fill", function(d) {
-        if (d.properties.GEOID10 === "94605")
-          centerPath = d;
-        //clicked(centerPath);
-        return "#aaa";
-      })
       .on("click", clicked);
 
+  centerAndScale(ba);
 
-/*
-  g.append("path")
-      .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
-      .attr("id", "state-borders")
-      .attr("d", path);
-      */
+  // g.append("path")
+  //     .datum(topojson.mesh(us, us.objects.Bay_Area, function(a, b) { return a !== b; }))
+  //     .attr("id", "state-borders")
+  //     .attr("d", path);
+      
 });
+
+function centerAndScale(ba) {
+
+  var zips = topojson.feature(ba, ba.objects.Bay_Area),
+      zip = zips.features.filter(function(d) { 
+
+        return d.properties.GEOID10 === "94040";
+         })[0];
+  // Create a unit projection.
+  var projection = d3.geo.albers()
+      .scale(1)
+      .translate([0, 0]);
+
+  // Create a path generator.
+  var path = d3.geo.path()
+      .projection(projection);
+
+  // Compute the bounds of a feature of interest, then derive scale & translate.
+  var b = path.bounds(zip),
+      s = .1 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
+      t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
+
+  // Update the projection to use computed scale & translate.
+  projection
+      .scale(s)
+      .translate(t);
+
+      zoom.translate(projection.translate());
+
+  g.selectAll("path").transition()
+      .duration(700)
+      .attr("d", path);
+}
+
 
 function clicked(d) {
   var centroid = path.centroid(d),
