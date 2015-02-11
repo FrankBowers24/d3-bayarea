@@ -27,11 +27,11 @@
 <script src="http://d3js.org/topojson.v1.min.js"></script>
 <script>
 
-var width = 960,
-    height = 500;
+var width = 800,
+    height = 900;
 
 var projection = d3.geo.albersUsa()
-    .scale(1070)
+    .scale(0.6 * (1 << 16))
     .translate([width / 2, height / 2]);
 
 var path = d3.geo.path()
@@ -40,7 +40,7 @@ var path = d3.geo.path()
 var zoom = d3.behavior.zoom()
     .translate(projection.translate())
     .scale(projection.scale())
-    .scaleExtent([height, 80 * height])
+    .scaleExtent([0.6 * (1 << 16), 0.6*(1 << 17)])
     .on("zoom", zoomed);
 
 var svg = d3.select("body").append("svg")
@@ -61,12 +61,13 @@ d3.json("Bay_Area_topo.json", function(error, ba) {
   
 
   g.append("g")
-      .attr("id", "states")
+    .attr("id", "states")
     .selectAll("path")
-      .data(topojson.feature(ba, ba.objects.Bay_Area).features)
+    .data(topojson.feature(ba, ba.objects.Bay_Area).features)
     .enter().append("path")
-      .attr("d", path)
-      .on("click", clicked);
+    .attr("d", path)
+    .attr("stroke", "black");
+    // .on("click", clicked);
 
   centerAndScale(ba);
 
@@ -82,32 +83,34 @@ function centerAndScale(ba) {
   var zips = topojson.feature(ba, ba.objects.Bay_Area),
       zip = zips.features.filter(function(d) { 
 
-        return d.properties.GEOID10 === "94040";
+        return d.properties.GEOID10 === "94560";
          })[0];
-  // Create a unit projection.
-  var projection = d3.geo.albers()
-      .scale(1)
-      .translate([0, 0]);
+  // // Create a unit projection.
+  // var projection = d3.geo.albers()
+  //     .scale(1)
+  //     .translate([0, 0]);
 
-  // Create a path generator.
-  var path = d3.geo.path()
-      .projection(projection);
+  // // Create a path generator.
+  // var path = d3.geo.path()
+  //     .projection(projection);
 
-  // Compute the bounds of a feature of interest, then derive scale & translate.
-  var b = path.bounds(zip),
-      s = .1 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
-      t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
+  // // Compute the bounds of a feature of interest, then derive scale & translate.
+  // var b = path.bounds(zip),
+  //     s = .07 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
+  //     t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
 
-  // Update the projection to use computed scale & translate.
-  projection
-      .scale(s)
-      .translate(t);
+  // // Update the projection to use computed scale & translate.
+  // projection
+  //     .scale(s)
+  //     .translate(t);
 
-      zoom.translate(projection.translate());
+  //     zoom.translate(projection.translate());
 
-  g.selectAll("path").transition()
-      .duration(700)
-      .attr("d", path);
+  // g.selectAll("path").transition()
+  //     .duration(700)
+  //     .attr("d", path);
+
+  clicked(zip);
 }
 
 
@@ -122,9 +125,12 @@ function clicked(d) {
 
   zoom.translate(projection.translate());
 
-  g.selectAll("path").transition()
-      .duration(700)
-      .attr("d", path);
+  // g.selectAll("path").transition()
+  //     .duration(700)
+  //     .attr("d", path);
+
+  g.selectAll("path")
+      .attr("d", path);    
 }
 
 function zoomed() {
