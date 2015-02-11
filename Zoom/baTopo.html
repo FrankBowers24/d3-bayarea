@@ -40,7 +40,7 @@ var path = d3.geo.path()
 var zoom = d3.behavior.zoom()
     .translate(projection.translate())
     .scale(projection.scale())
-    .scaleExtent([0.6 * (1 << 16), 0.6*(1 << 17)])
+    .scaleExtent([0.6 * (1 << 16), 0.7*(1 << 17)])
     .on("zoom", zoomed);
 
 var svg = d3.select("body").append("svg")
@@ -57,7 +57,11 @@ g.append("rect")
     .attr("height", height);
     
 
-d3.json("Bay_Area_topo.json", function(error, ba) {
+d3.json("Bay_Area_Cities_topo.json", function(error, ba) {
+
+  function getTitle(d) { 
+    return d.properties.GEOID10 + ": " + d.properties.city;
+  }
   
 
   g.append("g")
@@ -66,7 +70,10 @@ d3.json("Bay_Area_topo.json", function(error, ba) {
     .data(topojson.feature(ba, ba.objects.Bay_Area).features)
     .enter().append("path")
     .attr("d", path)
-    .attr("stroke", "black");
+    .attr("stroke", "black")
+    .append("svg:title")
+    .text(function(d) { 
+      return getTitle(d); });
     // .on("click", clicked);
 
   centerAndScale(ba);
