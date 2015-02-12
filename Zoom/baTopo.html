@@ -3,11 +3,11 @@
 <meta charset="utf-8">
 <style>
 
-.background {
+/*.background {
   fill: none;
   pointer-events: all;
-}
-
+}*/
+/*
 #states {
   fill: #aaa;
 }
@@ -20,7 +20,7 @@
   stroke-linecap: round;
   pointer-events: none;
 }
-
+*/
 </style>
 <body>
 <script src="http://d3js.org/d3.v3.min.js"></script>
@@ -51,10 +51,10 @@ var g = svg.append("g")
     .call(zoom);
 
 
-g.append("rect")
-    .attr("class", "background")
-    .attr("width", width)
-    .attr("height", height);
+// g.append("rect")
+//     .attr("class", "background")
+//     .attr("width", width)
+//     .attr("height", height);
     
 
 d3.json("Bay_Area_Cities_topo.json", function(error, ba) {
@@ -65,12 +65,13 @@ d3.json("Bay_Area_Cities_topo.json", function(error, ba) {
   
 
   g.append("g")
-    .attr("id", "states")
+    // .attr("id", "states")
     .selectAll("path")
     .data(topojson.feature(ba, ba.objects.Bay_Area).features)
     .enter().append("path")
     .attr("d", path)
     .attr("stroke", "black")
+    .attr("fill", "#aaa")
     .append("svg:title")
     .text(function(d) { 
       return getTitle(d); });
@@ -78,11 +79,6 @@ d3.json("Bay_Area_Cities_topo.json", function(error, ba) {
 
   centerAndScale(ba);
 
-  // g.append("path")
-  //     .datum(topojson.mesh(us, us.objects.Bay_Area, function(a, b) { return a !== b; }))
-  //     .attr("id", "state-borders")
-  //     .attr("d", path);
-      
 });
 
 function centerAndScale(ba) {
