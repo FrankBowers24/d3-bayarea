@@ -762,6 +762,7 @@ var zoom = d3.behavior.zoom()
                                 d3.select(this).classed("selected", true);
                                 d3.select("#tipLocation").text(getTitle(d))
                                 setToolTip(d, statData);
+                                clicked(d, true);
                             }
                             //Get data value
                             var value = getStatValue(d, statData); 
@@ -813,7 +814,7 @@ var zoom = d3.behavior.zoom()
 }
 
 
-function clicked(d) {
+function clicked(d, transition) {
   var centroid = path.centroid(d),
       translate = projection.translate();
 
@@ -824,12 +825,14 @@ function clicked(d) {
 
   zoom.translate(projection.translate());
 
-  // g.selectAll("path").transition()
-  //     .duration(700)
-  //     .attr("d", path);
-
-  svg.selectAll("path")
-      .attr("d", path);    
+    if (transition) {
+      svg.selectAll("path").transition()
+          .duration(1000)
+          .attr("d", path);
+    } else {
+      svg.selectAll("path")
+          .attr("d", path); 
+    }   
 }
 
 function zoomed() {
