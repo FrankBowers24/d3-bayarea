@@ -570,9 +570,6 @@
 
 
         };
-
-
-
     };
 
     return LabeledPie;
@@ -594,38 +591,6 @@
     incomePie.setColorScale(color);
 
   };
-
-   /*
-  (function () {
-
-    var labels = ["Latino", "White", "African American", "Native", "Asian", 
-      "Pacific Islander", "Other Race", "Mixed Race"];
-
-    var color = d3.scale.ordinal()
-      .domain([0,1,2,3,4,5, 6, 7])
-      .range(["#1b9e77","#d95f02","#7570b3","#e7298a","#66a61e","#e6ab02","#a6761d","#666666"]);
-
-    incomePie.setLabels(labels);
-    incomePie.setColorScale(color);
-        
-  })();
-  */
-
-  /*
-  (function () {
-
-    var labels = ["< $25K", "$25K - $50K", "$50K - $75K", "$75K - $100K", "$100K - $200K", "> $200K"];
-
-    var color = d3.scale.ordinal()
-      .domain([0,1,2,3,4,5])
-      .range(["#a50026","#f46d43","#fee08b","#d9ef8b","#66bd63","#006837"]);
-
-    incomePie.setLabels(labels);
-    incomePie.setColorScale(color);
-        
-  })();
-
-  */
 
   var pieLabelConfig = {
     income: {
@@ -651,8 +616,6 @@
   </script> <script type="text/javascript">
 
         var zipCodeMap = (function() {
-
-            //Width and height
             var width = 650;
             var height = 1000;
 
@@ -668,13 +631,6 @@ var zoom = d3.behavior.zoom()
     .scale(projection.scale())
     .scaleExtent([0.6 * (1 << 16), 0.7*(1 << 17)])
     .on("zoom", zoomed);
-
-// var svg = d3.select("body").append("svg")
-//     .attr("width", width)
-//     .attr("height", height);
-
-// var g = svg.append("g")
-//     .call(zoom);
                              
             //Define quantize scale to sort data values into buckets of color
             var color = d3.scale.quantize()
@@ -789,7 +745,7 @@ var zoom = d3.behavior.zoom()
                                 d3.select(this).classed("selected", true);
                                 d3.select("#tipLocation").text(getTitle(d))
                                 setToolTip(d, statData);
-                                clicked(d, true);
+                                center(d, true);
                             }
                             //Get data value
                             var value = getStatValue(d, statData); 
@@ -805,43 +761,19 @@ var zoom = d3.behavior.zoom()
 
             }
 
-            function centerAndScale(ba) {
+            function centerZip(ba) {
 
   var zips = topojson.feature(ba, ba.objects.Bay_Area),
       zip = zips.features.filter(function(d) { 
 
         return d.properties.GEOID10 === "94560";
          })[0];
-  // // Create a unit projection.
-  // var projection = d3.geo.albers()
-  //     .scale(1)
-  //     .translate([0, 0]);
 
-  // // Create a path generator.
-  // var path = d3.geo.path()
-  //     .projection(projection);
-
-  // // Compute the bounds of a feature of interest, then derive scale & translate.
-  // var b = path.bounds(zip),
-  //     s = .07 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
-  //     t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
-
-  // // Update the projection to use computed scale & translate.
-  // projection
-  //     .scale(s)
-  //     .translate(t);
-
-  //     zoom.translate(projection.translate());
-
-  // g.selectAll("path").transition()
-  //     .duration(700)
-  //     .attr("d", path);
-
-  clicked(zip);
+  center(zip);
 }
 
 
-function clicked(d, transition) {
+function center(d, transition) {
   var centroid = path.centroid(d),
       translate = projection.translate();
 
@@ -870,38 +802,10 @@ function zoomed() {
             d3.json("data/allStats.json", function(stats) {
                 statData = stats;
 
-
-                //Load in GeoJSON data
-
-                
-                
-                /*
-                //   FOR IRS INCOME DATA
-                function getStatValue(d, stats) {
-                    var zip = d.properties.GEOID10;
-                    var counts = stats[zip];
-                    if (counts) {
-                        return +counts[counts.length - 1]/+counts[0];
-
-                    } else {
-                        return null;
-                    }
-                
-                }   
-                */
-
-    
-
-
-
                 d3.json("Bay_Area_Cities_topo.json", function(json) {
-
                     geometry = json;
-
                     var lastZipClick = [];
-
-                    var zips = topojson.feature(json, json.objects.Bay_Area)
-
+/*                    var zips = topojson.feature(json, json.objects.Bay_Area)
                     var min = d3.min(zips.features, function(d) { 
                         return getStatValue(d, statData); //+d.properties.GEOID10; 
                     });
@@ -914,7 +818,7 @@ function zoomed() {
                       min, 
                       max
                       ]);   
-
+*/                    updateColorDomain();
 
                     svg.selectAll("path")
                        .data(topojson.feature(json, json.objects.Bay_Area).features)
@@ -942,10 +846,6 @@ function zoomed() {
                             d3.select(this).classed("selected", true);
                             d3.select("#tipLocation").text(getTitle(d));
                             setToolTip(d, statData);
-                            //console.log("x: " + d3.event.x + ", y: " + d3.event.y);
-                            /*
-                            d3.select('#tt')
-                               .attr("style", "left: " + d3.event.x + "px; top: " + d3.event.y + "px;");*/
                             lastZipClick = [d3.event.x, d3.event.y];
                         })
                        .append("svg:title")
@@ -953,9 +853,7 @@ function zoomed() {
                             return getTitle(d); });
                      
 
-                     centerAndScale(json);      
-
-                     /*  TODO: find a way to unselect tooltip when selecting off a zip code region */       
+                     centerZip(json);      
 
                      d3.select(".rightSide").on("click", function() {
                         if (d3.event.x !== lastZipClick[0]  && d3.event.y !== lastZipClick[1]) {
@@ -964,7 +862,6 @@ function zoomed() {
                        }
                        lastZipClick = [];
                      })
-            
             });
         });
 
@@ -1030,25 +927,25 @@ function zoomed() {
         var key = value.match(/[0-9]/) ? "GEOID10" : "city";
         zipCodeMap.selectByData(key, value); //GEOID10
     })
-/*
-  d3.select("#selectInput")
+
+  /*d3.select("#selectInput")
     .on("keyup", function(){
       window.event.stopPropagation();
       var value = d3.select("#selectInput").node().value;
       var key = value.match(/[0-9]/) ? "GEOID10" : "city";
       zipCodeMap.selectByData(key, value); //GEOID10
 
-    });
+    });*/
 
-  d3.select("#selectInput")
-    .on("change", function(){
+  $("#selectInput")
+    .on("propertychange", function(){
       window.event.stopPropagation();
       var value = d3.select("#selectInput").node().value;
       var key = value.match(/[0-9]/) ? "GEOID10" : "city";
       zipCodeMap.selectByData(key, value); //GEOID10
 
     });
-*/
+
 
   $("#selectInput").bind('input propertychange', function(event) {
     event.stopPropagation();
