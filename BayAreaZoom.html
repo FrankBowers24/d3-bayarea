@@ -5,6 +5,8 @@
   <meta charset="utf-8">
 
   <title>D3: Bay Area Income by Zip Code</title>
+  <script data-require="jquery@2.1.3" data-semver="2.1.3" src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+  <script src="jquery.auto-complete.min.js"></script>
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script src="http://d3js.org/topojson.v1.min.js"></script>
   <style type="text/css">
@@ -693,6 +695,18 @@ var zoom = d3.behavior.zoom()
 
             var geometry;
 
+            var getPropertyValues = function() {
+                var key;
+                var valueMap = {};
+                var zips = topojson.feature(geometry, geometry.objects.Bay_Area);
+                zips.features.forEach(function(d) {
+                    for (key in d.properties) {
+                        valueMap[d.properties[key]] = true;
+                    }
+                });
+                return Object.keys(valueMap);
+            }
+
             var setStatType = function(newStatType) {
                 statType = newStatType;
             }
@@ -957,6 +971,7 @@ function zoomed() {
        setPieLabels(pieLabelConfig, "income");
 
        return {
+          getPropertyValues: getPropertyValues,
           setStatType: setStatType,
           setStatIndex: setStatIndex,
           updateStats: updateStats,
@@ -1012,9 +1027,10 @@ function zoomed() {
     .on("click", function() {
         window.event.stopPropagation();
         var value = d3.select("#selectInput").node().value;
-        zipCodeMap.selectByData("city", value); //GEOID10
+        var key = value.match(/[0-9]/) ? "GEOID10" : "city";
+        zipCodeMap.selectByData(key, value); //GEOID10
     })
-
+/*
   d3.select("#selectInput")
     .on("keyup", function(){
       window.event.stopPropagation();
@@ -1032,18 +1048,26 @@ function zoomed() {
       zipCodeMap.selectByData(key, value); //GEOID10
 
     });
+*/
 
-  // $("#selectInput").autoComplete({
-  //   minChars: 2,
-  //   source: function(term, suggest){
-  //       term = term.toLowerCase();
-  //       var choices = ['ActionScript', 'AppleScript', 'Asp', ...];
-  //       var matches = [];
-  //       for (i=0; i<choices.length; i++)
-  //           if (~choices[i].toLowerCase().indexOf(term)) matches.push(choices[i]);
-  //       suggest(matches);
-  //   }
-  // });  
+  $("#selectInput").bind('input propertychange', function(event) {
+    event.stopPropagation();
+    var value = d3.select("#selectInput").node().value;
+    var key = value.match(/[0-9]/) ? "GEOID10" : "city";
+    zipCodeMap.selectByData(key, value);      
+  });
+
+  $("#selectInput").autoComplete({
+    minChars: 1,
+    source: function(term, suggest){
+        term = term.toLowerCase();
+        var choices = zipCodeMap.getPropertyValues();
+        var matches = [];
+        for (i=0; i<choices.length; i++)
+            if (~choices[i].toLowerCase().indexOf(term)) matches.push(choices[i]);
+        suggest(matches);
+    }
+  });  
 
                 
             
