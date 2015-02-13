@@ -103,6 +103,17 @@
                 width: 450;
                 height: 300;
             }
+
+            /* autoComplete styles */
+        .autocomplete-suggestions {
+            text-align: left; cursor: default; border: 1px solid #ccc; border-top: 0; background: #fff; box-shadow: -1px 1px 3px rgba(0,0,0,.1);
+
+            /* core styles should not be changed */
+            position: absolute; display: none; z-index: 9999; max-height: 254px; overflow: hidden; overflow-y: auto; box-sizing: border-box;
+        }
+        .autocomplete-suggestion { position: relative; padding: 0 .6em; line-height: 23px; white-space: nowrap; overflow: hidden; font-size: 1.02em; color: #333; }
+        .autocomplete-suggestion b { font-weight: normal; color: #1f8dd6; }
+        .autocomplete-suggestion.selected { background: #f0f0f0; }
   </style>
 </head>
 
@@ -716,10 +727,12 @@ var zoom = d3.behavior.zoom()
                 }   
 
             var updateColorDomain = function() {
-                var min = d3.min(geometry.features, function(d) { 
+                var zips = topojson.feature(geometry, geometry.objects.Bay_Area)
+
+                var min = d3.min(zips.features, function(d) { 
                         return getStatValue(d, statData); //+d.properties.GEOID10; 
                     });
-                    var max = d3.max(geometry.features, function(d) { 
+                    var max = d3.max(zips.features, function(d) { 
                         return getStatValue(d, statData); //+d.properties.GEOID10;
                      })
 
@@ -1019,6 +1032,18 @@ function zoomed() {
       zipCodeMap.selectByData(key, value); //GEOID10
 
     });
+
+  // $("#selectInput").autoComplete({
+  //   minChars: 2,
+  //   source: function(term, suggest){
+  //       term = term.toLowerCase();
+  //       var choices = ['ActionScript', 'AppleScript', 'Asp', ...];
+  //       var matches = [];
+  //       for (i=0; i<choices.length; i++)
+  //           if (~choices[i].toLowerCase().indexOf(term)) matches.push(choices[i]);
+  //       suggest(matches);
+  //   }
+  // });  
 
                 
             
