@@ -688,11 +688,10 @@ var zoom = d3.behavior.zoom()
                             return d.properties.GEOID10 + ": " + d.properties.city;
                 }
 
-            function setToolTip(d, stats) {
+            function setToolTip(d, stats, values) {
                     d3.select(".tooltip").classed("hidden", false);
-                    var zip = d.properties.GEOID10;
-                    var counts = stats[zip][statType].slice(1);
-
+                    values = values || stats[d.properties.GEOID10][statType];
+                    var counts = values.slice(1);
                     incomePie.change(counts);
                 }   
 
@@ -737,7 +736,10 @@ var zoom = d3.behavior.zoom()
 
             var selectByData = function(field, fieldValue) {
                 var matches = [];
-                var aggregate;
+                var aggregate = [];
+                var title;
+                var zip;
+                var values;
 
                 var zips = topojson.feature(geometry, geometry.objects.Bay_Area);
                 zips.features.forEach(function(d) {
@@ -747,10 +749,19 @@ var zoom = d3.behavior.zoom()
                 });
                 if (matches.length > 0) {
                     d3.selectAll(".selected").classed("selected", false);
-                    aggregate = matches[0];
-
-                    d3.select("#tipLocation").text(getTitle(aggregate));
-                    setToolTip(aggregate, statData);
+                    matches.forEach(function(d) {
+                        zip = d.properties.GEOID10;
+                        values = statData[zip][statType];
+                        for (var i = 0; i < values.length; i++) {
+                            aggregate[i] = aggregate[i] || 0;
+                            aggregate[i] += +values[i];
+                        }
+                    });
+                    // var zip = d.properties.GEOID10;
+                    // stats[zip][statType]
+                    title = (matches.length > 1) ? fieldValue : getTitle(matches[0]);
+                    d3.select("#tipLocation").text(title);
+                    setToolTip(null, statData, aggregate);
                     //center(aggregate, true);
                 }
 
@@ -847,7 +858,7 @@ function zoomed() {
                        })
                        .on("click", function (d) {
                             // Find previously selected, unselect
-                            d3.select(".selected").classed("selected", false);
+                            d3.selectAll(".selected").classed("selected", false);
 
                             // Select current item
                             d3.select(this).classed("selected", true);
