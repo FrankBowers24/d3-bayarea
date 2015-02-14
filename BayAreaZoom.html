@@ -736,16 +736,30 @@ var zoom = d3.behavior.zoom()
             };
 
             var selectByData = function(field, fieldValue) {
-                d3.selectAll(".selected").classed("selected", false);
-                svg.selectAll("path")
-                       .transition().duration(1000)
-                       .attr("fill", function(d) {
+                var matches = [];
+                var aggregate;
 
+                var zips = topojson.feature(geometry, geometry.objects.Bay_Area);
+                zips.features.forEach(function(d) {
+                    if (d.properties[field] === fieldValue) {
+                        matches.push(d);
+                    }
+                });
+                if (matches.length > 0) {
+                    d3.selectAll(".selected").classed("selected", false);
+                    aggregate = matches[0];
+
+                    d3.select("#tipLocation").text(getTitle(aggregate));
+                    setToolTip(aggregate, statData);
+                    //center(aggregate, true);
+                }
+
+                svg.selectAll("path")
+                       .transition().duration(100)
+                       .attr("fill", function(d) {
                             if (d.properties[field] === fieldValue) {
                                 d3.select(this).classed("selected", true);
-                                d3.select("#tipLocation").text(getTitle(d))
-                                setToolTip(d, statData);
-                                center(d, true);
+                                
                             }
                             //Get data value
                             var value = getStatValue(d, statData); 
@@ -758,6 +772,12 @@ var zoom = d3.behavior.zoom()
                                 return "#ccc";
                             }
                        })
+
+                if (matches.length > 0) {
+                    aggregate = matches[0];
+
+                    center(aggregate, true);
+                }
 
             }
 
@@ -805,20 +825,7 @@ function zoomed() {
                 d3.json("Bay_Area_Cities_topo.json", function(json) {
                     geometry = json;
                     var lastZipClick = [];
-/*                    var zips = topojson.feature(json, json.objects.Bay_Area)
-                    var min = d3.min(zips.features, function(d) { 
-                        return getStatValue(d, statData); //+d.properties.GEOID10; 
-                    });
-                    var max = d3.max(zips.features, function(d) { 
-                        return getStatValue(d, statData); //+d.properties.GEOID10;
-                     })
-
-
-                    color.domain([
-                      min, 
-                      max
-                      ]);   
-*/                    updateColorDomain();
+                    updateColorDomain();
 
                     svg.selectAll("path")
                        .data(topojson.feature(json, json.objects.Bay_Area).features)
