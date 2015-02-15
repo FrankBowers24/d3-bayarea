@@ -894,6 +894,18 @@ function zoomed() {
        }
   })();
 
+
+  var getSelectionTitle = function() {
+    var title = d3.select("#tipLocation").text();
+    var retVal = d3.select("#tipLocation").text().split(':')[0];
+    return retVal;
+  }
+
+  var selectByData = function(value) {
+    var key = value.match(/[0-9]/) ? "GEOID10" : "city";
+    zipCodeMap.selectByData(key, value);
+  }
+
   d3.select("#statList")
     .on("change", function() {
       var statIndex = +d3.select("#statList").node().value;
@@ -904,10 +916,12 @@ function zoomed() {
         zipCodeMap.setStatType("income");
         zipCodeMap.setStatIndex(6);
         setPieLabels(pieLabelConfig, "income");
+        selectByData(getSelectionTitle());
       } else if (statIndex === 1) {
         zipCodeMap.setStatType("race");
         zipCodeMap.setStatIndex(raceIndex);
         setPieLabels(pieLabelConfig, "race");
+        selectByData(getSelectionTitle());
       }
       zipCodeMap.updateStats();
     });
@@ -920,6 +934,7 @@ function zoomed() {
       zipCodeMap.setStatIndex(raceIndex);
       zipCodeMap.updateStats();
       setPieLabels(pieLabelConfig, "race");
+      selectByData(getSelectionTitle());
     });  
 
   d3.select("#asianList")
@@ -930,11 +945,13 @@ function zoomed() {
           zipCodeMap.setStatIndex(5);
           zipCodeMap.updateStats();
           setPieLabels(pieLabelConfig, "race");
+          selectByData(getSelectionTitle());
         } else {
           zipCodeMap.setStatType("asian");
           zipCodeMap.setStatIndex(statIndex);
           zipCodeMap.updateStats();
           setPieLabels(pieLabelConfig, "asian");
+          selectByData(getSelectionTitle());
         }
     });
 
