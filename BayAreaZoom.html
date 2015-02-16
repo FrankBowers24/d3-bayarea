@@ -757,32 +757,36 @@ var zoom = d3.behavior.zoom()
                             aggregate[i] += +values[i];
                         }
                     });
-                    // var zip = d.properties.GEOID10;
-                    // stats[zip][statType]
                     title = (matches.length > 1) ? fieldValue : getTitle(matches[0]);
                     d3.select("#tipLocation").text(title);
                     setToolTip(null, statData, aggregate);
-                    //center(aggregate, true);
                 }
 
-                svg.selectAll("path")
-                       .transition().duration(100)
-                       .attr("fill", function(d) {
-                            if (d.properties[field] === fieldValue) {
-                                d3.select(this).classed("selected", true);
+                svg.selectAll("path")[0].forEach(function(path) {
+                    var path = d3.select(path);
+                    if (path.datum().properties[field] === fieldValue) {
+                        path.classed("selected", true);
+                    }
+                });
+
+                // svg.selectAll("path")
+                //        .transition().duration(100)
+                //        .attr("fill", function(d) {
+                //             if (d.properties[field] === fieldValue) {
+                //                 d3.select(this).classed("selected", true);
                                 
-                            }
-                            //Get data value
-                            var value = getStatValue(d, statData); 
+                //             }
+                //             //Get data value
+                //             var value = getStatValue(d, statData); 
                             
-                            if (value) {
-                                //If value exists…
-                                return color(value);
-                            } else {
-                                //If value is undefined…
-                                return "#ccc";
-                            }
-                       })
+                //             if (value) {
+                //                 //If value exists…
+                //                 return color(value);
+                //             } else {
+                //                 //If value is undefined…
+                //                 return "#ccc";
+                //             }
+                //        })
 
                 if (matches.length > 0) {
                     aggregate = matches[0];
@@ -930,29 +934,37 @@ function zoomed() {
     .on("change", function() {
       var raceIndex = +d3.select("#raceList").node().value;
       d3.select("#asianList").classed("hidden", raceIndex !== 5);
-      zipCodeMap.setStatType("race");
-      zipCodeMap.setStatIndex(raceIndex);
+      var asianIndex = +d3.select("#asianList").node().value;
+      if (raceIndex === 5) {
+        selectAsian();
+      } else {
+          zipCodeMap.setStatType("race");
+          zipCodeMap.setStatIndex(raceIndex);
+          setPieLabels(pieLabelConfig, "race");
+          selectByData(getSelectionTitle());
+      }
       zipCodeMap.updateStats();
+    });  
+
+  var selectAsian = function() {
+    var asianIndex = +d3.select("#asianList").node().value;
+    if (asianIndex === 0) {
+      zipCodeMap.setStatType("race");
+      zipCodeMap.setStatIndex(5);
       setPieLabels(pieLabelConfig, "race");
       selectByData(getSelectionTitle());
-    });  
+    } else {
+      zipCodeMap.setStatType("asian");
+      zipCodeMap.setStatIndex(asianIndex);
+      setPieLabels(pieLabelConfig, "asian");
+      selectByData(getSelectionTitle());
+    }
+  }
 
   d3.select("#asianList")
     .on("change", function() {
-        var statIndex = +d3.select("#asianList").node().value;
-        if (statIndex === 0) {
-          zipCodeMap.setStatType("race");
-          zipCodeMap.setStatIndex(5);
-          zipCodeMap.updateStats();
-          setPieLabels(pieLabelConfig, "race");
-          selectByData(getSelectionTitle());
-        } else {
-          zipCodeMap.setStatType("asian");
-          zipCodeMap.setStatIndex(statIndex);
-          zipCodeMap.updateStats();
-          setPieLabels(pieLabelConfig, "asian");
-          selectByData(getSelectionTitle());
-        }
+      selectAsian();
+      zipCodeMap.updateStats();
     });
 
   d3.select("#selectButton")
