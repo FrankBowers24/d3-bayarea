@@ -15,7 +15,7 @@
           border: solid 1px;
          }
 
-           h1, h3 {
+           h1, h5 {
              text-align: center;
              font-family: sans-serif;
            }
@@ -62,10 +62,12 @@
 
             }
             .legend-container {
-                border-top: 10px solid #006837;
-                border-right: 1px solid black;
                 display: block;
                 position: absolute;
+                border-top: 10px solid #006837;
+                border-right: 1px solid black;
+                border-bottom: 1px solid black;
+                padding-bottom: 10px;
                 top: 410px;
                 z-index: 999;
                 width: 450px;
@@ -118,6 +120,31 @@
             .tip-info svg {
                 width: 450;
                 height: 300;
+            }
+
+            /* legend */
+            #legend {
+                margin: 0 10px;
+            }
+            .legend-description {
+                margin: 0 10px;
+            }
+            .list-inline {
+                padding: 0px;
+                border: 0px;
+                margin: 0px;
+            }
+
+            li.key {
+                border-top-width: 15px;
+                border-top-style: solid;
+                font-size: .75em;
+                width: 9%;
+                padding-left: 0;
+                padding-right: 0;
+                list-style: none;
+                display: inline;
+                float: left;
             }
 
             /* autoComplete styles */
@@ -249,7 +276,8 @@
       </div>
     </div>
     <div class="legend-container">
-        <h3>Legend</h3>
+        <h5>Map Legend</h5>
+        <small class="legend-description">Percentage of income tax returns with AGI greater than $200,000</small>
         <div id="legend"></div>
     </div>
   </div>
@@ -735,7 +763,9 @@ var zoom = d3.behavior.zoom()
                 color.domain([
                   min, 
                   max
-                  ]);   
+                  ]);  
+
+                createLegend(color); 
 
             }
 
@@ -903,7 +933,29 @@ function zoomed() {
           updateStats: updateStats,
           selectByData: selectByData
        }
-  })();
+  })(createLegend);
+
+  var createLegend = function(colors) {
+    var formats = {
+        percent: d3.format('%')
+    };
+
+    d3.select("#legend ul").remove();
+    var legend = d3.select('#legend')
+      .append('ul')
+      .attr('class', 'list-inline');
+
+    var keys = legend.selectAll('li.key')
+        .data(colors.range());
+
+    keys.enter().append('li')
+        .attr('class', 'key')
+        .style('border-top-color', String)
+        .text(function(d) {
+            var r = colors.invertExtent(d);
+            return formats.percent(r[0]);
+        });
+  }
 
 
   var getSelectionTitle = function() {
