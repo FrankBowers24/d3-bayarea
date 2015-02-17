@@ -15,10 +15,12 @@
           border: solid 1px;
          }
 
-           h1 {
+           h1, h3 {
              text-align: center;
              font-family: sans-serif;
            }
+
+
 
             /* map styling */
             path:hover {
@@ -37,18 +39,16 @@
                }
 
             /* former tooltip, now pie chart */
-            .tt {
+            #tt {
                 /*position: absolute;*/
                 opacity: 0.95;
                 background-color: white;
-                border: 3px;
-                border-color: gray;
-                margin-top: 10px;
-                
+                border-right: 1px solid black;                
             }
-            #tipInfo {
+            .tip-info {
+                display: block;
                 width: 450;
-                height: 360;
+                height: 270;
                 padding: 10px;
             }
             #tipLocation {
@@ -58,10 +58,20 @@
                 font-size: 1.8em;
                 padding: 7px;
                 text-align: center;
+                height: 27px;
 
             }
+            .legend-container {
+                border-top: 10px solid #006837;
+                border-right: 1px solid black;
+                display: block;
+                position: absolute;
+                top: 410px;
+                z-index: 999;
+                width: 450px;
+            }
             .hidden {
-                visibility: hidden;
+                display: none;
             }
 
 
@@ -105,7 +115,7 @@
             #statList {
             	margin-bottom: 10px;
             }  
-            .tipInfo svg {
+            .tip-info svg {
                 width: 450;
                 height: 300;
             }
@@ -231,12 +241,16 @@
       "button">Select</button>
     </form>
 
-    <div class="tooltip hidden" id="tt">
+    <div class="tooltip" id="tt">
       <div id="tipContainer">
         <div id="tipLocation"></div>
 
-        <div id="tipInfo"></div>
+        <div class="tip-info hidden"></div>
       </div>
+    </div>
+    <div class="legend-container">
+        <h3>Legend</h3>
+        <div id="legend"></div>
     </div>
   </div>
 
@@ -266,7 +280,7 @@
 
         this.svg = svg;
 
-        d3.select(parent).select("svg").attr("width", "450").attr("height", "320");
+        d3.select(parent).select("svg").attr("width", "450").attr("height", "200");
 
         this.svg.append("g")
             .attr("class", "slices");
@@ -298,7 +312,7 @@
 
         this.minimumDisplayedPercentage = 6;
 
-        this.svg.attr("transform", "translate(" + 195 + "," + 110 + ")");
+        this.svg.attr("transform", "translate(" + 195 + "," + 100 + ")");
 
         this.minimumDisplayedLabel = 3;
 
@@ -579,13 +593,13 @@
     return LabeledPie;
   }));
 
-  var incomePie = new LabeledPie("#tipInfo");
+  var incomePie = new LabeledPie(".tip-info");
 
   var setPieLabels = function(labelConfig, key) {
 
     // reset income pie
-    d3.select("#tipInfo").select("svg").remove();
-    incomePie = new LabeledPie("#tipInfo");
+    d3.select(".tip-info").select("svg").remove();
+    incomePie = new LabeledPie(".tip-info");
 
     var color = d3.scale.ordinal()
       .domain(labelConfig[key]["domain"])
@@ -693,14 +707,14 @@ var zoom = d3.behavior.zoom()
                 }
 
             function setToolTip(d, stats, values) {
-                    d3.select(".tooltip").classed("hidden", false);
+                    //d3.select(".tooltip").classed("hidden", false);
                     values = values || stats[d.properties.GEOID10][statType];
                     var counts = values.slice(1);
                     if (+values[0] > 0) {
-                        d3.select("#tipInfo").classed("hidden", false);
+                        d3.select(".tip-info").classed("hidden", false);
                        incomePie.change(counts);
                     } else {
-                        d3.select("#tipInfo").classed("hidden", true);
+                        d3.select(".tip-info").classed("hidden", true);
                     }
                 }   
 
@@ -869,7 +883,8 @@ function zoomed() {
                      d3.select(".rightSide").on("click", function() {
                         if (d3.event.x !== lastZipClick[0]  && d3.event.y !== lastZipClick[1]) {
                           d3.select(".selected").classed("selected", false);
-                          d3.select(".tooltip").classed("hidden", true);
+                          d3.select(".tip-info").classed("hidden", true);
+                          d3.select("#tipLocation").text('');
                        }
                        lastZipClick = [];
                      })
