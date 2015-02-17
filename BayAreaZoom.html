@@ -280,7 +280,10 @@
 
         this.svg = svg;
 
-        d3.select(parent).select("svg").attr("width", "450").attr("height", "200");
+        this.svgWidth = 450;
+        this.svgHeight = 200;
+
+        d3.select(parent).select("svg").attr("width", this.svgWidth).attr("height", this.svgHeight);
 
         this.svg.append("g")
             .attr("class", "slices");
@@ -312,7 +315,7 @@
 
         this.minimumDisplayedPercentage = 6;
 
-        this.svg.attr("transform", "translate(" + 195 + "," + 100 + ")");
+        this.svg.attr("transform", "translate(" + this.svgWidth/2 + "," + this.svgHeight/2 + ")");
 
         this.minimumDisplayedLabel = 3;
 
