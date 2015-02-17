@@ -14,33 +14,29 @@
          header, #controlForm {
           border: solid 1px;
          }
-         text {
-            color: black;
-            fill: black;
-            font-size: 12px;
-            font-family: sans-serif;
-            width: 50px;
-            height: 14px;
-           }
 
            h1 {
              text-align: center;
              font-family: sans-serif;
            }
 
-
+            /* map styling */
             path:hover {
                 fill: lightskyblue;
             }
             .selected {
                 fill: blue;
             }
-            #controlForm {
-                padding: 15px;
-            } 
-            #statList {
-            	margin-bottom: 10px;
-            }  
+            text {
+                color: black;
+                fill: black;
+                font-size: 12px;
+                font-family: sans-serif;
+                width: 50px;
+                height: 14px;
+               }
+
+            /* former tooltip, now pie chart */
             .tt {
                 /*position: absolute;*/
                 opacity: 0.95;
@@ -88,6 +84,8 @@
                 stroke-width: 2px;
                 fill: none;
             }
+
+            /*  main layout */
             .leftTop {
                 position: fixed;
                 z-index: 130;
@@ -101,6 +99,12 @@
                 left: 450px;
                 overflow: scroll;
             }
+            #controlForm {
+                padding: 15px;
+            } 
+            #statList {
+            	margin-bottom: 10px;
+            }  
             .tipInfo svg {
                 width: 450;
                 height: 300;
@@ -692,7 +696,12 @@ var zoom = d3.behavior.zoom()
                     d3.select(".tooltip").classed("hidden", false);
                     values = values || stats[d.properties.GEOID10][statType];
                     var counts = values.slice(1);
-                    incomePie.change(counts);
+                    if (+values[0] > 0) {
+                        d3.select("#tipInfo").classed("hidden", false);
+                       incomePie.change(counts);
+                    } else {
+                        d3.select("#tipInfo").classed("hidden", true);
+                    }
                 }   
 
             var updateColorDomain = function() {
@@ -769,31 +778,11 @@ var zoom = d3.behavior.zoom()
                     }
                 });
 
-                // svg.selectAll("path")
-                //        .transition().duration(100)
-                //        .attr("fill", function(d) {
-                //             if (d.properties[field] === fieldValue) {
-                //                 d3.select(this).classed("selected", true);
-                                
-                //             }
-                //             //Get data value
-                //             var value = getStatValue(d, statData); 
-                            
-                //             if (value) {
-                //                 //If value exists…
-                //                 return color(value);
-                //             } else {
-                //                 //If value is undefined…
-                //                 return "#ccc";
-                //             }
-                //        })
-
                 if (matches.length > 0) {
                     aggregate = matches[0];
 
                     center(aggregate, true);
                 }
-
             }
 
             function centerZip(ba) {
