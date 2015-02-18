@@ -641,6 +641,13 @@
 
   };
 
+  var statLabels = {
+    race: ["All", "Latino", "White", "African American", "Native American", "Asian", 
+      "Pacific Islander", "Other Race", "Mixed Race"],
+    asian: ["All", "Asian Indian", "Bangladeshi", "Cambodian", "Mainland Chinese", "Filipino", "Hmong",
+      "Japanese", "Korean", "Laotian", "Pakistani", "Taiwanese", "Thai", "Vietnamese"]
+  }
+
   var pieLabelConfig = {
     income: {
       labels: ["< $25K", "$25K - $50K", "$50K - $75K", "$75K - $100K", "$100K - $200K", "> $200K"],
@@ -648,14 +655,12 @@
       range: ["#a50026","#f46d43","#fee08b","#d9ef8b","#66bd63","#006837"]
     },
     race: {
-      labels: ["Latino", "White", "African American", "Native", "Asian", 
-      "Pacific Islander", "Other Race", "Mixed Race"],
+      labels: statLabels.race.slice(1),
       domain: [0,1,2,3,4,5, 6, 7],
       range: ["#1b9e77","#d95f02","#7570b3","#e7298a","#66a61e","#e6ab02","#a6761d","#666666"]
     },
     asian: {
-      labels: ["Asian Indian", "Bangladeshi", "Cambodian", "Mainland Chinese", "Filipino", "Hmong",
-      "Japanese", "Korean", "Laotian", "Pakistani", "Taiwanese", "Thai", "Vietnamese"],
+      labels: statLabels.asian.slice(1),
       domain: [0,1,2,3,4,5, 6, 7, 8, 9, 10, 11, 12],
       range:["#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c","#fdbf6f","#ff7f00","#cab2d6","#6a3d9a","#ffff99","#b15928", "#cccccc"]
     }
@@ -765,7 +770,7 @@ var zoom = d3.behavior.zoom()
                   max
                   ]);  
 
-                createLegend(color); 
+                createLegend(color, statType, statIndex); 
 
             }
 
@@ -935,7 +940,35 @@ function zoomed() {
        }
   })(createLegend);
 
-  var createLegend = function(colors) {
+
+
+  var setLegendDescription = function(statType, statIndex) {
+
+    var mapLegends = {
+        income: "Percentage of income tax returns with AGI greater than $200,000",
+        race: "Percentage of # race or ethnicity",
+        asian: "Percentage of Asians listed as #"
+    }
+
+    var description = mapLegends[statType];
+    if (description.indexOf('#') >= 0) {
+       description = description.replace('#', statLabels[statType][statIndex]); 
+    }  
+    d3.select(".legend-description").text(description);
+
+    // // map legends
+    // "Percentage of income tax returns with AGI greater than $200,000"
+    // "Percentage of #{race} race/ethnicity"
+    // "Percentage of Asians listed as #{Asian}"
+
+    // // pie legends
+    // "AGI reported on 2012 income tax return"
+    // "Race/Ethnicity"
+    // "Country of origin for Asians"
+
+  }
+
+  var createLegend = function(colors, statType, statIndex) {
     var formats = {
         percent: d3.format('%')
     };
@@ -955,6 +988,7 @@ function zoomed() {
             var r = colors.invertExtent(d);
             return formats.percent(r[0]);
         });
+    setLegendDescription(statType, statIndex);
   }
 
 
