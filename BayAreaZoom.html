@@ -38,16 +38,20 @@
 
             /* former tooltip, now pie chart */
             #tt {
-                /*position: absolute;*/
+                position: absolute;
+                top: 152px;
+                width: 450px;
+                height: 260px;
                 opacity: 0.95;
                 background-color: white;
-                border-right: 1px solid black;                
+                border-right: 1.5px solid black;                
             }
             .tip-info {
                 display: block;
                 width: 450;
                 height: 270;
                 padding: 10px;
+                border: none;
             }
             #tipLocation {
                 color: white;
@@ -122,10 +126,6 @@
             #statList {
             	margin-bottom: 10px;
             }  
-            .tip-info svg {
-                width: 450;
-                height: 300;
-            }
 
 
             /* legend */
@@ -764,7 +764,7 @@ var zoom = d3.behavior.zoom()
             var updateColorDomain = function() {
                 var zips = topojson.feature(geometry, geometry.objects.Bay_Area)
 
-                var min = d3.min(zips.features, function(d) { 
+/*                var min = d3.min(zips.features, function(d) { 
                         return getStatValue(d, statData); //+d.properties.GEOID10; 
                     });
                     var max = d3.max(zips.features, function(d) { 
@@ -776,6 +776,11 @@ var zoom = d3.behavior.zoom()
                   min, 
                   max
                   ]);  
+*/
+                color.domain(
+                    d3.extent(zips.features, function(d) { 
+                        return getStatValue(d, statData); })
+                );
 
                 createLegend(color, statType, statIndex); 
 
