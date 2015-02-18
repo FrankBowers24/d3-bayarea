@@ -15,12 +15,10 @@
           border: solid 1px;
          }
 
-           h1, h5 {
+           h1, h5, h6 {
              text-align: center;
              font-family: sans-serif;
            }
-
-
 
             /* map styling */
             path:hover {
@@ -60,6 +58,13 @@
                 text-align: center;
                 height: 27px;
 
+            }
+            .tip-description {
+                display: block;
+                position: fixed;
+                top: 385px;
+                z-index: 2;
+                margin: 0 10px;
             }
             .legend-container {
                 display: block;
@@ -121,6 +126,7 @@
                 width: 450;
                 height: 300;
             }
+
 
             /* legend */
             #legend {
@@ -264,15 +270,15 @@
           Vietnamese
         </option>
       </select> <br>
-      <input id="selectInput" type="text" placeholder="City or Zip Code"> <button id="selectButton" type=
-      "button">Select</button>
+      <input id="selectInput" type="text" placeholder="City or Zip Code">
+      <button id="selectButton" type="button">Select</button>
     </form>
 
     <div class="tooltip" id="tt">
-      <div id="tipContainer">
         <div id="tipLocation"></div>
-
-        <div class="tip-info hidden"></div>
+      <div id="tip-container hidden">
+        <div class="tip-info"></div>
+        <h6 class="tip-description hidden">AGI for 2012 Tax Returns</h6>
       </div>
     </div>
     <div class="legend-container">
@@ -309,7 +315,7 @@
         this.svg = svg;
 
         this.svgWidth = 450;
-        this.svgHeight = 200;
+        this.svgHeight = 190;
 
         d3.select(parent).select("svg").attr("width", this.svgWidth).attr("height", this.svgHeight);
 
@@ -743,14 +749,15 @@ var zoom = d3.behavior.zoom()
                 }
 
             function setToolTip(d, stats, values) {
-                    //d3.select(".tooltip").classed("hidden", false);
                     values = values || stats[d.properties.GEOID10][statType];
                     var counts = values.slice(1);
                     if (+values[0] > 0) {
                         d3.select(".tip-info").classed("hidden", false);
+                        d3.select(".tip-description").classed("hidden", false);
                        incomePie.change(counts);
                     } else {
                         d3.select(".tip-info").classed("hidden", true);
+                        d3.select(".tip-description").classed("hidden", false);
                     }
                 }   
 
@@ -922,6 +929,7 @@ function zoomed() {
                         if (d3.event.x !== lastZipClick[0]  && d3.event.y !== lastZipClick[1]) {
                           d3.select(".selected").classed("selected", false);
                           d3.select(".tip-info").classed("hidden", true);
+                          d3.select(".tip-description").classed("hidden", true);
                           d3.select("#tipLocation").text('');
                        }
                        lastZipClick = [];
@@ -946,8 +954,14 @@ function zoomed() {
 
     var mapLegends = {
         income: "Percentage of income tax returns with AGI greater than $200,000",
-        race: "Percentage of # race or ethnicity",
+        race: "Percentage of # race/ethnicity",
         asian: "Percentage of Asians listed as #"
+    }
+
+    var pieLegends = {
+        income: "AGI reported on 2012 income tax return",
+        race: "Race/Ethnicity",
+        asian: "National origin of Asians"
     }
 
     var description = mapLegends[statType];
@@ -955,17 +969,7 @@ function zoomed() {
        description = description.replace('#', statLabels[statType][statIndex]); 
     }  
     d3.select(".legend-description").text(description);
-
-    // // map legends
-    // "Percentage of income tax returns with AGI greater than $200,000"
-    // "Percentage of #{race} race/ethnicity"
-    // "Percentage of Asians listed as #{Asian}"
-
-    // // pie legends
-    // "AGI reported on 2012 income tax return"
-    // "Race/Ethnicity"
-    // "Country of origin for Asians"
-
+    d3.select(".tip-description").text(pieLegends[statType]);
   }
 
   var createLegend = function(colors, statType, statIndex) {
