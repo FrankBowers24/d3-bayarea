@@ -20,6 +20,10 @@
              font-family: sans-serif;
            }
 
+           small {
+             font-family: sans-serif;
+           }
+
             /* map styling */
             path:hover {
                 fill: lightskyblue;
@@ -42,9 +46,8 @@
                 top: 152px;
                 width: 450px;
                 height: 260px;
-                opacity: 0.95;
                 background-color: white;
-                border-right: 1.5px solid black;                
+                border-right: 1px solid black;                
             }
             .tip-info {
                 display: block;
@@ -125,7 +128,10 @@
             } 
             #statList {
             	margin-bottom: 10px;
-            }  
+            } 
+            button {
+                padding: 4px 6px 4px 4px;
+            } 
 
 
             /* legend */
@@ -979,7 +985,8 @@ function zoomed() {
 
   var createLegend = function(colors, statType, statIndex) {
     var formats = {
-        percent: d3.format('%')
+        percent: d3.format('%'),
+        percentPointOne: d3.format('2.1%')
     };
 
     d3.select("#legend ul").remove();
@@ -990,12 +997,18 @@ function zoomed() {
     var keys = legend.selectAll('li.key')
         .data(colors.range());
 
+    // do we need more precision?
+    var endRange = colors.range()[colors.range().length - 1];
+    var maxDomain = colors.invertExtent(endRange);
+    var needMorePrecision = maxDomain[0] < 0.1;
+
     keys.enter().append('li')
         .attr('class', 'key')
         .style('border-top-color', String)
         .text(function(d) {
             var r = colors.invertExtent(d);
-            return formats.percent(r[0]);
+            return needMorePrecision ? 
+              formats.percentPointOne(r[0]) : formats.percent(r[0]);
         });
     setLegendDescription(statType, statIndex);
   }
