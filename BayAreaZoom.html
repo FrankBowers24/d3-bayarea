@@ -133,7 +133,6 @@
                 padding: 4px 6px 4px 4px;
             } 
 
-
             /* legend */
             #legend {
                 margin: 0 10px;
@@ -177,109 +176,16 @@
     <header>
       <h1>Bay Area Stats</h1>
     </header>
-
     <form id="control-form" name="control-form">
       <select id="stat-list" >
-        <option value="0">
-          Income
-        </option>
-
-        <option value="1">
-          Race/Ethnicity
-        </option>
-      </select> <select id="race-list" class="hidden">
-        <option value="1">
-          Latino
-        </option>
-
-        <option value="2">
-          White
-        </option>
-
-        <option value="3">
-          African American
-        </option>
-
-        <option value="4">
-          Native American
-        </option>
-
-        <option value="5">
-          Asian
-        </option>
-
-        <option value="6">
-          Pacific Islander
-        </option>
-
-        <option value="7">
-          Other Race
-        </option>
-
-        <option value="8">
-          Mixed Race
-        </option>
-      </select> <select id="asian-list" class="hidden">
-        <option value="0">
-          All
-        </option>
-
-        <option value="1">
-          Asian Indian
-        </option>
-
-        <option value="2">
-          Bangladeshi
-        </option>
-
-        <option value="3">
-          Cambodian
-        </option>
-
-        <option value="4">
-          Mainland Chinese
-        </option>
-
-        <option value="5">
-          Filipino
-        </option>
-
-        <option value="6">
-          Hmong
-        </option>
-
-        <option value="7">
-          Japanese
-        </option>
-
-        <option value="8">
-          Korean
-        </option>
-
-        <option value="9">
-          Laotian
-        </option>
-
-        <option value="10">
-          Pakistani
-        </option>
-
-        <option value="11">
-          Taiwanese
-        </option>
-
-        <option value="12">
-          Thai
-        </option>
-
-        <option value="13">
-          Vietnamese
-        </option>
-      </select> <br>
+        <option value="0">Income</option>
+        <option value="1">Race/Ethnicity</option>
+      </select>
+      <select id="race-list" class="hidden"></select> 
+      <select id="asian-list" class="hidden"></select> <br>
       <input id="select-input" type="text" placeholder="City or Zip Code">
       <button id="select-button" type="button">Select</button>
     </form>
-
     <div class="tooltip">
         <div class="tip-location"></div>
       <div id="tip-container hidden">
@@ -293,8 +199,9 @@
         <div id="legend"></div>
     </div>
   </div>
+  <div class="right-side"></div>
 
-  <div class="right-side"></div><script type="text/javascript">
+  <script type="text/javascript">
 
 
   (function (root, factory) {
@@ -707,6 +614,32 @@
     d3.select(".legend-description").text(description);
     d3.select(".tip-description").text(pieLegends[statType]);
   }
+
+  var createComboBoxes = function() {
+    raceList = statLabels.race.slice(1);
+    var races = d3.select("#race-list").selectAll('option')
+       .data(raceList);
+
+    races.enter().append('option')
+       .attr('value', function(d, i) {
+          return i + 1;
+       })
+       .text(function(d) {
+         return d;
+       });
+
+    var asians = d3.select("#asian-list").selectAll('option')
+      .data(statLabels.asian);
+
+    asians.enter().append('option')
+      .attr('value', function(d,i) { return i; })
+      .text(function(d) {
+        return d;
+      });
+
+  }
+
+  createComboBoxes();
 
   var createLegend = function(colors, statType, statIndex) {
     var formats = {
