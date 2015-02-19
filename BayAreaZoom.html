@@ -1058,6 +1058,25 @@ function zoomed() {
     zipCodeMap.selectByData(key, value);      
   });
 
+  $("#select-input").on('val.changed', function(event) {
+    event.stopPropagation();
+    var value = d3.select("#select-input").node().value;
+    var key = value.match(/[0-9]/) ? "GEOID10" : "city";
+    zipCodeMap.selectByData(key, value);      
+  });
+
+
+   // hack to get auto-complete programmatic change to #select-input noticed
+   (function($){
+    var originalVal = $.fn.val;
+    $.fn.val = function(){
+        var result =originalVal.apply(this,arguments);
+        if(arguments.length>0)
+            $(this).trigger('val.changed');
+        return result;
+    };
+  })(jQuery);
+
   $("#select-input").autoComplete({
     minChars: 1,
     source: function(term, suggest){
