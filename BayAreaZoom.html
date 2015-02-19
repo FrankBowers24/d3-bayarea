@@ -4,14 +4,14 @@
 <head>
   <meta charset="utf-8">
 
-  <title>D3: Bay Area Income by Zip Code</title>
+  <title>D3: Bay Area Stats</title>
   <script data-require="jquery@2.1.3" data-semver="2.1.3" src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
   <script src="jquery.auto-complete.min.js"></script>
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script src="http://d3js.org/topojson.v1.min.js"></script>
   <style type="text/css">
 
-         header, #controlForm {
+         header, #control-form {
           border: solid 1px;
          }
 
@@ -41,7 +41,7 @@
                }
 
             /* former tooltip, now pie chart */
-            #tt {
+            .tooltip {
                 position: absolute;
                 top: 152px;
                 width: 450px;
@@ -56,7 +56,7 @@
                 padding: 10px;
                 border: none;
             }
-            #tipLocation {
+            .tip-location {
                 color: white;
                 background-color: #006837;
                 font-family: 'Roboto Condensed', sans-serif;
@@ -110,23 +110,23 @@
             }
 
             /*  main layout */
-            .leftTop {
+            .left-top {
                 position: fixed;
                 z-index: 130;
                 top: 0px;
                 left: 0px;
                 width: 450px;
             }
-            .rightSide {
+            .right-side {
                 position:absolute;
                 top: 0px;
                 left: 450px;
                 overflow: scroll;
             }
-            #controlForm {
+            #control-form {
                 padding: 15px;
             } 
-            #statList {
+            #stat-list {
             	margin-bottom: 10px;
             } 
             button {
@@ -173,13 +173,13 @@
 </head>
 
 <body>
-  <div class="leftTop">
+  <div class="left-top">
     <header>
       <h1>Bay Area Stats</h1>
     </header>
 
-    <form id="controlForm" name="controlForm">
-      <select id="statList" >
+    <form id="control-form" name="control-form">
+      <select id="stat-list" >
         <option value="0">
           Income
         </option>
@@ -187,7 +187,7 @@
         <option value="1">
           Race/Ethnicity
         </option>
-      </select> <select id="raceList" class="hidden">
+      </select> <select id="race-list" class="hidden">
         <option value="1">
           Latino
         </option>
@@ -219,7 +219,7 @@
         <option value="8">
           Mixed Race
         </option>
-      </select> <select id="asianList" class="hidden">
+      </select> <select id="asian-list" class="hidden">
         <option value="0">
           All
         </option>
@@ -276,25 +276,25 @@
           Vietnamese
         </option>
       </select> <br>
-      <input id="selectInput" type="text" placeholder="City or Zip Code">
-      <button id="selectButton" type="button">Select</button>
+      <input id="select-input" type="text" placeholder="City or Zip Code">
+      <button id="select-button" type="button">Select</button>
     </form>
 
-    <div class="tooltip" id="tt">
-        <div id="tipLocation"></div>
+    <div class="tooltip">
+        <div class="tip-location"></div>
       <div id="tip-container hidden">
         <div class="tip-info"></div>
-        <h6 class="tip-description hidden">AGI for 2012 Tax Returns</h6>
+        <h6 class="tip-description hidden"></h6>
       </div>
     </div>
     <div class="legend-container">
         <h5>Map Legend</h5>
-        <small class="legend-description">Percentage of income tax returns with AGI greater than $200,000</small>
+        <small class="legend-description"></small>
         <div id="legend"></div>
     </div>
   </div>
 
-  <div class="rightSide"></div><script type="text/javascript">
+  <div class="right-side"></div><script type="text/javascript">
 
 
   (function (root, factory) {
@@ -703,7 +703,7 @@ var zoom = d3.behavior.zoom()
                                 .range(["#a50026","#d73027","#f46d43","#fdae61","#fee08b","#ffffbf","#d9ef8b","#a6d96a","#66bd63","#1a9850","#006837"]);
 
             //Create SVG element
-            var svg = d3.select(".rightSide")
+            var svg = d3.select(".right-side")
                         .append("svg")
                         .attr("width", width)
                         .attr("height", height)
@@ -837,7 +837,7 @@ var zoom = d3.behavior.zoom()
                         }
                     });
                     title = (matches.length > 1) ? fieldValue : getTitle(matches[0]);
-                    d3.select("#tipLocation").text(title);
+                    d3.select(".tip-location").text(title);
                     setToolTip(null, statData, aggregate);
                 }
 
@@ -925,7 +925,7 @@ function zoomed() {
 
                             // Select current item
                             d3.select(this).classed("selected", true);
-                            d3.select("#tipLocation").text(getTitle(d));
+                            d3.select(".tip-location").text(getTitle(d));
                             setToolTip(d, statData);
                             lastZipClick = [d3.event.x, d3.event.y];
                         })
@@ -936,12 +936,12 @@ function zoomed() {
 
                      centerZip(json);      
 
-                     d3.select(".rightSide").on("click", function() {
+                     d3.select(".right-side").on("click", function() {
                         if (d3.event.x !== lastZipClick[0]  && d3.event.y !== lastZipClick[1]) {
                           d3.select(".selected").classed("selected", false);
                           d3.select(".tip-info").classed("hidden", true);
                           d3.select(".tip-description").classed("hidden", true);
-                          d3.select("#tipLocation").text('');
+                          d3.select(".tip-location").text('');
                        }
                        lastZipClick = [];
                      })
@@ -1015,8 +1015,7 @@ function zoomed() {
 
 
   var getSelectionTitle = function() {
-    var title = d3.select("#tipLocation").text();
-    var retVal = d3.select("#tipLocation").text().split(':')[0];
+    var retVal = d3.select(".tip-location").text().split(':')[0];
     return retVal;
   }
 
@@ -1025,12 +1024,12 @@ function zoomed() {
     zipCodeMap.selectByData(key, value);
   }
 
-  d3.select("#statList")
+  d3.select("#stat-list")
     .on("change", function() {
-      var statIndex = +d3.select("#statList").node().value;
-      var raceIndex = +d3.select("#raceList").node().value;
-      d3.select("#raceList").classed("hidden", statIndex === 0);
-      d3.select("#asianList").classed("hidden", statIndex === 0 || raceIndex !== 5);
+      var statIndex = +d3.select("#stat-list").node().value;
+      var raceIndex = +d3.select("#race-list").node().value;
+      d3.select("#race-list").classed("hidden", statIndex === 0);
+      d3.select("#asian-list").classed("hidden", statIndex === 0 || raceIndex !== 5);
       if (statIndex === 0) {
         zipCodeMap.setStatType("income");
         zipCodeMap.setStatIndex(6);
@@ -1045,11 +1044,11 @@ function zoomed() {
       zipCodeMap.updateStats();
     });
 
-  d3.select("#raceList")
+  d3.select("#race-list")
     .on("change", function() {
-      var raceIndex = +d3.select("#raceList").node().value;
-      d3.select("#asianList").classed("hidden", raceIndex !== 5);
-      var asianIndex = +d3.select("#asianList").node().value;
+      var raceIndex = +d3.select("#race-list").node().value;
+      d3.select("#asian-list").classed("hidden", raceIndex !== 5);
+      var asianIndex = +d3.select("#asian-list").node().value;
       if (raceIndex === 5) {
         selectAsian();
       } else {
@@ -1062,7 +1061,7 @@ function zoomed() {
     });  
 
   var selectAsian = function() {
-    var asianIndex = +d3.select("#asianList").node().value;
+    var asianIndex = +d3.select("#asian-list").node().value;
     if (asianIndex === 0) {
       zipCodeMap.setStatType("race");
       zipCodeMap.setStatIndex(5);
@@ -1076,47 +1075,47 @@ function zoomed() {
     }
   }
 
-  d3.select("#asianList")
+  d3.select("#asian-list")
     .on("change", function() {
       selectAsian();
       zipCodeMap.updateStats();
     });
 
-  d3.select("#selectButton")
+  d3.select("#select-button")
     .on("click", function() {
         window.event.stopPropagation();
-        var value = d3.select("#selectInput").node().value;
+        var value = d3.select("#select-input").node().value;
         var key = value.match(/[0-9]/) ? "GEOID10" : "city";
         zipCodeMap.selectByData(key, value); //GEOID10
     })
 
-  /*d3.select("#selectInput")
+  /*d3.select("#select-input")
     .on("keyup", function(){
       window.event.stopPropagation();
-      var value = d3.select("#selectInput").node().value;
+      var value = d3.select("#select-input").node().value;
       var key = value.match(/[0-9]/) ? "GEOID10" : "city";
       zipCodeMap.selectByData(key, value); //GEOID10
 
     });*/
 
-  $("#selectInput")
+  $("#select-input")
     .on("propertychange", function(){
       window.event.stopPropagation();
-      var value = d3.select("#selectInput").node().value;
+      var value = d3.select("#select-input").node().value;
       var key = value.match(/[0-9]/) ? "GEOID10" : "city";
       zipCodeMap.selectByData(key, value); //GEOID10
 
     });
 
 
-  $("#selectInput").bind('input propertychange', function(event) {
+  $("#select-input").bind('input propertychange', function(event) {
     event.stopPropagation();
-    var value = d3.select("#selectInput").node().value;
+    var value = d3.select("#select-input").node().value;
     var key = value.match(/[0-9]/) ? "GEOID10" : "city";
     zipCodeMap.selectByData(key, value);      
   });
 
-  $("#selectInput").autoComplete({
+  $("#select-input").autoComplete({
     minChars: 1,
     source: function(term, suggest){
         term = term.toLowerCase();
