@@ -636,22 +636,14 @@
     return LabeledPie;
   }));
 
+  
+
+
+  </script> <script type="text/javascript">
+
+
   var incomePie = new LabeledPie(".tip-info");
 
-  var setPieLabels = function(labelConfig, key) {
-
-    // reset income pie
-    d3.select(".tip-info").select("svg").remove();
-    incomePie = new LabeledPie(".tip-info");
-
-    var color = d3.scale.ordinal()
-      .domain(labelConfig[key]["domain"])
-      .range(labelConfig[key]["range"]);
-
-    incomePie.setLabels(labelConfig[key]["labels"]);
-    incomePie.setColorScale(color);
-
-  };
 
   var statLabels = {
     race: ["All", "Latino", "White", "African American", "Native American", "Asian", 
@@ -679,9 +671,75 @@
   }
 
 
-  </script> <script type="text/javascript">
+  var setPieLabels = function(labelConfig, key) {
 
-        var zipCodeMap = (function() {
+    // reset income pie
+    d3.select(".tip-info").select("svg").remove();
+    incomePie = new LabeledPie(".tip-info");
+
+    var color = d3.scale.ordinal()
+      .domain(labelConfig[key]["domain"])
+      .range(labelConfig[key]["range"]);
+
+    incomePie.setLabels(labelConfig[key]["labels"]);
+    incomePie.setColorScale(color);
+
+  };
+
+    var setLegendDescription = function(statType, statIndex) {
+
+    var mapLegends = {
+        income: "Percentage of income tax returns with AGI greater than $200,000",
+        race: "Percentage of # race/ethnicity",
+        asian: "Percentage of Asians listed as #"
+    }
+
+    var pieLegends = {
+        income: "AGI reported on 2012 income tax return",
+        race: "Race/Ethnicity",
+        asian: "National origin of Asians"
+    }
+
+    var description = mapLegends[statType];
+    if (description.indexOf('#') >= 0) {
+       description = description.replace('#', statLabels[statType][statIndex]); 
+    }  
+    d3.select(".legend-description").text(description);
+    d3.select(".tip-description").text(pieLegends[statType]);
+  }
+
+  var createLegend = function(colors, statType, statIndex) {
+    var formats = {
+        percent: d3.format('%'),
+        percentPointOne: d3.format('2.1%')
+    };
+
+    d3.select("#legend ul").remove();
+    var legend = d3.select('#legend')
+      .append('ul')
+      .attr('class', 'list-inline');
+
+    var keys = legend.selectAll('li.key')
+        .data(colors.range());
+
+    // do we need more precision?
+    var endRange = colors.range()[colors.range().length - 1];
+    var maxDomain = colors.invertExtent(endRange);
+    var needMorePrecision = maxDomain[0] < 0.1;
+
+    keys.enter().append('li')
+        .attr('class', 'key')
+        .style('border-top-color', String)
+        .text(function(d) {
+            var r = colors.invertExtent(d);
+            return needMorePrecision ? 
+              formats.percentPointOne(r[0]) : formats.percent(r[0]);
+        });
+    setLegendDescription(statType, statIndex);
+  }
+
+
+        var zipCodeMap = (function(createLegend, setPieLabels) {
             var width = 650;
             var height = 1000;
 
@@ -957,61 +1015,13 @@ function zoomed() {
           updateStats: updateStats,
           selectByData: selectByData
        }
-  })(createLegend);
+  })(createLegend, setPieLabels);
+
+
+  
 
 
 
-  var setLegendDescription = function(statType, statIndex) {
-
-    var mapLegends = {
-        income: "Percentage of income tax returns with AGI greater than $200,000",
-        race: "Percentage of # race/ethnicity",
-        asian: "Percentage of Asians listed as #"
-    }
-
-    var pieLegends = {
-        income: "AGI reported on 2012 income tax return",
-        race: "Race/Ethnicity",
-        asian: "National origin of Asians"
-    }
-
-    var description = mapLegends[statType];
-    if (description.indexOf('#') >= 0) {
-       description = description.replace('#', statLabels[statType][statIndex]); 
-    }  
-    d3.select(".legend-description").text(description);
-    d3.select(".tip-description").text(pieLegends[statType]);
-  }
-
-  var createLegend = function(colors, statType, statIndex) {
-    var formats = {
-        percent: d3.format('%'),
-        percentPointOne: d3.format('2.1%')
-    };
-
-    d3.select("#legend ul").remove();
-    var legend = d3.select('#legend')
-      .append('ul')
-      .attr('class', 'list-inline');
-
-    var keys = legend.selectAll('li.key')
-        .data(colors.range());
-
-    // do we need more precision?
-    var endRange = colors.range()[colors.range().length - 1];
-    var maxDomain = colors.invertExtent(endRange);
-    var needMorePrecision = maxDomain[0] < 0.1;
-
-    keys.enter().append('li')
-        .attr('class', 'key')
-        .style('border-top-color', String)
-        .text(function(d) {
-            var r = colors.invertExtent(d);
-            return needMorePrecision ? 
-              formats.percentPointOne(r[0]) : formats.percent(r[0]);
-        });
-    setLegendDescription(statType, statIndex);
-  }
 
 
   var getSelectionTitle = function() {
