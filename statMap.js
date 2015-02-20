@@ -3,12 +3,10 @@ var incomePie = new LabeledPie(".tip-info");
 
 var statLabels = {
   race: ["All", "Latino", "White", "African American", "Native American", "Asian",
-    "Pacific Islander", "Other Race", "Mixed Race"
-  ],
+    "Pacific Islander", "Other Race", "Mixed Race"],
   asian: ["All", "Asian Indian", "Bangladeshi", "Cambodian", "Mainland Chinese", "Filipino", "Hmong",
-    "Japanese", "Korean", "Laotian", "Pakistani", "Taiwanese", "Thai", "Vietnamese"
-  ]
-}
+    "Japanese", "Korean", "Laotian", "Pakistani", "Taiwanese", "Thai", "Vietnamese"]
+};
 
 var pieLabelConfig = {
   income: {
@@ -26,20 +24,20 @@ var pieLabelConfig = {
     domain: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
     range: ["#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00", "#cab2d6", "#6a3d9a", "#ffff99", "#b15928", "#cccccc"]
   }
-}
+};
 
 
-var setPieLabels = function(labelConfig, key) {
+var setPieLabels = function (labelConfig, key) {
 
   // reset income pie
   d3.select(".tip-info").select("svg").remove();
   incomePie = new LabeledPie(".tip-info");
 
   var color = d3.scale.ordinal()
-    .domain(labelConfig[key]["domain"])
-    .range(labelConfig[key]["range"]);
+    .domain(labelConfig[key].domain)
+    .range(labelConfig[key].range);
 
-  incomePie.setLabels(labelConfig[key]["labels"]);
+  incomePie.setLabels(labelConfig[key].labels);
   incomePie.setColorScale(color);
 
 };
@@ -50,13 +48,13 @@ var setLegendDescription = function(statType, statIndex) {
     income: "Percentage of income tax returns with AGI greater than $200,000",
     race: "Percentage of # race/ethnicity",
     asian: "Percentage of Asians listed as #"
-  }
+  };
 
   var pieLegends = {
     income: "AGI reported on 2012 income tax return",
     race: "Race/Ethnicity",
     asian: "National origin of Asians"
-  }
+  };
 
   var description = mapLegends[statType];
   if (description.indexOf('#') >= 0) {
@@ -64,10 +62,10 @@ var setLegendDescription = function(statType, statIndex) {
   }
   d3.select(".legend-description").text(description);
   d3.select(".tip-description").text(pieLegends[statType]);
-}
+};
 
 var createComboBoxes = function() {
-  raceList = statLabels.race.slice(1);
+  var raceList = statLabels.race.slice(1);
   var races = d3.select("#race-list").selectAll('option')
     .data(raceList);
 
@@ -83,14 +81,14 @@ var createComboBoxes = function() {
     .data(statLabels.asian);
 
   asians.enter().append('option')
-    .attr('value', function(d, i) {
+    .attr('value', function (d, i) {
       return i;
     })
     .text(function(d) {
       return d;
     });
 
-}
+};
 
 createComboBoxes();
 
@@ -122,7 +120,7 @@ var createLegend = function(colors, statType, statIndex) {
         formats.percentPointOne(r[0]) : formats.percent(r[0]);
     });
   setLegendDescription(statType, statIndex);
-}
+};
 
 
 var zipCodeMap = (function(createLegend, setPieLabels) {
@@ -171,11 +169,11 @@ var zipCodeMap = (function(createLegend, setPieLabels) {
       }
     });
     return Object.keys(valueMap);
-  }
+  };
 
   var setStatType = function(newStatType) {
     statType = newStatType;
-  }
+  };
 
   var setStatIndex = function(newStatIndex) {
     statIndex = newStatIndex;
@@ -422,7 +420,41 @@ var selectByData = function(value) {
   zipCodeMap.selectByData(key, value);
 }
 
-d3.select("#stat-list")
+var gotoVoiceCommand = function(place) {
+  $('#select-input').val(place);
+  selectByData(place);
+}
+
+var showMeVoiceCommand = function(stat) {
+  var statIndex = 0;
+  if (stat === "income") {
+    statIndex = 0;
+  } else if (stat === "race") {
+    statIndex = 1;
+  }
+  var test = statIndex.toString();
+  $("#stat-list").val(statIndex);
+  $("#stat-list").trigger("change");
+}
+
+$("#stat-list").on("change", function() {
+  var test = true;
+});
+
+var enableVoiceCommands = function() {
+    var commands = {
+      'go to *place': gotoVoiceCommand,
+      'show me *stat': showMeVoiceCommand
+  };  
+  console.log(annyang);
+  annyang.start();
+  annyang.debug();
+  annyang.addCommands(commands);
+}
+
+enableVoiceCommands();
+
+$("#stat-list")
   .on("change", function() {
     var statIndex = +d3.select("#stat-list").node().value;
     var raceIndex = +d3.select("#race-list").node().value;
