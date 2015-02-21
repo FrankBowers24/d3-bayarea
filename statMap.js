@@ -1,7 +1,12 @@
+var d3;
+var LabeledPie;
+var topojson;
+var annyang;
+
 var incomePie = new LabeledPie(".tip-info");
 
-
 var statLabels = {
+  main: ["Income", "Race/Ethnicity"],
   race: ["All", "Latino", "White", "African American", "Native American", "Asian",
     "Pacific Islander", "Other Race", "Mixed Race"],
   asian: ["All", "Asian Indian", "Bangladeshi", "Cambodian", "Mainland Chinese", "Filipino", "Hmong",
@@ -28,7 +33,6 @@ var pieLabelConfig = {
 
 
 var setPieLabels = function (labelConfig, key) {
-
   // reset income pie
   d3.select(".tip-info").select("svg").remove();
   incomePie = new LabeledPie(".tip-info");
@@ -39,11 +43,9 @@ var setPieLabels = function (labelConfig, key) {
 
   incomePie.setLabels(labelConfig[key].labels);
   incomePie.setColorScale(color);
-
 };
 
-var setLegendDescription = function(statType, statIndex) {
-
+var setLegendDescription = function (statType, statIndex) {
   var mapLegends = {
     income: "Percentage of income tax returns with AGI greater than $200,000",
     race: "Percentage of # race/ethnicity",
@@ -64,16 +66,16 @@ var setLegendDescription = function(statType, statIndex) {
   d3.select(".tip-description").text(pieLegends[statType]);
 };
 
-var createComboBoxes = function() {
+var createComboBoxes = function () {
   var raceList = statLabels.race.slice(1);
   var races = d3.select("#race-list").selectAll('option')
     .data(raceList);
 
   races.enter().append('option')
-    .attr('value', function(d, i) {
+    .attr('value', function (d, i) {
       return i + 1;
     })
-    .text(function(d) {
+    .text(function (d) {
       return d;
     });
 
@@ -84,7 +86,7 @@ var createComboBoxes = function() {
     .attr('value', function (d, i) {
       return i;
     })
-    .text(function(d) {
+    .text(function (d) {
       return d;
     });
 
@@ -92,7 +94,7 @@ var createComboBoxes = function() {
 
 createComboBoxes();
 
-var createLegend = function(colors, statType, statIndex) {
+var createLegend = function (colors, statType, statIndex) {
   var formats = {
     percent: d3.format('%'),
     percentPointOne: d3.format('2.1%')
@@ -114,16 +116,16 @@ var createLegend = function(colors, statType, statIndex) {
   keys.enter().append('li')
     .attr('class', 'key')
     .style('border-top-color', String)
-    .text(function(d) {
+    .text(function (d) {
       var r = colors.invertExtent(d);
       return needMorePrecision ?
-        formats.percentPointOne(r[0]) : formats.percent(r[0]);
+          formats.percentPointOne(r[0]) : formats.percent(r[0]);
     });
   setLegendDescription(statType, statIndex);
 };
 
 
-var zipCodeMap = (function(createLegend, setPieLabels) {
+var zipCodeMap = (function (createLegend, setPieLabels) {
   var width = 650;
   var height = 1000;
 
@@ -159,11 +161,11 @@ var zipCodeMap = (function(createLegend, setPieLabels) {
 
   var geometry;
 
-  var getPropertyValues = function() {
+  var getPropertyValues = function () {
     var key;
     var valueMap = {};
     var zips = topojson.feature(geometry, geometry.objects.Bay_Area);
-    zips.features.forEach(function(d) {
+    zips.features.forEach(function (d) {
       for (key in d.properties) {
         valueMap[d.properties[key]] = true;
       }
@@ -171,11 +173,11 @@ var zipCodeMap = (function(createLegend, setPieLabels) {
     return Object.keys(valueMap);
   };
 
-  var setStatType = function(newStatType) {
+  var setStatType = function (newStatType) {
     statType = newStatType;
   };
 
-  var setStatIndex = function(newStatIndex) {
+  var setStatIndex = function (newStatIndex) {
     statIndex = newStatIndex;
   };
 
@@ -183,13 +185,10 @@ var zipCodeMap = (function(createLegend, setPieLabels) {
     var zip = d.properties.GEOID10;
     var counts = stats[zip][statType];
     if (counts) {
-      /*  CHANGE THIS FOR EACH RACE/INCOME LEVEL */
       return +counts[statIndex] / +counts[0];
-
     } else {
       return null;
     }
-
   }
 
   function getTitle(d) {
@@ -209,72 +208,60 @@ var zipCodeMap = (function(createLegend, setPieLabels) {
     }
   }
 
-  var updateColorDomain = function() {
-    var zips = topojson.feature(geometry, geometry.objects.Bay_Area)
+  var updateColorDomain = function () {
+    var zips = topojson.feature(geometry, geometry.objects.Bay_Area);
 
-    /*                var min = d3.min(zips.features, function(d) { 
-                            return getStatValue(d, statData); //+d.properties.GEOID10; 
-                        });
-                        var max = d3.max(zips.features, function(d) { 
-                            return getStatValue(d, statData); //+d.properties.GEOID10;
-                         })
-
-
-                    color.domain([
-                      min, 
-                      max
-                      ]);  
-    */
     color.domain(
-      d3.extent(zips.features, function(d) {
+      d3.extent(zips.features, function (d) {
         return getStatValue(d, statData);
       })
     );
 
     createLegend(color, statType, statIndex);
+  };
 
-  }
+  var doFill = function (d) {
+    var value = getStatValue(d, statData);
 
-  var updateStats = function() {
+    if (value) {
+      //If value exists…
+      return color(value);
+    } else {
+      //If value is undefined…
+      return "#ccc";
+    }
+  };
 
-    updateColorDomain()
+  var updateStats = function () {
+    updateColorDomain();
 
     svg.selectAll("path")
       .transition().duration(1000)
-      .attr("fill", function(d) {
-        //Get data value
-        var value = getStatValue(d, statData);
-
-        if (value) {
-          //If value exists…
-          return color(value);
-        } else {
-          //If value is undefined…
-          return "#ccc";
-        }
-      })
-
+      .attr("fill", function (d) {
+        return doFill(d);
+      });
   };
 
-  var selectByData = function(field, fieldValue) {
+  var selectByData = function (field, fieldValue) {
     var matches = [];
     var aggregate = [];
     var title;
     var zip;
     var values;
+    var i;
 
     var zips = topojson.feature(geometry, geometry.objects.Bay_Area);
-    zips.features.forEach(function(d) {
+    zips.features.forEach(function (d) {
       if (d.properties[field] === fieldValue) {
         matches.push(d);
       }
     });
     if (matches.length > 0) {
       d3.selectAll(".selected").classed("selected", false);
-      matches.forEach(function(d) {
+      matches.forEach(function (d) {
         zip = d.properties.GEOID10;
         values = statData[zip][statType];
-        for (var i = 0; i < values.length; i++) {
+        for (i = 0; i < values.length; i++) {
           aggregate[i] = aggregate[i] || 0;
           aggregate[i] += +values[i];
         }
@@ -284,8 +271,8 @@ var zipCodeMap = (function(createLegend, setPieLabels) {
       setToolTip(null, statData, aggregate);
     }
 
-    svg.selectAll("path")[0].forEach(function(path) {
-      var path = d3.select(path);
+    svg.selectAll("path")[0].forEach(function (path) {
+      path = d3.select(path);
       if (path.datum().properties[field] === fieldValue) {
         path.classed("selected", true);
       }
@@ -296,12 +283,12 @@ var zipCodeMap = (function(createLegend, setPieLabels) {
 
       center(aggregate, true);
     }
-  }
+  };
 
   function centerZip(ba) {
 
     var zips = topojson.feature(ba, ba.objects.Bay_Area),
-      zip = zips.features.filter(function(d) {
+      zip = zips.features.filter(function (d) {
 
         return d.properties.GEOID10 === "94560";
       })[0];
@@ -336,10 +323,10 @@ var zipCodeMap = (function(createLegend, setPieLabels) {
     svg.selectAll("path").attr("d", path);
   }
 
-  d3.json("data/allStats.json", function(stats) {
+  d3.json("data/allStats.json", function (stats) {
     statData = stats;
 
-    d3.json("Bay_Area_Cities_topo.json", function(json) {
+    d3.json("Bay_Area_Cities_topo.json", function (json) {
       geometry = json;
       var lastZipClick = [];
       updateColorDomain();
@@ -350,19 +337,10 @@ var zipCodeMap = (function(createLegend, setPieLabels) {
         .append("path")
         .attr("d", path)
         .attr("stroke", "black")
-        .attr("fill", function(d) {
-          //Get data value
-          var value = getStatValue(d, statData);
-
-          if (value) {
-            //If value exists…
-            return color(value);
-          } else {
-            //If value is undefined…
-            return "#ccc";
-          }
+        .attr("fill", function (d) {
+          return doFill(d);
         })
-        .on("click", function(d) {
+        .on("click", function (d) {
           // Find previously selected, unselect
           d3.selectAll(".selected").classed("selected", false);
 
@@ -373,22 +351,21 @@ var zipCodeMap = (function(createLegend, setPieLabels) {
           lastZipClick = [d3.event.x, d3.event.y];
         })
         .append("svg:title")
-        .text(function(d) {
+        .text(function (d) {
           return getTitle(d);
         });
 
-
       centerZip(json);
 
-      d3.select(".right-side").on("click", function() {
+      d3.select(".right-side").on("click", function () {
         if (d3.event.x !== lastZipClick[0] && d3.event.y !== lastZipClick[1]) {
-          d3.select(".selected").classed("selected", false);
+          d3.selectAll(".selected").classed("selected", false);
           d3.select(".tip-info").classed("hidden", true);
           d3.select(".tip-description").classed("hidden", true);
           d3.select(".tip-location").text('');
         }
         lastZipClick = [];
-      })
+      });
     });
   });
 
@@ -400,62 +377,50 @@ var zipCodeMap = (function(createLegend, setPieLabels) {
     setStatIndex: setStatIndex,
     updateStats: updateStats,
     selectByData: selectByData
-  }
+  };
 })(createLegend, setPieLabels);
 
-
-
-
-
-
-
-
-var getSelectionTitle = function() {
+var getSelectionTitle = function () {
   var retVal = d3.select(".tip-location").text().split(':')[0];
   return retVal;
-}
+};
 
-var selectByData = function(value) {
+var selectByData = function (value) {
   var key = value.match(/[0-9]/) ? "GEOID10" : "city";
   zipCodeMap.selectByData(key, value);
-}
+};
 
-var gotoVoiceCommand = function(place) {
+var gotoVoiceCommand = function (place) {
   $('#select-input').val(place);
   selectByData(place);
-}
+};
 
-var showMeVoiceCommand = function(stat) {
+var showMeVoiceCommand = function (stat) {
   var statIndex = 0;
   if (stat === "income") {
     statIndex = 0;
   } else if (stat === "race") {
     statIndex = 1;
   }
-  var test = statIndex.toString();
   $("#stat-list").val(statIndex);
   $("#stat-list").trigger("change");
-}
+};
 
-$("#stat-list").on("change", function() {
-  var test = true;
-});
-
-var enableVoiceCommands = function() {
-    var commands = {
-      'go to *place': gotoVoiceCommand,
-      'show me *stat': showMeVoiceCommand
-  };  
+var enableVoiceCommands = function () {
+  var commands = {
+    'go to *place': gotoVoiceCommand,
+    'show me *stat': showMeVoiceCommand
+  };
   console.log(annyang);
   annyang.start();
   annyang.debug();
   annyang.addCommands(commands);
-}
+};
 
 enableVoiceCommands();
 
 $("#stat-list")
-  .on("change", function() {
+  .on("change", function () {
     var statIndex = +d3.select("#stat-list").node().value;
     var raceIndex = +d3.select("#race-list").node().value;
     d3.select("#race-list").classed("hidden", statIndex === 0);
@@ -475,10 +440,9 @@ $("#stat-list")
   });
 
 d3.select("#race-list")
-  .on("change", function() {
+  .on("change", function () {
     var raceIndex = +d3.select("#race-list").node().value;
     d3.select("#asian-list").classed("hidden", raceIndex !== 5);
-    var asianIndex = +d3.select("#asian-list").node().value;
     if (raceIndex === 5) {
       selectAsian();
     } else {
@@ -490,7 +454,7 @@ d3.select("#race-list")
     zipCodeMap.updateStats();
   });
 
-var selectAsian = function() {
+var selectAsian = function () {
   var asianIndex = +d3.select("#asian-list").node().value;
   if (asianIndex === 0) {
     zipCodeMap.setStatType("race");
@@ -503,49 +467,38 @@ var selectAsian = function() {
     setPieLabels(pieLabelConfig, "asian");
     selectByData(getSelectionTitle());
   }
-}
+};
 
 d3.select("#asian-list")
-  .on("change", function() {
+  .on("change", function () {
     selectAsian();
     zipCodeMap.updateStats();
   });
 
 d3.select("#select-button")
-  .on("click", function() {
+  .on("click", function () {
     window.event.stopPropagation();
     var value = d3.select("#select-input").node().value;
     var key = value.match(/[0-9]/) ? "GEOID10" : "city";
-    zipCodeMap.selectByData(key, value); //GEOID10
-  })
-
-/*d3.select("#select-input")
-  .on("keyup", function(){
-    window.event.stopPropagation();
-    var value = d3.select("#select-input").node().value;
-    var key = value.match(/[0-9]/) ? "GEOID10" : "city";
-    zipCodeMap.selectByData(key, value); //GEOID10
-
-  });*/
-
-$("#select-input")
-  .on("propertychange", function() {
-    window.event.stopPropagation();
-    var value = d3.select("#select-input").node().value;
-    var key = value.match(/[0-9]/) ? "GEOID10" : "city";
-    zipCodeMap.selectByData(key, value); //GEOID10
-
+    zipCodeMap.selectByData(key, value);
   });
 
+$("#select-input")
+  .on("propertychange", function () {
+    window.event.stopPropagation();
+    var value = d3.select("#select-input").node().value;
+    var key = value.match(/[0-9]/) ? "GEOID10" : "city";
+    zipCodeMap.selectByData(key, value);
+  });
 
-$("#select-input").bind('input propertychange', function(event) {
+$("#select-input").bind('input propertychange', function (event) {
   event.stopPropagation();
   var value = d3.select("#select-input").node().value;
   var key = value.match(/[0-9]/) ? "GEOID10" : "city";
   zipCodeMap.selectByData(key, value);
 });
 
-$("#select-input").on('val.changed', function(event) {
+$("#select-input").on('val.changed', function (event) {
   event.stopPropagation();
   var value = d3.select("#select-input").node().value;
   var key = value.match(/[0-9]/) ? "GEOID10" : "city";
@@ -554,24 +507,29 @@ $("#select-input").on('val.changed', function(event) {
 
 
 // hack to get auto-complete programmatic change to #select-input noticed
-(function($) {
+(function ($) {
   var originalVal = $.fn.val;
-  $.fn.val = function() {
+  $.fn.val = function () {
     var result = originalVal.apply(this, arguments);
-    if (arguments.length > 0)
+    if (arguments.length > 0) {
       $(this).trigger('val.changed');
+    }
     return result;
   };
 })(jQuery);
 
 $("#select-input").autoComplete({
   minChars: 1,
-  source: function(term, suggest) {
+  source: function (term, suggest) {
     term = term.toLowerCase();
+    var i;
     var choices = zipCodeMap.getPropertyValues();
     var matches = [];
-    for (i = 0; i < choices.length; i++)
-      if (~choices[i].toLowerCase().indexOf(term)) matches.push(choices[i]);
+    for (i = 0; i < choices.length; i++) {
+      if (~choices[i].toLowerCase().indexOf(term)) {
+        matches.push(choices[i]);
+      }
+    }
     suggest(matches);
   }
 });

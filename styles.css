@@ -19,6 +19,9 @@
   .selected {
     fill: blue;
   }
+  svg:text {
+    font-size: 24px;
+  }
   text {
     color: black;
     fill: black;
