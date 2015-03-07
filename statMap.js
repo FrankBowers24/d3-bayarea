@@ -128,6 +128,8 @@ var createLegend = function (colors, statType, statIndex) {
 var zipCodeMap = (function (createLegend, setPieLabels) {
   var width = 650;
   var height = 1000;
+  var minZoom = 0.6 * (1 << 16);
+  var maxZoom = 0.7 * (1 << 17);
 
   var projection = d3.geo.albersUsa()
     .scale(0.6 * (1 << 16))
@@ -139,7 +141,7 @@ var zipCodeMap = (function (createLegend, setPieLabels) {
   var zoom = d3.behavior.zoom()
     .translate(projection.translate())
     .scale(projection.scale())
-    .scaleExtent([0.6 * (1 << 16), 0.7 * (1 << 17)])
+    .scaleExtent([minZoom, maxZoom])
     .on("zoom", zoomed);
 
   //Define quantize scale to sort data values into buckets of color
@@ -318,10 +320,51 @@ var zipCodeMap = (function (createLegend, setPieLabels) {
     }
   }
 
+  function formatLocation(p, k) {
+    var format = d3.format("." + Math.floor(Math.log(k) / 2 - 2) + "f");
+    return (p[1] < 0 ? format(-p[1]) + "°S" : format(p[1]) + "°N") + " "
+         + (p[0] < 0 ? format(-p[0]) + "°W" : format(p[0]) + "°E");
+  }
+
+  function mousemoved() {
+    // console.log("mouse: " + d3.mouse(this));
+    // console.log("lat/long: " + formatLocation(projection.invert(d3.mouse(this)), zoom.scale()));
+  }
+
   function zoomed() {
     projection.translate(d3.event.translate).scale(d3.event.scale);
     svg.selectAll("path").attr("d", path);
   }
+
+  function location(p, translate, scale) {
+      return [ (p[0] - translate[0]) / scale, (p[1] - translate[1]) / scale ];
+    }
+
+  function translateTo(p, l) {
+      l = point(l);
+      translate[0] += p[0] - l[0];
+      translate[1] += p[1] - l[1];
+    }
+
+    function zoomOut() {
+
+      var test = d3.select(".selected");
+
+        var d = d3.select(".selected").datum();
+
+
+        var bounds = path.bounds(d),
+            dx = bounds[1][0] - bounds[0][0],
+            dy = bounds[1][1] - bounds[0][1],
+            x = (bounds[0][0] + bounds[1][0]) / 2,
+            y = (bounds[0][1] + bounds[1][1]) / 2,
+            scale = maxZoom, //.9 / Math.max(dx / width, dy / height),
+            translate = [width / 2 - scale * x, height / 2 - scale * y];
+
+        svg.transition()
+            .duration(750)
+            .call(zoom.translate(translate).scale(scale).event);
+    }
 
   d3.json("data/allStats.json", function (stats) {
     statData = stats;
@@ -350,6 +393,7 @@ var zipCodeMap = (function (createLegend, setPieLabels) {
           setToolTip(d, statData);
           lastZipClick = [d3.event.x, d3.event.y];
         })
+        .on("mousemove", mousemoved)
         .append("svg:title")
         .text(function (d) {
           return getTitle(d);
@@ -376,7 +420,8 @@ var zipCodeMap = (function (createLegend, setPieLabels) {
     setStatType: setStatType,
     setStatIndex: setStatIndex,
     updateStats: updateStats,
-    selectByData: selectByData
+    selectByData: selectByData,
+    zoomOut: zoomOut
   };
 })(createLegend, setPieLabels);
 
@@ -389,6 +434,12 @@ var selectByData = function (value) {
   var key = value.match(/[0-9]/) ? "GEOID10" : "city";
   zipCodeMap.selectByData(key, value);
 };
+
+d3.select("#zoom-out")
+  .on("click", function () {
+    window.event.stopPropagation();
+    zipCodeMap.zoomOut();
+  });
 
 var gotoVoiceCommand = function (place) {
   $('#select-input').val(place);
@@ -486,6 +537,7 @@ d3.select("#select-button")
 $("#select-input")
   .on("propertychange", function () {
     window.event.stopPropagation();
+    window.event.preventDefault();
     var value = d3.select("#select-input").node().value;
     var key = value.match(/[0-9]/) ? "GEOID10" : "city";
     zipCodeMap.selectByData(key, value);
@@ -493,6 +545,7 @@ $("#select-input")
 
 $("#select-input").bind('input propertychange', function (event) {
   event.stopPropagation();
+  window.event.preventDefault();
   var value = d3.select("#select-input").node().value;
   var key = value.match(/[0-9]/) ? "GEOID10" : "city";
   zipCodeMap.selectByData(key, value);
@@ -505,7 +558,7 @@ $("#select-input").on('val.changed', function (event) {
   zipCodeMap.selectByData(key, value);
 });
 
-
+/*
 // hack to get auto-complete programmatic change to #select-input noticed
 (function ($) {
   var originalVal = $.fn.val;
@@ -516,7 +569,7 @@ $("#select-input").on('val.changed', function (event) {
     }
     return result;
   };
-})(jQuery);
+})(jQuery);*/
 
 $("#select-input").autoComplete({
   minChars: 1,
