@@ -6,7 +6,7 @@ Bay Area Stats by Zip Code
 
 This is a mashup of many D3 examples:
 
-1. Chrloropleth
+1. Choropleth
 2. Zoom USA map
 3. Pie chart with labels
 4. D3 legend
@@ -19,7 +19,7 @@ Try out Bay Area Stats:
 4.  Select Race: Asian and select Asian nationalities
 5.  Notice how the pie chart changes when you click on different zip code regions.  The pie chart changes are most interesting when the change in data is greatest (Marin vs East Oakland).
 
-I got all the data and map boundaries directly from the Census Bureau and the IRS and converted it to JSON using QGIS, ogr2ogr, and custom node.js scripts.
+I got all the data and map boundaries directly from the Census Bureau and the IRS and converted it to JSON using QGIS, ogr2ogr, and node.js scripts that I wrote.
 
 I downloaded cb_2013_us_zcta510_500k.shp, 2013 Census Bureau Zip Code Tabulation Area boundaries 
 
@@ -36,42 +36,73 @@ Income data is based on IRS statistics on the number of tax returns filed in 201
 For Race and Enthnicity data I downloaded 2010 census data called HISPANIC OR LATINO, AND NOT HISPANIC OR LATINO BY RACE
 Universe: Total population  2010 Census Summary File   // DEC_10_SF1_P9.csv
 
-Index,
-1,GEO.id2,Id2  // Zip Code
-3,D001,Total:
-4,D002,Hispanic or Latino
-7,D005,Not Hispanic or Latino: - Population of one race: - White alone
-8,D006,Not Hispanic or Latino: - Population of one race: - Black or African American alone
-9,D007,Not Hispanic or Latino: - Population of one race: - American Indian and Alaska Native alone
-10,D008,Not Hispanic or Latino: - Population of one race: - Asian alone
-11, D009,Not Hispanic or Latino: - Population of one race: - Native Hawaiian and Other Pacific Islander alone
-12, D010,Not Hispanic or Latino: - Population of one race: - Some Other Race alone
-13, D011,Not Hispanic or Latino: - Two or More Races:
+If you enter a city name all the zip codes for the city are selected and the city is animated to the center of the map.  The data shown in the pie chart is aggregated from all the selected zip codes.
 
+ACS_13_5YR_DP04
+2   Zip Code (zip code in second column)
 
-color for race pie: ["#1b9e77","#d95f02","#7570b3","#e7298a","#66a61e","#e6ab02","#a6761d","#666666"]
-colors for race density: 
+176, HC01_V63 Occupied housing units
+180, HC01_VC64 Occupied housing units - Owner-occupied
+184, HC01_VC65 Occupied housing units - Renter-occupied
 
-<select name="statType">
-	<option value="0">Income</option>
-	<option value="1">Race/Ethnicity</option>
-</select>
+1.  Rent vs Own
 
-<select name="raceList" >
-  <option value="1">Hispanic or Latino</option>
-  <option value="2">White</option>
-  <option value="3">African American</option>
-  <option value="4">Native American</option>
-  <option value="5">Asian</option>
-  <option value="6">Pacific Islander</option>
-  <option value="7">Other Race</option>
-  <option value="8">Mixed Race</option>
-</select>
-<button type="button">Refresh</button>
+200 HC01-VC74 Occupied housing Units - Moved in 2010 or later
+204 HC01_VC75   - Moved in 2000 to 2009
+208 HC01_VC76  - Moved in 1990 to 1999
+212 HC01-VC77  - Moved in 1980 to 1989
+216 HC01-VC78  -Moved in 1970 to 1979
+220 HC01-VC79  - Moved in 1969 or earlier
 
+432 HC01 -VC157 selected monthly owner costs as a % of household income
+
+496 HC01-VC181 GROSS RENT - Occupied units paying rent
+
+536 HC01_VC196 GROSS RENT as a percentage of household income
+---------------------
 
 SELECTED SOCIAL CHARACTERISTICS IN THE UNITED STATES  more information
 2009-2013 American Community Survey 5-Year Estimates  (ACS_13_5YR_DP02_with_ann.csv  1/19 10:00 AM)
+
+1. Education
+2. Place of Birth/Citizenship
+3. Language
+
+Education
+2 zip code
+232 HC01_VC85 population 25 years and over
+236 HC01_VC86 less than 9th grade
+240 HC01_VC87 9th to 12 grade, no diploma
+244 HC01_VC88 High school graduate
+248 HC01_VC89 Some College, no degree
+252 HC01_VC90 Associate's degree
+256 HC01_VC91 Bachelor's degree
+260 HC01_VC92 Graduate or professional degree
+
+Place of Birth
+344 PLACE OF BIRTH - Total population
+348 Native
+352 Native - USA
+356 Native - California
+360 Native - USA, not California
+368 Foreign Born
+416 Foreign Born - Europe
+420 Foreign Born - Asia
+424 Foreign Born - Africa
+438 Foreign Born - Oceania
+432 Foreign Born - Latin America
+436 Foreign Born - Canada
+
+Language
+440 Language spoken at home - population 5 years and over
+444 English only
+448 Language other than English
+456 Spanish
+464 Other Indo-European languages
+474 Asian and Pacific Islander languages
+480 Other languages
+
+
 
 
 SELECTED HOUSING CHARACTERISTICS  more information
