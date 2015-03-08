@@ -8,9 +8,11 @@ var incomePie = new LabeledPie(".tip-info");
 var statLabels = {
   main: ["Income", "Race/Ethnicity"],
   race: ["All", "Latino", "White", "African American", "Native American", "Asian",
-    "Pacific Islander", "Other Race", "Mixed Race"],
+    "Pacific Islander", "Other Race", "Mixed Race"
+  ],
   asian: ["All", "Asian Indian", "Bangladeshi", "Cambodian", "Mainland Chinese", "Filipino", "Hmong",
-    "Japanese", "Korean", "Laotian", "Pakistani", "Taiwanese", "Thai", "Vietnamese"]
+    "Japanese", "Korean", "Laotian", "Pakistani", "Taiwanese", "Thai", "Vietnamese"
+  ]
 };
 
 var pieLabelConfig = {
@@ -119,7 +121,7 @@ var createLegend = function (colors, statType, statIndex) {
     .text(function (d) {
       var r = colors.invertExtent(d);
       return needMorePrecision ?
-          formats.percentPointOne(r[0]) : formats.percent(r[0]);
+        formats.percentPointOne(r[0]) : formats.percent(r[0]);
     });
   setLegendDescription(statType, statIndex);
 };
@@ -322,8 +324,7 @@ var zipCodeMap = (function (createLegend, setPieLabels) {
 
   function formatLocation(p, k) {
     var format = d3.format("." + Math.floor(Math.log(k) / 2 - 2) + "f");
-    return (p[1] < 0 ? format(-p[1]) + "°S" : format(p[1]) + "°N") + " "
-         + (p[0] < 0 ? format(-p[0]) + "°W" : format(p[0]) + "°E");
+    return (p[1] < 0 ? format(-p[1]) + "°S" : format(p[1]) + "°N") + " " + (p[0] < 0 ? format(-p[0]) + "°W" : format(p[0]) + "°E");
   }
 
   function mousemoved() {
@@ -337,34 +338,34 @@ var zipCodeMap = (function (createLegend, setPieLabels) {
   }
 
   function location(p, translate, scale) {
-      return [ (p[0] - translate[0]) / scale, (p[1] - translate[1]) / scale ];
-    }
+    return [(p[0] - translate[0]) / scale, (p[1] - translate[1]) / scale];
+  }
 
   function translateTo(p, l) {
-      l = point(l);
-      translate[0] += p[0] - l[0];
-      translate[1] += p[1] - l[1];
-    }
+    l = point(l);
+    translate[0] += p[0] - l[0];
+    translate[1] += p[1] - l[1];
+  }
 
-    function zoomOut() {
+  function zoomOut() {
 
-      var test = d3.select(".selected");
+    var test = d3.select(".selected");
 
-        var d = d3.select(".selected").datum();
+    var d = d3.select(".selected").datum();
 
 
-        var bounds = path.bounds(d),
-            dx = bounds[1][0] - bounds[0][0],
-            dy = bounds[1][1] - bounds[0][1],
-            x = (bounds[0][0] + bounds[1][0]) / 2,
-            y = (bounds[0][1] + bounds[1][1]) / 2,
-            scale = maxZoom, //.9 / Math.max(dx / width, dy / height),
-            translate = [width / 2 - scale * x, height / 2 - scale * y];
+    var bounds = path.bounds(d),
+      dx = bounds[1][0] - bounds[0][0],
+      dy = bounds[1][1] - bounds[0][1],
+      x = (bounds[0][0] + bounds[1][0]) / 2,
+      y = (bounds[0][1] + bounds[1][1]) / 2,
+      scale = maxZoom, //.9 / Math.max(dx / width, dy / height),
+      translate = [width / 2 - scale * x, height / 2 - scale * y];
 
-        svg.transition()
-            .duration(750)
-            .call(zoom.translate(translate).scale(scale).event);
-    }
+    svg.transition()
+      .duration(750)
+      .call(zoom.translate(translate).scale(scale).event);
+  }
 
   d3.json("data/allStats.json", function (stats) {
     statData = stats;
@@ -457,19 +458,20 @@ var showMeVoiceCommand = function (stat) {
   $("#stat-list").trigger("change");
 };
 
-/*var enableVoiceCommands = function () {
+var enableVoiceCommands = function () {
   var commands = {
     'go to *place': gotoVoiceCommand,
     'show me *stat': showMeVoiceCommand
   };
-  console.log(annyang);
-  annyang.start();
-  annyang.debug();
-  annyang.addCommands(commands);
+  if (annyang) {
+    console.log(annyang);
+    annyang.start();
+    annyang.debug();
+    annyang.addCommands(commands);
+  }
 };
 
 enableVoiceCommands();
-*/
 
 $("#stat-list")
   .on("change", function () {
