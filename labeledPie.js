@@ -1,4 +1,6 @@
-(function(root, factory) {
+var d3;
+
+(function (root, factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
     define([], factory);
@@ -11,9 +13,9 @@
     // Browser globals (root is window)
     root.LabeledPie = factory();
   }
-}(this, function() {
+}(this, function () {
 
-  var LabeledPie = function(parent) {
+  var LabeledPie = function (parent) {
 
     var svg = d3.select(parent)
       .append("svg")
@@ -35,8 +37,8 @@
     this.svg.append("g")
       .attr("class", "lines");
 
-    this.width = 160,
-      this.height = 160;
+    this.width = 160;
+    this.height = 160;
     this.radius = Math.min(this.width, this.height) / 2;
 
     this.pie = d3.layout.pie()
@@ -71,7 +73,7 @@
       var pt1;
       var pt2;
       var lineElement;
-      svg.select(".lines").selectAll("polyline").each(function(d, i) {
+      svg.select(".lines").selectAll("polyline").each(function (d, i) {
         if (i === index) {
           lineElement = this;
         }
@@ -83,8 +85,8 @@
 
       d3.select(lineElement)
         .transition().duration(500)
-        .attrTween("points", function(d) {
-          return function(t) {
+        .attrTween("points", function (d) {
+          return function (t) {
             pt1[1] = oldY + t * delta;
             pt2[1] = oldY + t * delta;
             return [pt0, pt1, pt2];
@@ -93,15 +95,15 @@
     }
 
     function transitionOverlappingLabel(textElement, newY) {
-      var matrix = textElement.transform.baseVal[0].matrix;
+      var matrix = textElement.transform.baseVal.getItem(0).matrix;
       var oldY = matrix.f;
       var pos = [matrix.e, matrix.f];
       var delta = newY - oldY;
 
       d3.select(textElement)
         .transition().duration(500)
-        .attrTween("transform", function(d) {
-          return function(t) {
+        .attrTween("transform", function (d) {
+          return function (t) {
             pos[1] = oldY + t * delta;
             return "translate(" + pos + ")";
           };
@@ -113,7 +115,7 @@
       var matrix;
       var currentY;
       for (var i = 0; i < labels.length; i++) {
-        matrix = labels[i].transform.baseVal[0].matrix;
+        matrix = labels[i].transform.baseVal.getItem(0).matrix;
         currentY = matrix.f;
         var height = labels[i].getBBox().height;
         if (currentY > (lastY - height)) {
@@ -129,9 +131,9 @@
       var leftLabels = [];
       var rightLabels = [];
 
-      svg.select(".labels").selectAll("text").each(function(d, index) {
-        var str = this.outerHTML;
-        if (!str.match("opacity: 0")) { // only look at visible labels
+      svg.select(".labels").selectAll("text").each(function (d, index) {
+        var str = this.style.cssText;
+        if (str && !str.match("opacity: 0")) { // only look at visible labels
           this.dataset.index = index;
           if (str.match("text-anchor: end")) {
             leftLabels.push(this);
@@ -140,23 +142,27 @@
           }
         }
       });
-      adjustOverlappingLabels(leftLabels);
-      adjustOverlappingLabels(rightLabels.reverse());
+      try {
+        adjustOverlappingLabels(leftLabels);
+        adjustOverlappingLabels(rightLabels.reverse());
+      } catch (e) {
+
+      }
       return true; // return true to stop timer from firing again
     }
 
 
-    LabeledPie.prototype.setLabels = function(labels) {
+    LabeledPie.prototype.setLabels = function (labels) {
       this.labels = labels;
     }
 
-    LabeledPie.prototype.setColorScale = function(color) {
+    LabeledPie.prototype.setColorScale = function (color) {
       this.color = color;
     }
 
 
 
-    LabeledPie.prototype.change = function(data) {
+    LabeledPie.prototype.change = function (data) {
 
       var radius = this.radius;
       var labels = this.labels;
@@ -186,7 +192,7 @@
 
       slice.enter()
         .insert("path")
-        .style("fill", function(d, i) {
+        .style("fill", function (d, i) {
           return color(i);
         })
         .attr("class", "slice");
@@ -199,11 +205,11 @@
 
       slice
         .transition().duration(1000)
-        .attrTween("d", function(d) {
+        .attrTween("d", function (d) {
           this._current = this._current || d;
           var interpolate = d3.interpolate(this._current, d);
           this._current = interpolate(0);
-          return function(t) {
+          return function (t) {
             return arc(interpolate(t));
           };
         })
@@ -219,7 +225,7 @@
       text.enter()
         .append("text")
         .attr("dy", ".35em")
-        .text(function(d, i) {
+        .text(function (d, i) {
           return labels[i];
         });
 
@@ -228,25 +234,25 @@
       }
 
       text.transition().duration(1000)
-        .style("opacity", function(d) {
+        .style("opacity", function (d) {
           return getPercentage(d) < minimumDisplayedLabel ? 0 : 1;
         })
-        .attrTween("transform", function(d) {
+        .attrTween("transform", function (d) {
           this._current = this._current || d;
           var interpolate = d3.interpolate(this._current, d);
           this._current = interpolate(0);
-          return function(t) {
+          return function (t) {
             var d2 = interpolate(t);
             var pos = outerArc.centroid(d2);
             pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
             return "translate(" + pos + ")";
           };
         })
-        .styleTween("text-anchor", function(d) {
+        .styleTween("text-anchor", function (d) {
           this._current = this._current || d;
           var interpolate = d3.interpolate(this._current, d);
           this._current = interpolate(0);
-          return function(t) {
+          return function (t) {
             var d2 = interpolate(t);
             return midAngle(d2) < Math.PI ? "start" : "end";
           };
@@ -267,14 +273,14 @@
         .append("polyline");
 
       polyline.transition().duration(1000)
-        .style("opacity", function(d) {
+        .style("opacity", function (d) {
           return getPercentage(d) < minimumDisplayedLabel ? 0 : 0.3;
         })
-        .attrTween("points", function(d) {
+        .attrTween("points", function (d) {
           this._current = this._current || d;
           var interpolate = d3.interpolate(this._current, d);
           this._current = interpolate(0);
-          return function(t) {
+          return function (t) {
             var d2 = interpolate(t);
             var pos = outerArc.centroid(d2);
             pos[0] = radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
@@ -308,19 +314,19 @@
                   };
               })
 */
-        .text(function(d) {
+        .text(function (d) {
           var percent = getPercentage(d);
           return percent > minimumDisplayedPercentage ? Math.round(percent) + "%" : "";
         })
-        .style("opacity", function(d) {
+        .style("opacity", function (d) {
           return d.value / sum * 100 > minimumDisplayedPercentage ? 1 : 0;
         })
-        .attrTween("transform", function(d, i) {
+        .attrTween("transform", function (d, i) {
           var bbox = this.getBBox();
           this._current = this._current || d;
           var interpolate = d3.interpolate(this._current, d);
           this._current = interpolate(0);
-          return function(t) {
+          return function (t) {
             var d2 = interpolate(t);
             var pos = arc.centroid(d2);
             pos[0] = pos[0] - bbox.width / 2;

@@ -457,7 +457,7 @@ var showMeVoiceCommand = function (stat) {
   $("#stat-list").trigger("change");
 };
 
-var enableVoiceCommands = function () {
+/*var enableVoiceCommands = function () {
   var commands = {
     'go to *place': gotoVoiceCommand,
     'show me *stat': showMeVoiceCommand
@@ -469,6 +469,7 @@ var enableVoiceCommands = function () {
 };
 
 enableVoiceCommands();
+*/
 
 $("#stat-list")
   .on("change", function () {
