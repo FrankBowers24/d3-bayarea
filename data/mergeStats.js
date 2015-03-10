@@ -5,6 +5,7 @@ var asian = JSON.parse(fs.readFileSync('asian.json', 'utf8'));
 var irs = JSON.parse(fs.readFileSync('irs.json', 'utf8'));
 var birth = JSON.parse(fs.readFileSync('birth.json', 'utf8'));
 var foreign = JSON.parse(fs.readFileSync('foreign.json', 'utf8'));
+var age = JSON.parse(fs.readFileSync('age.json', 'utf8'));
 
 var mergedTotal = {};
 
@@ -17,7 +18,8 @@ for (var key in irs) {
     race: race[key],
     asian: asian[key],
     birth: birth[key],
-    foreign: foreign[key]
+    foreign: foreign[key],
+    age: age[key]
   }
   mergedTotal[key] = merged;
 }

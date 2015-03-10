@@ -68,6 +68,10 @@ SELECTED SOCIAL CHARACTERISTICS IN THE UNITED STATES  more information
 2. Place of Birth/Citizenship
 3. Language
 
+4 Total Households
+52 Households with one or more people under 18 years
+56 Households with one or more people 65 years and over
+
 Education
 2 zip code
 232 HC01_VC85 population 25 years and over
@@ -86,10 +90,13 @@ Place of Birth
 356 Native - California
 360 Native - USA, not California
 368 Foreign Born
+
+Foreign Born
+412 Foreign Born - Total
 416 Foreign Born - Europe
 420 Foreign Born - Asia
 424 Foreign Born - Africa
-438 Foreign Born - Oceania
+428 Foreign Born - Oceania
 432 Foreign Born - Latin America
 436 Foreign Born - Canada
 

@@ -15,7 +15,8 @@ var statLabels = {
     "Japanese", "Korean", "Laotian", "Pakistani", "Taiwanese", "Thai", "Vietnamese"
   ],
   birth: ["All", "California", "USA, not California", "Foreign"],
-  foreign: ["All", "Europe", "Asia", "Africa", "Oceania", "Latin America", "Canada"]
+  foreign: ["All", "Europe", "Asia", "Africa", "Oceania", "Latin America", "Canada"],
+  age: ["All", "Under 18", "18 to 24", "25 to 34", "35 to 44", "45 to 64", "65 and over"]
 };
 
 var pieLabelConfig = {
@@ -43,6 +44,11 @@ var pieLabelConfig = {
     labels: statLabels.foreign.slice(1),
     domain: [1, 2, 3, 4, 5, 6],
     range: ["#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02", "#a6761d"]
+  },
+  age: {
+    labels: statLabels.age.slice(1),
+    domain: [0, 1, 2, 3, 4, 5],
+    range: ["#a50026", "#f46d43", "#fee08b", "#d9ef8b", "#66bd63", "#006837"]
   }
 };
 
@@ -66,7 +72,8 @@ var setLegendDescription = function (statType, statIndex) {
     race: "Percentage of # race/ethnicity",
     asian: "Percentage of Asians listed as #",
     birth: "Percentage of # Born",
-    foreign: "Percentage of Foreign Born from #"
+    foreign: "Percentage of Foreign Born from #",
+    age: "Percentage of population age #"
   };
 
   var pieLegends = {
@@ -74,7 +81,8 @@ var setLegendDescription = function (statType, statIndex) {
     race: "Race/Ethnicity",
     asian: "National origin of Asians",
     birth: "Place of birth",
-    foreign: "Regional origin of Foreign Born Population"
+    foreign: "Regional origin of Foreign Born Population",
+    age: "Age"
   };
 
   var description = mapLegends[statType];
@@ -126,6 +134,17 @@ var createComboBoxes = function () {
   foreign.enter().append('option')
     .attr('value', function (d, i) {
       return i;
+    })
+    .text(function (d) {
+      return d;
+    });
+
+  var age = d3.select("#age-list").selectAll('option')
+    .data(statLabels.age.slice(1));
+
+  age.enter().append('option')
+    .attr('value', function (d, i) {
+      return i + 1;
     })
     .text(function (d) {
       return d;
@@ -518,10 +537,12 @@ $("#stat-list")
     var raceIndex = +d3.select("#race-list").node().value;
     var birthIndex = +d3.select("#birth-list").node().value;
     var foreignIndex = +d3.select("#foreign-list").node().value;
+    var ageIndex = +d3.select("#age-list").node().value;
     d3.select("#race-list").classed("hidden", statIndex !== 1);
-    d3.select("#asian-list").classed("hidden", statIndex !==1 || raceIndex !== 5);
+    d3.select("#asian-list").classed("hidden", statIndex !== 1 || raceIndex !== 5);
     d3.select("#birth-list").classed("hidden", statIndex !== 2);
     d3.select("#foreign-list").classed("hidden", statIndex !== 2 || birthIndex !== 3);
+    d3.select("#age-list").classed("hidden", statIndex !== 3);
     if (statIndex === 0) {
       zipCodeMap.setStatType("income");
       zipCodeMap.setStatIndex(6);
@@ -536,7 +557,7 @@ $("#stat-list")
         setPieLabels(pieLabelConfig, "race");
         selectByData(getSelectionTitle());
       }
-    } else if (statIndex == 2) {
+    } else if (statIndex === 2) {
       if (birthIndex === 3) {
         selectForeign();
       } else {
@@ -545,6 +566,12 @@ $("#stat-list")
         setPieLabels(pieLabelConfig, "birth");
         selectByData(getSelectionTitle());
       }
+    } else if (statIndex === 3) {
+      zipCodeMap.setStatType("age");
+      zipCodeMap.setStatIndex(ageIndex);
+      setPieLabels(pieLabelConfig, "age");
+      selectByData(getSelectionTitle());
+
     }
     zipCodeMap.updateStats();
   });
@@ -618,6 +645,17 @@ d3.select("#birth-list")
       setPieLabels(pieLabelConfig, "birth");
       selectByData(getSelectionTitle());
     }
+    zipCodeMap.updateStats();
+  });
+
+d3.select("#age-list")
+  .on("change", function () {
+    var ageIndex = +d3.select("#age-list").node().value;
+
+    zipCodeMap.setStatType("age");
+    zipCodeMap.setStatIndex(ageIndex);
+    setPieLabels(pieLabelConfig, "age");
+    selectByData(getSelectionTitle());
     zipCodeMap.updateStats();
   });
 
