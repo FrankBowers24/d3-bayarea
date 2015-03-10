@@ -2,6 +2,7 @@ var d3;
 var LabeledPie;
 var topojson;
 var annyang;
+var window;
 
 var incomePie = new LabeledPie(".tip-info");
 
@@ -12,7 +13,9 @@ var statLabels = {
   ],
   asian: ["All", "Asian Indian", "Bangladeshi", "Cambodian", "Mainland Chinese", "Filipino", "Hmong",
     "Japanese", "Korean", "Laotian", "Pakistani", "Taiwanese", "Thai", "Vietnamese"
-  ]
+  ],
+  birth: ["All", "California", "USA, not California", "Foreign"],
+  foreign: ["All", "Europe", "Asia", "Africa", "Oceania", "Latin America", "Canada"]
 };
 
 var pieLabelConfig = {
@@ -30,6 +33,16 @@ var pieLabelConfig = {
     labels: statLabels.asian.slice(1),
     domain: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
     range: ["#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c", "#fdbf6f", "#ff7f00", "#cab2d6", "#6a3d9a", "#ffff99", "#b15928", "#cccccc"]
+  },
+  birth: {
+    labels: statLabels.birth.slice(1),
+    domain: [0, 1, 2],
+    range: ["#1b9e77", "#d95f02", "#7570b3"]
+  },
+  foreign: {
+    labels: statLabels.foreign.slice(1),
+    domain: [1, 2, 3, 4, 5, 6],
+    range: ["#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02", "#a6761d"]
   }
 };
 
@@ -51,13 +64,17 @@ var setLegendDescription = function (statType, statIndex) {
   var mapLegends = {
     income: "Percentage of income tax returns with AGI greater than $200,000",
     race: "Percentage of # race/ethnicity",
-    asian: "Percentage of Asians listed as #"
+    asian: "Percentage of Asians listed as #",
+    birth: "Percentage of # Born",
+    foreign: "Percentage of Foreign Born from #"
   };
 
   var pieLegends = {
     income: "AGI reported on 2012 income tax return",
     race: "Race/Ethnicity",
-    asian: "National origin of Asians"
+    asian: "National origin of Asians",
+    birth: "Place of birth",
+    foreign: "Regional origin of Foreign Born Population"
   };
 
   var description = mapLegends[statType];
@@ -85,6 +102,28 @@ var createComboBoxes = function () {
     .data(statLabels.asian);
 
   asians.enter().append('option')
+    .attr('value', function (d, i) {
+      return i;
+    })
+    .text(function (d) {
+      return d;
+    });
+
+  var birth = d3.select("#birth-list").selectAll('option')
+    .data(statLabels.birth.slice(1));
+
+  birth.enter().append('option')
+    .attr('value', function (d, i) {
+      return i + 1;
+    })
+    .text(function (d) {
+      return d;
+    });
+
+  var foreign = d3.select("#foreign-list").selectAll('option')
+    .data(statLabels.foreign);
+
+  foreign.enter().append('option')
     .attr('value', function (d, i) {
       return i;
     })
@@ -477,18 +516,35 @@ $("#stat-list")
   .on("change", function () {
     var statIndex = +d3.select("#stat-list").node().value;
     var raceIndex = +d3.select("#race-list").node().value;
-    d3.select("#race-list").classed("hidden", statIndex === 0);
-    d3.select("#asian-list").classed("hidden", statIndex === 0 || raceIndex !== 5);
+    var birthIndex = +d3.select("#birth-list").node().value;
+    var foreignIndex = +d3.select("#foreign-list").node().value;
+    d3.select("#race-list").classed("hidden", statIndex !== 1);
+    d3.select("#asian-list").classed("hidden", statIndex !==1 || raceIndex !== 5);
+    d3.select("#birth-list").classed("hidden", statIndex !== 2);
+    d3.select("#foreign-list").classed("hidden", statIndex !== 2 || birthIndex !== 3);
     if (statIndex === 0) {
       zipCodeMap.setStatType("income");
       zipCodeMap.setStatIndex(6);
       setPieLabels(pieLabelConfig, "income");
       selectByData(getSelectionTitle());
     } else if (statIndex === 1) {
-      zipCodeMap.setStatType("race");
-      zipCodeMap.setStatIndex(raceIndex);
-      setPieLabels(pieLabelConfig, "race");
-      selectByData(getSelectionTitle());
+      if (raceIndex === 5) {
+        selectAsian();
+      } else {
+        zipCodeMap.setStatType("race");
+        zipCodeMap.setStatIndex(raceIndex);
+        setPieLabels(pieLabelConfig, "race");
+        selectByData(getSelectionTitle());
+      }
+    } else if (statIndex == 2) {
+      if (birthIndex === 3) {
+        selectForeign();
+      } else {
+        zipCodeMap.setStatType("birth");
+        zipCodeMap.setStatIndex(birthIndex);
+        setPieLabels(pieLabelConfig, "birth");
+        selectByData(getSelectionTitle());
+      }
     }
     zipCodeMap.updateStats();
   });
@@ -526,6 +582,42 @@ var selectAsian = function () {
 d3.select("#asian-list")
   .on("change", function () {
     selectAsian();
+    zipCodeMap.updateStats();
+  });
+
+var selectForeign = function () {
+  var foreignIndex = +d3.select("#foreign-list").node().value;
+  if (foreignIndex === 0) {
+    zipCodeMap.setStatType("birth");
+    zipCodeMap.setStatIndex(3);
+    setPieLabels(pieLabelConfig, "birth");
+    selectByData(getSelectionTitle());
+  } else {
+    zipCodeMap.setStatType("foreign");
+    zipCodeMap.setStatIndex(foreignIndex);
+    setPieLabels(pieLabelConfig, "foreign");
+    selectByData(getSelectionTitle());
+  }
+};
+
+d3.select("#foreign-list")
+  .on("change", function () {
+    selectForeign();
+    zipCodeMap.updateStats();
+  });
+
+d3.select("#birth-list")
+  .on("change", function () {
+    var birthIndex = +d3.select("#birth-list").node().value;
+    d3.select("#foreign-list").classed("hidden", birthIndex !== 3);
+    if (birthIndex === 3) {
+      selectForeign();
+    } else {
+      zipCodeMap.setStatType("birth");
+      zipCodeMap.setStatIndex(birthIndex);
+      setPieLabels(pieLabelConfig, "birth");
+      selectByData(getSelectionTitle());
+    }
     zipCodeMap.updateStats();
   });
 
