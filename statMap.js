@@ -674,6 +674,7 @@ $("#select-input")
     var value = d3.select("#select-input").node().value;
     var key = value.match(/[0-9]/) ? "GEOID10" : "city";
     zipCodeMap.selectByData(key, value);
+    return false;
   });
 
 $("#select-input").bind('input propertychange', function (event) {
@@ -682,6 +683,7 @@ $("#select-input").bind('input propertychange', function (event) {
   var value = d3.select("#select-input").node().value;
   var key = value.match(/[0-9]/) ? "GEOID10" : "city";
   zipCodeMap.selectByData(key, value);
+  return false;
 });
 
 $("#select-input").on('val.changed', function (event) {
@@ -689,6 +691,15 @@ $("#select-input").on('val.changed', function (event) {
   var value = d3.select("#select-input").node().value;
   var key = value.match(/[0-9]/) ? "GEOID10" : "city";
   zipCodeMap.selectByData(key, value);
+});
+
+$(document).ready(function() {
+  $(window).keydown(function(event){
+    if(event.keyCode == 13) {
+      event.preventDefault();
+      return false;
+    }
+  });
 });
 
 /*
