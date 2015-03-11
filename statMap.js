@@ -16,7 +16,8 @@ var statLabels = {
   ],
   birth: ["All", "California", "USA, not California", "Foreign"],
   foreign: ["All", "Europe", "Asia", "Africa", "Oceania", "Latin America", "Canada"],
-  age: ["All", "Under 18", "18 to 24", "25 to 34", "35 to 44", "45 to 64", "65 and over"]
+  age: ["All", "Under 18", "18 to 24", "25 to 34", "35 to 44", "45 to 64", "65 and over"],
+  housing: ["Single Family Homes", "Condominiums"]
 };
 
 var pieLabelConfig = {
@@ -73,7 +74,9 @@ var setLegendDescription = function (statType, statIndex) {
     asian: "Percentage of Asians listed as #",
     birth: "Percentage of # Born",
     foreign: "Percentage of Foreign Born from #",
-    age: "Percentage of population age #"
+    age: "Percentage of population age #",
+    sfr: "Median Price of Single Family Homes ($1,000,000's)",
+    condo: "Median Price of Condominiums ($1,000,000's)"
   };
 
   var pieLegends = {
@@ -82,7 +85,9 @@ var setLegendDescription = function (statType, statIndex) {
     asian: "National origin of Asians",
     birth: "Place of birth",
     foreign: "Regional origin of Foreign Born Population",
-    age: "Age"
+    age: "Age",
+    sfr: "",
+    condo: ""
   };
 
   var description = mapLegends[statType];
@@ -150,6 +155,17 @@ var createComboBoxes = function () {
       return d;
     });
 
+  var housing = d3.select("#housing-list").selectAll('option')
+    .data(statLabels.housing);
+
+  housing.enter().append('option')
+    .attr('value', function (d, i) {
+      return i + 1;
+    })
+    .text(function (d) {
+      return d;
+    });
+
 };
 
 createComboBoxes();
@@ -157,7 +173,8 @@ createComboBoxes();
 var createLegend = function (colors, statType, statIndex) {
   var formats = {
     percent: d3.format('%'),
-    percentPointOne: d3.format('2.1%')
+    percentPointOne: d3.format('2.1%'), 
+    price: d3.format('1.1')
   };
 
   d3.select("#legend ul").remove();
@@ -178,8 +195,14 @@ var createLegend = function (colors, statType, statIndex) {
     .style('border-top-color', String)
     .text(function (d) {
       var r = colors.invertExtent(d);
-      return needMorePrecision ?
+      var str;
+      if (statType === "sfr" || statType === "condo") {
+        str = (r[0]/1000000).toFixed(2); 
+      } else {
+        str = needMorePrecision ?
         formats.percentPointOne(r[0]) : formats.percent(r[0]);
+      }
+      return str;
     });
   setLegendDescription(statType, statIndex);
 };
@@ -247,6 +270,7 @@ var zipCodeMap = (function (createLegend, setPieLabels) {
     var zip = d.properties.GEOID10;
     var counts = stats[zip][statType];
     if (counts) {
+      if (statIndex === -1) return +counts[0];
       return +counts[statIndex] / +counts[0];
     } else {
       return null;
@@ -538,11 +562,13 @@ $("#stat-list")
     var birthIndex = +d3.select("#birth-list").node().value;
     var foreignIndex = +d3.select("#foreign-list").node().value;
     var ageIndex = +d3.select("#age-list").node().value;
+    var housingIndex = +d3.select("#housing-list").node().value;
     d3.select("#race-list").classed("hidden", statIndex !== 1);
     d3.select("#asian-list").classed("hidden", statIndex !== 1 || raceIndex !== 5);
     d3.select("#birth-list").classed("hidden", statIndex !== 2);
     d3.select("#foreign-list").classed("hidden", statIndex !== 2 || birthIndex !== 3);
     d3.select("#age-list").classed("hidden", statIndex !== 3);
+    d3.select("#housing-list").classed("hidden", statIndex !== 4);
     if (statIndex === 0) {
       zipCodeMap.setStatType("income");
       zipCodeMap.setStatIndex(6);
@@ -571,7 +597,11 @@ $("#stat-list")
       zipCodeMap.setStatIndex(ageIndex);
       setPieLabels(pieLabelConfig, "age");
       selectByData(getSelectionTitle());
-
+    } else if (statIndex === 4) {
+      zipCodeMap.setStatType((housingIndex === 1) ? "sfr" : "condo");
+      zipCodeMap.setStatIndex(-1);
+      //setPieLabels(pieLabelConfig, "age");
+      selectByData(getSelectionTitle());  
     }
     zipCodeMap.updateStats();
   });
@@ -655,6 +685,16 @@ d3.select("#age-list")
     zipCodeMap.setStatType("age");
     zipCodeMap.setStatIndex(ageIndex);
     setPieLabels(pieLabelConfig, "age");
+    selectByData(getSelectionTitle());
+    zipCodeMap.updateStats();
+  });
+
+d3.select("#housing-list")
+  .on("change", function () {
+    var housingIndex = +d3.select("#housing-list").node().value;
+    zipCodeMap.setStatType((housingIndex === 1) ? "sfr" : "condo");
+    zipCodeMap.setStatIndex(-1);
+    //setPieLabels(pieLabelConfig, "age");
     selectByData(getSelectionTitle());
     zipCodeMap.updateStats();
   });
