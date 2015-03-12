@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <title>D3: Bay Area Stats</title>
@@ -11,6 +12,7 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/1.4.0/annyang.min.js"></script>
   <link href="styles.css" rel="stylesheet" type="text/css" />
 </head>
+
 <body>
   <div class="left-top">
     <header>
@@ -33,8 +35,11 @@
       <br>
       <input id="select-input" type="text" placeholder="City or Zip Code">
       <button id="select-button" type="button">Select</button>
-<!--       <button id="zoom-out" type="button">Zoom Out</button>
- -->    </form>
+    </form>
+    <div class="tooltip-overlay">
+      <h4 class="tooltip-overlay-label"></h4>
+      <h3 class="tooltip-overlay-text"></h3>
+    </div>
     <div class="tooltip">
       <div class="tip-location"></div>
       <div id="tip-container hidden">
@@ -51,7 +56,7 @@
   <div class="right-side"></div>
 
   <script type="text/javascript" src="labeledPie.js"></script>
-  <script type="text/javascript" src= "statMap.js"></script>
+  <script type="text/javascript" src="statMap.js"></script>
 </body>
 
 </html>

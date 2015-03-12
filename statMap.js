@@ -65,6 +65,7 @@ var setPieLabels = function (labelConfig, key) {
 
   incomePie.setLabels(labelConfig[key].labels);
   incomePie.setColorScale(color);
+  d3.select(".tooltip-overlay").classed("hidden", true);
 };
 
 var setLegendDescription = function (statType, statIndex) {
@@ -80,15 +81,20 @@ var setLegendDescription = function (statType, statIndex) {
   };
 
   var pieLegends = {
-    income: "AGI reported on 2012 income tax return",
-    race: "Race/Ethnicity",
-    asian: "National origin of Asians",
-    birth: "Place of birth",
-    foreign: "Regional origin of Foreign Born Population",
-    age: "Age",
-    sfr: "",
-    condo: ""
+    income: "IRS Data: AGI reported on 2012 income tax returns",
+    race: "2010 Census: Race/Ethnicity",
+    asian: "2013 ACS: National origin of Asians",
+    birth: "2013 ACS: Place of birth",
+    foreign: "2013 ACS:Regional origin of Foreign Born Population",
+    age: "2013 American Community Survey: Age",
+    sfr: "Zillow: January, 2015",
+    condo: "Zillow: January, 2015"
   };
+
+  var overlayDescription = {
+    sfr: "Median Price of Single Family Homes",
+    condo: "Median Price of Condominiums"
+  }
 
   var description = mapLegends[statType];
   if (description.indexOf('#') >= 0) {
@@ -96,6 +102,9 @@ var setLegendDescription = function (statType, statIndex) {
   }
   d3.select(".legend-description").text(description);
   d3.select(".tip-description").text(pieLegends[statType]);
+  if (statType in overlayDescription) {
+    d3.select(".tooltip-overlay-label").text(overlayDescription[statType]);
+  }
 };
 
 var createComboBoxes = function () {
@@ -284,7 +293,12 @@ var zipCodeMap = (function (createLegend, setPieLabels) {
   function setToolTip(d, stats, values) {
     values = values || stats[d.properties.GEOID10][statType];
     var counts = values.slice(1);
-    if (+values[0] > 0) {
+    if (statIndex === -1) {
+      d3.select(".tooltip-overlay").classed("hidden", false);
+      d3.select(".tip-description").classed("hidden", false);
+      var value = values[0] ? "$" + values[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : values[0];
+      d3.select(".tooltip-overlay-text").text(value ? value : "No Data");
+    } else if (+values[0] > 0) {
       d3.select(".tip-info").classed("hidden", false);
       d3.select(".tip-description").classed("hidden", false);
       incomePie.change(counts);
@@ -335,6 +349,7 @@ var zipCodeMap = (function (createLegend, setPieLabels) {
     var zip;
     var values;
     var i;
+    var dataCount = 0;  // number of matches which have non-zero data
 
     var zips = topojson.feature(geometry, geometry.objects.Bay_Area);
     zips.features.forEach(function (d) {
@@ -347,6 +362,7 @@ var zipCodeMap = (function (createLegend, setPieLabels) {
       matches.forEach(function (d) {
         zip = d.properties.GEOID10;
         values = statData[zip][statType];
+        dataCount = (+values[0] > 0) ? dataCount + 1 : dataCount;
         for (i = 0; i < values.length; i++) {
           aggregate[i] = aggregate[i] || 0;
           aggregate[i] += +values[i];
@@ -354,6 +370,9 @@ var zipCodeMap = (function (createLegend, setPieLabels) {
       });
       title = (matches.length > 1) ? fieldValue : getTitle(matches[0]);
       d3.select(".tip-location").text(title);
+      if (statIndex === -1  && dataCount > 0) {
+        aggregate[0] = (+aggregate[0]/dataCount).toFixed(0);
+      }
       setToolTip(null, statData, aggregate);
     }
 
@@ -490,6 +509,7 @@ var zipCodeMap = (function (createLegend, setPieLabels) {
           d3.select(".tip-info").classed("hidden", true);
           d3.select(".tip-description").classed("hidden", true);
           d3.select(".tip-location").text('');
+          d3.select(".tooltip-overlay").classed("hidden", true);
         }
         lastZipClick = [];
       });
@@ -598,6 +618,7 @@ $("#stat-list")
       setPieLabels(pieLabelConfig, "age");
       selectByData(getSelectionTitle());
     } else if (statIndex === 4) {
+      d3.select(".tooltip-overlay").classed("hidden", false);
       zipCodeMap.setStatType((housingIndex === 1) ? "sfr" : "condo");
       zipCodeMap.setStatIndex(-1);
       //setPieLabels(pieLabelConfig, "age");
