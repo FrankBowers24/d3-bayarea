@@ -17,12 +17,15 @@ var statLabels = {
   birth: ["All", "California", "USA, not California", "Foreign"],
   foreign: ["All", "Europe", "Asia", "Africa", "Oceania", "Latin America", "Canada"],
   age: ["All", "Under 18", "18 to 24", "25 to 34", "35 to 44", "45 to 64", "65 and over"],
-  housing: ["Single Family Homes", "Condominiums", "Owner-Occupied"],
-  ownRent: ["All", "Owner-Occupied", "Renter-Occupied"]
+  housing: ["Single Family Homes", "Condominiums", "Owner-Occupied", "Housing Types"],
+  ownRent: ["All", "Owner-Occupied", "Renter-Occupied"],
+  housingUnits: ["All", "1-Unit Detached", "1-Unit Attached", "2 Units", "3 to 4 Units", "5 to 9 Units",
+    "10 to 19 Units", "20 or more Units", "Mobile Home", "Boat, RV, Van, etc."
+  ]
 };
 
-var housingStatTypes = ["", "sfr", "condo", "ownRent"];
-var housingStatIndexes = [0, -1, -1, 1];
+var housingStatTypes = ["", "sfr", "condo", "ownRent", "housingUnits"];
+var housingStatIndexes = [0, -1, -1, 1, 1];
 
 var pieLabelConfig = {
   income: {
@@ -59,6 +62,11 @@ var pieLabelConfig = {
     labels: statLabels.ownRent.slice(1),
     domain: [0, 1],
     range: ["#66bd63", "#006837"]
+  },
+  housingUnits: {
+    labels: statLabels.housingUnits.slice(1),
+    domain: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+    range: ["#d73027", "#f46d43", "#fdae61", "#fee08b", "#d9ef8b", "#a6d96a", "#66bd63", "#1a9850", "#006837"]
   }
 
 };
@@ -88,7 +96,8 @@ var setLegendDescription = function (statType, statIndex) {
     age: "Percentage of population age #",
     sfr: "Median Price of Single Family Homes ($1,000,000's)",
     condo: "Median Price of Condominiums ($1,000,000's)",
-    ownRent: "Percentage of Occupied Housing Units Which Are Owner-Occupied"
+    ownRent: "Percentage of Occupied Housing Units Which Are Owner-Occupied",
+    housingUnits: "Percentage of # Housing"
   };
 
   var pieLegends = {
@@ -100,7 +109,8 @@ var setLegendDescription = function (statType, statIndex) {
     age: "2009-2013 American Community Survey: Age",
     sfr: "Zillow: January, 2015",
     condo: "Zillow: January, 2015",
-    ownRent: "2009-2013 ACS: Owner-Occupied Housing"
+    ownRent: "2009-2013 ACS: Owner-Occupied Housing",
+    housingUnits: "2009-2013 ACS: Housing Units in Structure"
   };
 
   var overlayDescription = {
@@ -180,6 +190,17 @@ var createComboBoxes = function () {
     .data(statLabels.housing);
 
   housing.enter().append('option')
+    .attr('value', function (d, i) {
+      return i + 1;
+    })
+    .text(function (d) {
+      return d;
+    });
+
+  var housingUnits = d3.select("#housing-type-list").selectAll('option')
+    .data(statLabels.housingUnits.slice(1));
+
+  housingUnits.enter().append('option')
     .attr('value', function (d, i) {
       return i + 1;
     })
@@ -595,12 +616,14 @@ $("#stat-list")
     var foreignIndex = +d3.select("#foreign-list").node().value;
     var ageIndex = +d3.select("#age-list").node().value;
     var housingIndex = +d3.select("#housing-list").node().value;
+    var housingUnitsIndex = +d3.select("#housing-type-list").node().value;
     d3.select("#race-list").classed("hidden", statIndex !== 1);
     d3.select("#asian-list").classed("hidden", statIndex !== 1 || raceIndex !== 5);
     d3.select("#birth-list").classed("hidden", statIndex !== 2);
     d3.select("#foreign-list").classed("hidden", statIndex !== 2 || birthIndex !== 3);
     d3.select("#age-list").classed("hidden", statIndex !== 3);
     d3.select("#housing-list").classed("hidden", statIndex !== 4);
+    d3.select("#housing-type-list").classed("hidden", statIndex !== 4 || housingIndex !== 4);
     if (statIndex === 0) {
       zipCodeMap.setStatType("income");
       zipCodeMap.setStatIndex(6);
@@ -630,11 +653,15 @@ $("#stat-list")
       setPieLabels(pieLabelConfig, "age");
       selectByData(getSelectionTitle());
     } else if (statIndex === 4) {
-      d3.select(".tooltip-overlay").classed("hidden", false);
-      zipCodeMap.setStatType(housingStatTypes[housingIndex]);
-      zipCodeMap.setStatIndex(housingStatIndexes[housingIndex]);
-      setPieLabels(pieLabelConfig, "ownRent");
-      selectByData(getSelectionTitle());
+      if (housingIndex === 4) {
+        selectHousingUnits();
+      } else {
+        d3.select(".tooltip-overlay").classed("hidden", false);
+        zipCodeMap.setStatType(housingStatTypes[housingIndex]);
+        zipCodeMap.setStatIndex(housingStatIndexes[housingIndex]);
+        setPieLabels(pieLabelConfig, "ownRent");
+        selectByData(getSelectionTitle());
+      }
     }
     zipCodeMap.updateStats();
   });
@@ -722,13 +749,38 @@ d3.select("#age-list")
     zipCodeMap.updateStats();
   });
 
+var selectHousingUnits = function () {
+  var housingUnitsIndex = +d3.select("#housing-type-list").node().value;
+  zipCodeMap.setStatType("housingUnits");
+  zipCodeMap.setStatIndex(housingUnitsIndex);
+  setPieLabels(pieLabelConfig, "housingUnits");
+  selectByData(getSelectionTitle());
+};
+
 d3.select("#housing-list")
   .on("change", function () {
     var housingIndex = +d3.select("#housing-list").node().value;
-    zipCodeMap.setStatType(housingStatTypes[housingIndex]);
-    zipCodeMap.setStatIndex(housingStatIndexes[housingIndex]);
-    setPieLabels(pieLabelConfig, "ownRent");
+    d3.select("#housing-type-list").classed("hidden", housingIndex !== 4);
+    if (housingIndex === 4) {
+      var housingUnitsIndex = +d3.select("#housing-type-list").node().value;
+      zipCodeMap.setStatType("housingUnits");
+      zipCodeMap.setStatIndex(housingUnitsIndex);
+      setPieLabels(pieLabelConfig, "housingUnits");
+    } else {
+      zipCodeMap.setStatType(housingStatTypes[housingIndex]);
+      zipCodeMap.setStatIndex(housingStatIndexes[housingIndex]);
+      setPieLabels(pieLabelConfig, "ownRent");
+    }
     selectByData(getSelectionTitle());
+    zipCodeMap.updateStats();
+  });
+
+d3.select("#housing-type-list")
+  .on("change", function () {
+    var housingUnitsIndex = +d3.select("#housing-type-list").node().value;
+    zipCodeMap.setStatType("housingUnits");
+    zipCodeMap.setStatIndex(housingUnitsIndex);
+    setPieLabels(pieLabelConfig, "housingUnits");
     zipCodeMap.updateStats();
   });
 
