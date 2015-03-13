@@ -17,8 +17,12 @@ var statLabels = {
   birth: ["All", "California", "USA, not California", "Foreign"],
   foreign: ["All", "Europe", "Asia", "Africa", "Oceania", "Latin America", "Canada"],
   age: ["All", "Under 18", "18 to 24", "25 to 34", "35 to 44", "45 to 64", "65 and over"],
-  housing: ["Single Family Homes", "Condominiums"]
+  housing: ["Single Family Homes", "Condominiums", "Owner-Occupied"],
+  ownRent: ["All", "Owner-Occupied", "Renter-Occupied"]
 };
+
+var housingStatTypes = ["", "sfr", "condo", "ownRent"];
+var housingStatIndexes = [0, -1, -1, 1];
 
 var pieLabelConfig = {
   income: {
@@ -50,7 +54,13 @@ var pieLabelConfig = {
     labels: statLabels.age.slice(1),
     domain: [0, 1, 2, 3, 4, 5],
     range: ["#a50026", "#f46d43", "#fee08b", "#d9ef8b", "#66bd63", "#006837"]
+  },
+  ownRent: {
+    labels: statLabels.ownRent.slice(1),
+    domain: [0, 1],
+    range: ["#66bd63", "#006837"]
   }
+
 };
 
 
@@ -77,18 +87,20 @@ var setLegendDescription = function (statType, statIndex) {
     foreign: "Percentage of Foreign Born from #",
     age: "Percentage of population age #",
     sfr: "Median Price of Single Family Homes ($1,000,000's)",
-    condo: "Median Price of Condominiums ($1,000,000's)"
+    condo: "Median Price of Condominiums ($1,000,000's)",
+    ownRent: "Percentage of Occupied Housing Units Which Are Owner-Occupied"
   };
 
   var pieLegends = {
     income: "IRS Data: AGI reported on 2012 income tax returns",
     race: "2010 Census: Race/Ethnicity",
-    asian: "2013 ACS: National origin of Asians",
-    birth: "2013 ACS: Place of birth",
-    foreign: "2013 ACS:Regional origin of Foreign Born Population",
-    age: "2013 American Community Survey: Age",
+    asian: "2009-2013 ACS: National origin of Asians",
+    birth: "2009-2013 ACS: Place of birth",
+    foreign: "2009-2013 ACS:Regional origin of Foreign Born Population",
+    age: "2009-2013 American Community Survey: Age",
     sfr: "Zillow: January, 2015",
-    condo: "Zillow: January, 2015"
+    condo: "Zillow: January, 2015",
+    ownRent: "2009-2013 ACS: Owner-Occupied Housing"
   };
 
   var overlayDescription = {
@@ -182,7 +194,7 @@ createComboBoxes();
 var createLegend = function (colors, statType, statIndex) {
   var formats = {
     percent: d3.format('%'),
-    percentPointOne: d3.format('2.1%'), 
+    percentPointOne: d3.format('2.1%'),
     price: d3.format('1.1')
   };
 
@@ -206,10 +218,10 @@ var createLegend = function (colors, statType, statIndex) {
       var r = colors.invertExtent(d);
       var str;
       if (statType === "sfr" || statType === "condo") {
-        str = (r[0]/1000000).toFixed(2); 
+        str = (r[0] / 1000000).toFixed(2);
       } else {
         str = needMorePrecision ?
-        formats.percentPointOne(r[0]) : formats.percent(r[0]);
+          formats.percentPointOne(r[0]) : formats.percent(r[0]);
       }
       return str;
     });
@@ -349,7 +361,7 @@ var zipCodeMap = (function (createLegend, setPieLabels) {
     var zip;
     var values;
     var i;
-    var dataCount = 0;  // number of matches which have non-zero data
+    var dataCount = 0; // number of matches which have non-zero data
 
     var zips = topojson.feature(geometry, geometry.objects.Bay_Area);
     zips.features.forEach(function (d) {
@@ -370,8 +382,8 @@ var zipCodeMap = (function (createLegend, setPieLabels) {
       });
       title = (matches.length > 1) ? fieldValue : getTitle(matches[0]);
       d3.select(".tip-location").text(title);
-      if (statIndex === -1  && dataCount > 0) {
-        aggregate[0] = (+aggregate[0]/dataCount).toFixed(0);
+      if (statIndex === -1 && dataCount > 0) {
+        aggregate[0] = (+aggregate[0] / dataCount).toFixed(0);
       }
       setToolTip(null, statData, aggregate);
     }
@@ -619,10 +631,10 @@ $("#stat-list")
       selectByData(getSelectionTitle());
     } else if (statIndex === 4) {
       d3.select(".tooltip-overlay").classed("hidden", false);
-      zipCodeMap.setStatType((housingIndex === 1) ? "sfr" : "condo");
-      zipCodeMap.setStatIndex(-1);
-      //setPieLabels(pieLabelConfig, "age");
-      selectByData(getSelectionTitle());  
+      zipCodeMap.setStatType(housingStatTypes[housingIndex]);
+      zipCodeMap.setStatIndex(housingStatIndexes[housingIndex]);
+      setPieLabels(pieLabelConfig, "ownRent");
+      selectByData(getSelectionTitle());
     }
     zipCodeMap.updateStats();
   });
@@ -713,9 +725,9 @@ d3.select("#age-list")
 d3.select("#housing-list")
   .on("change", function () {
     var housingIndex = +d3.select("#housing-list").node().value;
-    zipCodeMap.setStatType((housingIndex === 1) ? "sfr" : "condo");
-    zipCodeMap.setStatIndex(-1);
-    //setPieLabels(pieLabelConfig, "age");
+    zipCodeMap.setStatType(housingStatTypes[housingIndex]);
+    zipCodeMap.setStatIndex(housingStatIndexes[housingIndex]);
+    setPieLabels(pieLabelConfig, "ownRent");
     selectByData(getSelectionTitle());
     zipCodeMap.updateStats();
   });

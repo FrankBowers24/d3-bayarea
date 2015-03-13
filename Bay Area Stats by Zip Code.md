@@ -47,6 +47,21 @@ ACS_13_5YR_DP04
 
 1.  Rent vs Own
 
+
+Housing (Units in Structure)
+
+24 Total Housing Units
+28 1-unit, detached
+32 1-unit, attached
+36 2 units
+40 3 to 4 units
+44 5 to 9 units
+48 10 to 19 units
+52 20 or more units
+56 Mobile Home
+60 Boat, RV, Van, etc.
+
+
 200 HC01-VC74 Occupied housing Units - Moved in 2010 or later
 204 HC01_VC75   - Moved in 2000 to 2009
 208 HC01_VC76  - Moved in 1990 to 1999
@@ -68,9 +83,40 @@ SELECTED SOCIAL CHARACTERISTICS IN THE UNITED STATES  more information
 2. Place of Birth/Citizenship
 3. Language
 
+AGE
 4 Total Households
 52 Households with one or more people under 18 years
 56 Households with one or more people 65 years and over
+
+AGE
+4  Total Population
+10 Total < 5
+118 Total 5 - 14
+124 Total 15 - 17
+
+130 Total 18 - 24
+
+
+40 Total 25-29
+46 Total 30-34
+
+52 Total 35 - 39
+58 Total 40 - 44
+
+64 Total 45 - 49
+70 Total 50 - 54
+76 Total 55 - 59
+82 Total 60 - 64
+
+166 Total 65 and over
+
+
+under 18
+18 - 24
+25 - 34
+35 - 44
+45 - 64
+65 and over
 
 Education
 2 zip code
