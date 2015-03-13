@@ -584,13 +584,33 @@ var gotoVoiceCommand = function (place) {
 
 var showMeVoiceCommand = function (stat) {
   var statIndex = 0;
+  var housingIndex = -1;
   if (stat === "income") {
     statIndex = 0;
   } else if (stat === "race") {
     statIndex = 1;
+  } else if (stat === "birth place") {
+    statIndex = 2;
+  } else if (stat === "ages") {
+    statIndex = 3;
+  } else if (stat === "homes") {
+    statIndex = 4;
+    housingIndex = 1;
+  } else if (stat === "condos") {
+    statIndex = 4;
+    housingIndex = 2;
+  } else if (stat === "housing types") {
+    statIndex = 4;
+    housingIndex = 4;
+  } else {
+    return;
   }
   $("#stat-list").val(statIndex);
   $("#stat-list").trigger("change");
+  if (housingIndex !== -1) {
+    $("#housing-list").val(housingIndex);
+    $("#housing-list").trigger("change");
+  }
 };
 
 var enableVoiceCommands = function () {
@@ -757,7 +777,8 @@ var selectHousingUnits = function () {
   selectByData(getSelectionTitle());
 };
 
-d3.select("#housing-list")
+
+$("#housing-list")
   .on("change", function () {
     var housingIndex = +d3.select("#housing-list").node().value;
     d3.select("#housing-type-list").classed("hidden", housingIndex !== 4);
