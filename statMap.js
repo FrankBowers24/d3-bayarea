@@ -802,6 +802,7 @@ d3.select("#housing-type-list")
     zipCodeMap.setStatType("housingUnits");
     zipCodeMap.setStatIndex(housingUnitsIndex);
     setPieLabels(pieLabelConfig, "housingUnits");
+    selectByData(getSelectionTitle());
     zipCodeMap.updateStats();
   });
 
