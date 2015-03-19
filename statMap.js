@@ -97,7 +97,8 @@ var setLegendDescription = function (statType, statIndex) {
     sfr: "Median Price of Single Family Homes ($1,000,000's)",
     condo: "Median Price of Condominiums ($1,000,000's)",
     ownRent: "Percentage of Occupied Housing Units Which Are Owner-Occupied",
-    housingUnits: "Percentage of # Housing"
+    housingUnits: "Percentage of # Housing",
+    employment: "Unemployment Rate"
   };
 
   var pieLegends = {
@@ -110,7 +111,8 @@ var setLegendDescription = function (statType, statIndex) {
     sfr: "Zillow: January, 2015",
     condo: "Zillow: January, 2015",
     ownRent: "2009-2013 ACS: Owner-Occupied Housing",
-    housingUnits: "2009-2013 ACS: Housing Units in Structure"
+    housingUnits: "2009-2013 ACS: Housing Units in Structure",
+    employment: "2009-2013 ACS: Unemployment Rate"
   };
 
   var overlayDescription = {
@@ -682,6 +684,10 @@ $("#stat-list")
         setPieLabels(pieLabelConfig, "ownRent");
         selectByData(getSelectionTitle());
       }
+    } else if (statIndex === 5) {
+      zipCodeMap.setStatType("employment");
+      zipCodeMap.setStatIndex(-1);
+      selectByData(getSelectionTitle());
     }
     zipCodeMap.updateStats();
   });

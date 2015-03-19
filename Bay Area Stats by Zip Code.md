@@ -38,6 +38,13 @@ Universe: Total population  2010 Census Summary File   // DEC_10_SF1_P9.csv
 
 If you enter a city name all the zip codes for the city are selected and the city is animated to the center of the map.  The data shown in the pie chart is aggregated from all the selected zip codes.
 
+ACS_13_5YR_DP03
+
+2 zip code
+12 Labor force
+16 Employed
+20 Unemployed
+
 ACS_13_5YR_DP04
 2   Zip Code (zip code in second column)
 
