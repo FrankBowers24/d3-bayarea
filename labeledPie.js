@@ -114,7 +114,8 @@ var d3;
       var lastY = Infinity; // matrix.f is y
       var matrix;
       var currentY;
-      for (var i = 0; i < labels.length; i++) {
+      var i;
+      for (i = 0; i < labels.length; i++) {
         matrix = labels[i].transform.baseVal.getItem(0).matrix;
         currentY = matrix.f;
         var height = labels[i].getBBox().height;
