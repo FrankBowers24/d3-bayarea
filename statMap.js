@@ -7,7 +7,7 @@ var window;
 var incomePie = new LabeledPie(".tip-info");
 
 var statLabels = {
-  stat: ["Income", "Race/Ethnicity", "Place of Birth", "Age", "Housing"],
+  //stat: ["Income", "Race/Ethnicity", "Place of Birth", "Age", "Housing"],
   race: ["All", "Latino", "White", "African American", "Native American", "Asian",
     "Pacific Islander", "Other Race", "Mixed Race"
     ],
@@ -17,15 +17,12 @@ var statLabels = {
   birth: ["All", "California", "USA, not California", "Foreign"],
   foreign: ["All", "Europe", "Asia", "Africa", "Oceania", "Latin America", "Canada"],
   age: ["All", "Under 18", "18 to 24", "25 to 34", "35 to 44", "45 to 64", "65 and over"],
-  housing: ["Single Family Homes", "Condominiums", "Owner-Occupied", "Housing Types"],
+  housing: ["", "Single Family Homes", "Condominiums", "Owner-Occupied", "Housing Types"],
   ownRent: ["All", "Owner-Occupied", "Renter-Occupied"],
   housingUnits: ["All", "1-Unit Detached", "1-Unit Attached", "2 Units", "3 to 4 Units", "5 to 9 Units",
     "10 to 19 Units", "20 or more Units", "Mobile Home", "Boat, RV, Van, etc."
     ]
 };
-
-var housingStatTypes = ["", "sfr", "condo", "ownRent", "housingUnits"];
-var housingStatIndexes = [0, -1, -1, 1, 1];
 
 var pieLabelConfig = {
   income: {
@@ -68,9 +65,7 @@ var pieLabelConfig = {
     domain: [0, 1, 2, 3, 4, 5, 6, 7, 8],
     range: ["#d73027", "#f46d43", "#fdae61", "#fee08b", "#d9ef8b", "#a6d96a", "#66bd63", "#1a9850", "#006837"]
   }
-
 };
-
 
 var setPieLabels = function (labelConfig, key) {
   // reset income pie
@@ -131,85 +126,28 @@ var setLegendDescription = function (statType, statIndex) {
   }
 };
 
+var getMenuId = function (name) {
+  name = name.replace(/[A-Z]/g, function (c) {
+    return '-' + c.toLowerCase();
+  });
+  return '#' + name + '-list';
+};
+
 var createComboBoxes = function () {
-  var raceList = statLabels.race.slice(1);
-  var races = d3.select("#race-list").selectAll('option')
-    .data(raceList);
-
-  races.enter().append('option')
-    .attr('value', function (d, i) {
-      return i + 1;
-    })
-    .text(function (d) {
-      return d;
-    });
-
-  var asians = d3.select("#asian-list").selectAll('option')
-    .data(statLabels.asian);
-
-  asians.enter().append('option')
-    .attr('value', function (d, i) {
-      return i;
-    })
-    .text(function (d) {
-      return d;
-    });
-
-  var birth = d3.select("#birth-list").selectAll('option')
-    .data(statLabels.birth.slice(1));
-
-  birth.enter().append('option')
-    .attr('value', function (d, i) {
-      return i + 1;
-    })
-    .text(function (d) {
-      return d;
-    });
-
-  var foreign = d3.select("#foreign-list").selectAll('option')
-    .data(statLabels.foreign);
-
-  foreign.enter().append('option')
-    .attr('value', function (d, i) {
-      return i;
-    })
-    .text(function (d) {
-      return d;
-    });
-
-  var age = d3.select("#age-list").selectAll('option')
-    .data(statLabels.age.slice(1));
-
-  age.enter().append('option')
-    .attr('value', function (d, i) {
-      return i + 1;
-    })
-    .text(function (d) {
-      return d;
-    });
-
-  var housing = d3.select("#housing-list").selectAll('option')
-    .data(statLabels.housing);
-
-  housing.enter().append('option')
-    .attr('value', function (d, i) {
-      return i + 1;
-    })
-    .text(function (d) {
-      return d;
-    });
-
-  var housingUnits = d3.select("#housing-type-list").selectAll('option')
-    .data(statLabels.housingUnits.slice(1));
-
-  housingUnits.enter().append('option')
-    .attr('value', function (d, i) {
-      return i + 1;
-    })
-    .text(function (d) {
-      return d;
-    });
-
+  var fullListNames = ['foreign', 'asian'];
+  var menuNames = Object.keys(statLabels);
+  menuNames.forEach(function (name) {
+    var omitFirst = fullListNames.indexOf(name) === -1;
+    var menu = d3.select(getMenuId(name)).selectAll('option')
+      .data(statLabels[name].slice(omitFirst ? 1 : 0));
+    menu.enter().append('option')
+      .attr('value', function (d, i) {
+        return omitFirst ? i + 1 : i;
+      })
+      .text(function (d) {
+        return d;
+      });
+  });
 };
 
 createComboBoxes();
@@ -653,7 +591,7 @@ var menuMap = {
     }, {
     name: "housing",
     children: [{
-      name: "housingType",
+      name: "housingUnits",
       index: 4
       }],
     statTypes: ["", "sfr", "condo", "ownRent", "housingUnits"],
@@ -662,28 +600,31 @@ var menuMap = {
     }]
 };
 
-var getMenuId = function (name) {
-  name = name.replace(/[A-Z]/g, function (c) {
-    return '-' + c.toLowerCase();
-  });
-  return '#' + name + '-list';
-};
 
-var addMenuListeners = function() {
-  var menu;
+var getAllMenuNames = function () {
+  var result = [];
   var subMenu;
-  $(getMenuId(menuMap.name)).on("change", function() { respondToMenus(); });
   var children = menuMap.children;
+  result.push(menuMap.name);
   for (var i = 0; i < children.length; i++) {
     menu = children[i];
     if (!(menu.noMenu)) {
-      $(getMenuId(menu.name)).on("change", function() { respondToMenus(); });
+      result.push(menu.name);
       if (menu.children) {
         subMenu = menu.children[0];
-        $(getMenuId(subMenu.name)).on("change", function() { respondToMenus(); });
-      } 
+        result.push(subMenu.name);
+      }
     }
   }
+  return result;
+}
+
+var addMenuListeners = function () {
+  getAllMenuNames().forEach(function (menuId) {
+    $(getMenuId(menuId)).on("change", function () {
+      respondToMenus();
+    });
+  });
 };
 
 addMenuListeners();
