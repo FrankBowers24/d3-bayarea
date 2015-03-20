@@ -7,13 +7,13 @@ var window;
 var incomePie = new LabeledPie(".tip-info");
 
 var statLabels = {
-  main: ["Income", "Race/Ethnicity"],
+  stat: ["Income", "Race/Ethnicity", "Place of Birth", "Age", "Housing"],
   race: ["All", "Latino", "White", "African American", "Native American", "Asian",
     "Pacific Islander", "Other Race", "Mixed Race"
-  ],
+    ],
   asian: ["All", "Asian Indian", "Bangladeshi", "Cambodian", "Mainland Chinese", "Filipino", "Hmong",
     "Japanese", "Korean", "Laotian", "Pakistani", "Taiwanese", "Thai", "Vietnamese"
-  ],
+    ],
   birth: ["All", "California", "USA, not California", "Foreign"],
   foreign: ["All", "Europe", "Asia", "Africa", "Oceania", "Latin America", "Canada"],
   age: ["All", "Under 18", "18 to 24", "25 to 34", "35 to 44", "45 to 64", "65 and over"],
@@ -21,7 +21,7 @@ var statLabels = {
   ownRent: ["All", "Owner-Occupied", "Renter-Occupied"],
   housingUnits: ["All", "1-Unit Detached", "1-Unit Attached", "2 Units", "3 to 4 Units", "5 to 9 Units",
     "10 to 19 Units", "20 or more Units", "Mobile Home", "Boat, RV, Van, etc."
-  ]
+    ]
 };
 
 var housingStatTypes = ["", "sfr", "condo", "ownRent", "housingUnits"];
@@ -118,7 +118,7 @@ var setLegendDescription = function (statType, statIndex) {
   var overlayDescription = {
     sfr: "Median Price of Single Family Homes",
     condo: "Median Price of Condominiums"
-  }
+  };
 
   var description = mapLegends[statType];
   if (description.indexOf('#') >= 0) {
@@ -630,187 +630,111 @@ var enableVoiceCommands = function () {
 
 enableVoiceCommands();
 
-$("#stat-list")
-  .on("change", function () {
-    var statIndex = +d3.select("#stat-list").node().value;
-    var raceIndex = +d3.select("#race-list").node().value;
-    var birthIndex = +d3.select("#birth-list").node().value;
-    var foreignIndex = +d3.select("#foreign-list").node().value;
-    var ageIndex = +d3.select("#age-list").node().value;
-    var housingIndex = +d3.select("#housing-list").node().value;
-    var housingUnitsIndex = +d3.select("#housing-type-list").node().value;
-    d3.select("#race-list").classed("hidden", statIndex !== 1);
-    d3.select("#asian-list").classed("hidden", statIndex !== 1 || raceIndex !== 5);
-    d3.select("#birth-list").classed("hidden", statIndex !== 2);
-    d3.select("#foreign-list").classed("hidden", statIndex !== 2 || birthIndex !== 3);
-    d3.select("#age-list").classed("hidden", statIndex !== 3);
-    d3.select("#housing-list").classed("hidden", statIndex !== 4);
-    d3.select("#housing-type-list").classed("hidden", statIndex !== 4 || housingIndex !== 4);
-    if (statIndex === 0) {
-      zipCodeMap.setStatType("income");
-      zipCodeMap.setStatIndex(6);
-      setPieLabels(pieLabelConfig, "income");
-      selectByData(getSelectionTitle());
-    } else if (statIndex === 1) {
-      if (raceIndex === 5) {
-        selectAsian();
-      } else {
-        zipCodeMap.setStatType("race");
-        zipCodeMap.setStatIndex(raceIndex);
-        setPieLabels(pieLabelConfig, "race");
-        selectByData(getSelectionTitle());
-      }
-    } else if (statIndex === 2) {
-      if (birthIndex === 3) {
-        selectForeign();
-      } else {
-        zipCodeMap.setStatType("birth");
-        zipCodeMap.setStatIndex(birthIndex);
-        setPieLabels(pieLabelConfig, "birth");
-        selectByData(getSelectionTitle());
-      }
-    } else if (statIndex === 3) {
-      zipCodeMap.setStatType("age");
-      zipCodeMap.setStatIndex(ageIndex);
-      setPieLabels(pieLabelConfig, "age");
-      selectByData(getSelectionTitle());
-    } else if (statIndex === 4) {
-      if (housingIndex === 4) {
-        selectHousingUnits();
-      } else {
-        d3.select(".tooltip-overlay").classed("hidden", false);
-        zipCodeMap.setStatType(housingStatTypes[housingIndex]);
-        zipCodeMap.setStatIndex(housingStatIndexes[housingIndex]);
-        setPieLabels(pieLabelConfig, "ownRent");
-        selectByData(getSelectionTitle());
-      }
-    } else if (statIndex === 5) {
-      zipCodeMap.setStatType("employment");
-      zipCodeMap.setStatIndex(-1);
-      selectByData(getSelectionTitle());
-    }
-    zipCodeMap.updateStats();
-  });
+var menuMap = {
+  name: "stat",
+  children: [{
+    name: "income",
+    statIndex: 6,
+    noMenu: true
+    }, {
+    name: "race",
+    children: [{
+      name: "asian",
+      index: 5
+      }]
+    }, {
+    name: "birth",
+    children: [{
+      name: "foreign",
+      index: 3
+      }]
+    }, {
+    name: "age"
+    }, {
+    name: "housing",
+    children: [{
+      name: "housingType",
+      index: 4
+      }],
+    statTypes: ["", "sfr", "condo", "ownRent", "housingUnits"],
+    statIndexes: [0, -1, -1, 1, 1],
+    pieLabels: ["", "ownRent", "ownRent", "ownRent", "housingUnits"]
+    }]
+};
 
-d3.select("#race-list")
-  .on("change", function () {
-    var raceIndex = +d3.select("#race-list").node().value;
-    d3.select("#asian-list").classed("hidden", raceIndex !== 5);
-    if (raceIndex === 5) {
-      selectAsian();
-    } else {
-      zipCodeMap.setStatType("race");
-      zipCodeMap.setStatIndex(raceIndex);
-      setPieLabels(pieLabelConfig, "race");
-      selectByData(getSelectionTitle());
-    }
-    zipCodeMap.updateStats();
+var getMenuId = function (name) {
+  name = name.replace(/[A-Z]/g, function (c) {
+    return '-' + c.toLowerCase();
   });
+  return '#' + name + '-list';
+};
 
-var selectAsian = function () {
-  var asianIndex = +d3.select("#asian-list").node().value;
-  if (asianIndex === 0) {
-    zipCodeMap.setStatType("race");
-    zipCodeMap.setStatIndex(5);
-    setPieLabels(pieLabelConfig, "race");
-    selectByData(getSelectionTitle());
-  } else {
-    zipCodeMap.setStatType("asian");
-    zipCodeMap.setStatIndex(asianIndex);
-    setPieLabels(pieLabelConfig, "asian");
-    selectByData(getSelectionTitle());
+var addMenuListeners = function() {
+  var menu;
+  var subMenu;
+  $(getMenuId(menuMap.name)).on("change", function() { respondToMenus(); });
+  var children = menuMap.children;
+  for (var i = 0; i < children.length; i++) {
+    menu = children[i];
+    if (!(menu.noMenu)) {
+      $(getMenuId(menu.name)).on("change", function() { respondToMenus(); });
+      if (menu.children) {
+        subMenu = menu.children[0];
+        $(getMenuId(subMenu.name)).on("change", function() { respondToMenus(); });
+      } 
+    }
   }
 };
 
-d3.select("#asian-list")
-  .on("change", function () {
-    selectAsian();
-    zipCodeMap.updateStats();
-  });
+addMenuListeners();
 
-var selectForeign = function () {
-  var foreignIndex = +d3.select("#foreign-list").node().value;
-  if (foreignIndex === 0) {
-    zipCodeMap.setStatType("birth");
-    zipCodeMap.setStatIndex(3);
-    setPieLabels(pieLabelConfig, "birth");
-    selectByData(getSelectionTitle());
-  } else {
-    zipCodeMap.setStatType("foreign");
-    zipCodeMap.setStatIndex(foreignIndex);
-    setPieLabels(pieLabelConfig, "foreign");
-    selectByData(getSelectionTitle());
+var respondToMenus = function () {
+  var configureMapAndPie = function (type, index, labelId) {
+    zipCodeMap.setStatType(type);
+    zipCodeMap.setStatIndex(index);
+    setPieLabels(pieLabelConfig, labelId);
+  };
+  var statIndex = +d3.select(getMenuId(menuMap.name)).node().value;
+  var children = menuMap.children;
+  var menu;
+  var subMenu;
+  for (var i = 0; i < children.length; i++) {
+    menu = children[i];
+    if (!(menu.noMenu)) {
+      menu.liveIndex = d3.select(getMenuId(menu.name));
+      menu.liveIndex.classed("hidden", statIndex !== i);
+      if (menu.children) {
+        subMenu = menu.children[0];
+        subMenu.liveIndex = d3.select(getMenuId(subMenu.name));
+        subMenu.liveIndex.classed("hidden", statIndex !== i ||
+          +menu.liveIndex.node().value !== subMenu.index);
+      } else {
+        subMenu = null;
+      }
+    }
+    if (statIndex === i) {
+      var liveIndex = (menu && menu.liveIndex) ? +menu.liveIndex.node().value : menu.statIndex;
+      if (subMenu && subMenu.index === liveIndex) {
+        var subMenuLiveIndex = +subMenu.liveIndex.node().value;
+        if (subMenuLiveIndex === 0) {
+          configureMapAndPie(menu.name, liveIndex, menu.name);
+        } else {
+          configureMapAndPie(
+            menu.statTypes ? menu.statTypes[liveIndex] : subMenu.name,
+            subMenuLiveIndex,
+            menu.pieLabels ? menu.pieLabels[liveIndex] : subMenu.name);
+        }
+      } else {
+        configureMapAndPie(
+          menu.statTypes ? menu.statTypes[liveIndex] : menu.name,
+          menu.statIndexes ? menu.statIndexes[liveIndex] : liveIndex,
+          menu.pieLabels ? menu.pieLabels[liveIndex] : menu.name);
+      }
+      selectByData(getSelectionTitle());
+      zipCodeMap.updateStats();
+    }
   }
 };
-
-d3.select("#foreign-list")
-  .on("change", function () {
-    selectForeign();
-    zipCodeMap.updateStats();
-  });
-
-d3.select("#birth-list")
-  .on("change", function () {
-    var birthIndex = +d3.select("#birth-list").node().value;
-    d3.select("#foreign-list").classed("hidden", birthIndex !== 3);
-    if (birthIndex === 3) {
-      selectForeign();
-    } else {
-      zipCodeMap.setStatType("birth");
-      zipCodeMap.setStatIndex(birthIndex);
-      setPieLabels(pieLabelConfig, "birth");
-      selectByData(getSelectionTitle());
-    }
-    zipCodeMap.updateStats();
-  });
-
-d3.select("#age-list")
-  .on("change", function () {
-    var ageIndex = +d3.select("#age-list").node().value;
-
-    zipCodeMap.setStatType("age");
-    zipCodeMap.setStatIndex(ageIndex);
-    setPieLabels(pieLabelConfig, "age");
-    selectByData(getSelectionTitle());
-    zipCodeMap.updateStats();
-  });
-
-var selectHousingUnits = function () {
-  var housingUnitsIndex = +d3.select("#housing-type-list").node().value;
-  zipCodeMap.setStatType("housingUnits");
-  zipCodeMap.setStatIndex(housingUnitsIndex);
-  setPieLabels(pieLabelConfig, "housingUnits");
-  selectByData(getSelectionTitle());
-};
-
-
-$("#housing-list")
-  .on("change", function () {
-    var housingIndex = +d3.select("#housing-list").node().value;
-    d3.select("#housing-type-list").classed("hidden", housingIndex !== 4);
-    if (housingIndex === 4) {
-      var housingUnitsIndex = +d3.select("#housing-type-list").node().value;
-      zipCodeMap.setStatType("housingUnits");
-      zipCodeMap.setStatIndex(housingUnitsIndex);
-      setPieLabels(pieLabelConfig, "housingUnits");
-    } else {
-      zipCodeMap.setStatType(housingStatTypes[housingIndex]);
-      zipCodeMap.setStatIndex(housingStatIndexes[housingIndex]);
-      setPieLabels(pieLabelConfig, "ownRent");
-    }
-    selectByData(getSelectionTitle());
-    zipCodeMap.updateStats();
-  });
-
-d3.select("#housing-type-list")
-  .on("change", function () {
-    var housingUnitsIndex = +d3.select("#housing-type-list").node().value;
-    zipCodeMap.setStatType("housingUnits");
-    zipCodeMap.setStatIndex(housingUnitsIndex);
-    setPieLabels(pieLabelConfig, "housingUnits");
-    selectByData(getSelectionTitle());
-    zipCodeMap.updateStats();
-  });
 
 d3.select("#select-button")
   .on("click", function () {
