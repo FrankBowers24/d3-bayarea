@@ -40,6 +40,11 @@ I looked at three pie charts examples and borrowed code from each of them:
 2. Super labelling, but no transition support: http://d3pie.org/
 3. Fade-In out for added/Removed labels: http://bl.ocks.org/dbuezas/9572040
 
+I found the code for #1 to be the most straightforward, but I liked the fade in/out of labels from #3.  I used #1 as a base and added fade from #3.  #2 is particularly interesting because it is a self-contained library for creating pie-charts in D3.  D3 is a low level library.  You have to be a proficient programmer to create a simple chart.  D3pie allows you to create a rich pie-chart with minimal programming skill.
+
+I then tackled the problem of overlapping labels.  This occurs when you have multiple adjacent narrow wedges.  If a wedge is too narrow you might omit the label, but this is not always the best solution.  I found a couple examples where the overlapping label problem was addressed for static data, but none with animated transitions. 
+
+The solution I chose was to keep all the labels in columns on either side of the pie as in example #1.  After the dataset transition is complete I check for overlaps.  I address the labels on each side separately starting from the bottom.  If label text bounding boxes I calculate a new position just above the previous label.  Then I animate the transition to the new position.  I also had to reposition the lines to each label.
 
 
 The census data files at the zip code level are pretty big: 4MB for the California houing data alone.
