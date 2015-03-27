@@ -1,0 +1,108 @@
+Are you new to the Bay Area?  Are you curious about where to find affordable housing?  Do you want to get a better understanding of the Bay Area's diversity?
+
+[Bay Area Stats](http://FrankBowers24.github.io) offers a graphical view of Bay Area demographic and housing data that lets you easily compare the characteristics of zip codes or cities.
+
+{<1>}![Housing Screen Shot](http://frankbowers24.github.io/2015-03-25_Housing%20Stats.png)
+
+### Features
+
+1.  Click, pan and zoom the map
+2.  Enter a city name or zip code and click Select
+3.  Change the menu to see Race/Ethnicity
+4.  Select Race: Asian and select Asian nationalities
+5.  Notice how the pie chart changes when you click on different zip code regions.  The pie chart changes are most interesting when the change in data is greatest.  Select Race/Ethnicity or Race/Asian/Mainland Chinese and click between Daly City and Berkeley.
+6.  If you are running the Chrome browser on a Macintosh and enable the microphone you can give it voice commands. Commands include "go to <city or zip code>", "Show me income", "Show me race", "Show me homes", "Show me condos", "Show me housing types".
+
+## Inspirations and How To
+
+I started learning D3 by reading [Visual Storytelling with D3 by Ritchie S. King](http://www.amazon.com/Visual-Storytelling-Introduction-Visualization-Addison-Wesley-ebook/dp/B00MZ6Q4QG/ref=pd_sim_kstore_3?ie=UTF8&refRID=1A1PV48AMXCCR7N3YMZA).  This is a fine introduction, but its scope is narrow, only covering how to make one type of bar chart.
+
+I highly recommend reading [Scott Murray's online D3 tutorial](http://alignedleft.com/tutorials/d3).  Then read the book-length version of the tutorials: [Interactive Data Visualization for the Web](http://www.amazon.com/Interactive-Data-Visualization-Scott-Murray-ebook/dp/B00BSG68UQ/ref=pd_sim_kstore_1?ie=UTF8&refRID=1A1PV48AMXCCR7N3YMZA).  Murray's book covers a broad range of D3 applications.  
+
+The example in Murray's book that inspired me the most was the Choropleth Map shown below. According to wikipedia: 
+>"A choropleth map (from Greek χώρο ("area/region") + πλήθος ("multitude")) is a thematic map in which areas are shaded or patterned in proportion to the measurement of the statistical variable being displayed on the map, such as population density or per-capita income."
+{<4>}![Choropleth](http://frankbowers24.github.io/Choropleth.png)
+
+Chapter 12 of Murray's book has a very useful section called Acquiring and Parsing Geodata which details how to access rich sources of mapping data and convert them to a compact D3-compatible format.  Geodata is collections of map boundary polygons whose vertices are expressed as latitude and longitude rather than x and y.  This chapter lead me to explore the Census Bureau's library of shapefiles for zip code regions.
+
+Murray's book whetted my appetite, but for a detailed how-to on converting GeoData I relied on Jim Vallandingham's excellent post, ["From Shapefile to GeoJSON"](http://vallandingham.me/shapefile_to_geojson.html).
+This post describes how to use multiple open source tools to convert Census Bureau files to GeoJSON.  I used QGIS to extract a subset of the zip code boundaries from the national shape file.  Then I used ogr2ogr to convert the extracted Bay_Area.shp file to GeoJSON.
+
+    ogr2ogr -f geoJSON -select GEOID10  Bay_Area.json Bay_Area.shp -simplify 0.001
+
+The -select option indicates which database fields I want to associate with each region (GEOID10 is the zip code).  The -simplify option controls the degree to which detail is reduced to compress the data.
+
+I then was intrigued by the D3 pie chart examples on http://bl.ocks.org, especially the labeled pie chart which has animated transitions from one dataset to another.  I was immediately captivated.  This is eye candy that needs a real world application.  Many of the D3 examples lack compeling data to make them relevant.  Data at the state or county level is often too general to be interesting.  I searched through federal government data at the zip code level and found insights that truly drew me in.  
+ 
+I looked at three pie charts examples and borrowed code from each of them:
+
+1. Super transitions on data change, but overlapping labels: http://bl.ocks.org/dbuezas/9306799
+2. Super labelling, but no transition support: http://d3pie.org/
+3. Fade-In out for added/Removed labels: http://bl.ocks.org/dbuezas/9572040
+
+
+
+The census data files at the zip code level are pretty big: 4MB for the California houing data alone.
+
+The data in Bay Area Stats was extracted from five csv files each of which is more than 4MB.  An interesting question is how to scale Bay Area Stas by providing server-side support to cover the same granularity on the fly for any metropolitan area in the country.  You would probably want to have all the zip code boundaries converted to GeoJSON in advance then dynamically extract subsets to be sent to the client.
+
+
+
+
+
+Writing in Markdown is really easy. In the left hand panel of Ghost, you simply write as you normally would. Where appropriate, you can use *shortcuts* to **style** your content. For example, a list:
+
+* Item number one
+* Item number two
+    * A nested item
+* A final item
+
+or with numbers!
+
+1. Remember to buy some milk
+2. Drink the milk
+3. Tweet that I remembered to buy the milk, and drank it
+
+### Links
+
+Want to link to a source? No problem. If you paste in a URL, like http://ghost.org - it'll automatically be linked up. But if you want to customise your anchor text, you can do that too! Here's a link to [the Ghost website](http://ghost.org). Neat.
+
+### What about Images?
+
+Images work too! Already know the URL of the image you want to include in your article? Simply paste it in like this to make it show up:
+
+{<2>}![The Ghost Logo](https://ghost.org/images/ghost.png)
+
+Not sure which image you want to use yet? That's ok too. Leave yourself a descriptive placeholder and keep writing. Come back later and drag and drop the image in to upload:
+
+{<3>}![A bowl of bananas]
+
+
+### Quoting
+
+Sometimes a link isn't enough, you want to quote someone on what they've said. It was probably very wisdomous. Is wisdomous a word? Find out in a future release when we introduce spellcheck! For now - it's definitely a word.
+
+> Wisdomous - it's definitely a word.
+
+### Working with Code
+
+Got a streak of geek? We've got you covered there, too. You can write inline `<code>` blocks really easily with back ticks. Want to show off something more comprehensive? 4 spaces of indentation gets you there.
+
+    .awesome-thing {
+        display: block;
+        width: 100%;
+    }
+
+### Ready for a Break? 
+
+Throw 3 or more dashes down on any new line and you've got yourself a fancy new divider. Aw yeah.
+
+---
+
+### Advanced Usage
+
+There's one fantastic secret about Markdown. If you want, you can write plain old HTML and it'll still work! Very flexible.
+
+<input type="text" placeholder="I'm an input field!" />
+
+That should be enough to get you started. Have fun - and let us know what you think :)
