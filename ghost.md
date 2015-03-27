@@ -2,7 +2,7 @@ Are you new to the Bay Area?  Are you curious about where to find affordable hou
 
 [Bay Area Stats](http://FrankBowers24.github.io) offers a graphical view of Bay Area demographic and housing data that lets you easily compare the characteristics of zip codes or cities.
 
-{<4>}![Housing Screen Shot](http://frankbowers24.github.io/2015-03-25_Housing%20Stats.png)
+{<1>}![Housing Screen Shot](http://frankbowers24.github.io/2015-03-25_Housing%20Stats.png)
 
 ### Features
 
@@ -15,9 +15,23 @@ Are you new to the Bay Area?  Are you curious about where to find affordable hou
 
 ## Inspirations and How To
 
-While perusing the D3 examples I came across a labeled pie chart which has animated transitions from one dataset to another.  I was immediately captivated.  This is eye candy that needs a real world application.  Many of the D3 examples lack compeling data to make them relevant.  Data at the state or county level is often too general to be interesting.  I searched through federal government data at the zip code level and found insights that truly drew me.
+I started learning D3 by reading [Visual Storytelling with D3 by Ritchie S. King](http://www.amazon.com/Visual-Storytelling-Introduction-Visualization-Addison-Wesley-ebook/dp/B00MZ6Q4QG/ref=pd_sim_kstore_3?ie=UTF8&refRID=1A1PV48AMXCCR7N3YMZA).  This is a fine introduction, but its scope is narrow, only covering how to make one type of bar chart.
 
+I highly recommend [Scott Murray's online D3 tutorial](http://alignedleft.com/tutorials/d3).  Then read the book-length version of the tutorials [Interactive Data Visualization for the Web](http://www.amazon.com/Interactive-Data-Visualization-Scott-Murray-ebook/dp/B00BSG68UQ/ref=pd_sim_kstore_1?ie=UTF8&refRID=1A1PV48AMXCCR7N3YMZA).  Murray's book covers a broad range of D3 applications.  I especially appreciated the section on how to convert and import.
+
+While perusing the D3 examples I came across a labeled pie chart which has animated transitions from one dataset to another.  I was immediately captivated.  This is eye candy that needs a real world application.  Many of the D3 examples lack compeling data to make them relevant.  Data at the state or county level is often too general to be interesting.  I searched through federal government data at the zip code level and found insights that truly drew me in.
+
+I was first inspired while reading Scott Murray's book on D3.  It includes good coverage of mapping and how to get import standard map formats into D3-compatible JSON.   I started out with the Choropleth from Chapter 7 of Scott's book.  
 To create a zip code map I converted Census Bureau shapefiles using
+
+The census data files at the zip code level are pretty big: 4MB for the California houing data alone.
+
+The data in Bay Area Stats was extracted from five csv files each of which is more than 4MB.  An interesting question is how to scale Bay Area Stas by providing server-side support to cover the same granularity on the fly for any metropolitan area in the country.  You would probably want to have all the zip code boundaries converted to GeoJSON in advance then dynamically extract subsets to be sent to the client.
+
+
+Super transitions on data change, but overlapping labels: http://bl.ocks.org/dbuezas/9306799
+Super labelling, but no transition support: http://d3pie.org/
+Fade-In out for added/Removed labels: http://bl.ocks.org/dbuezas/9572040
 
 
 Writing in Markdown is really easy. In the left hand panel of Ghost, you simply write as you normally would. Where appropriate, you can use *shortcuts* to **style** your content. For example, a list:
@@ -41,11 +55,11 @@ Want to link to a source? No problem. If you paste in a URL, like http://ghost.o
 
 Images work too! Already know the URL of the image you want to include in your article? Simply paste it in like this to make it show up:
 
-{<1>}![The Ghost Logo](https://ghost.org/images/ghost.png)
+{<2>}![The Ghost Logo](https://ghost.org/images/ghost.png)
 
 Not sure which image you want to use yet? That's ok too. Leave yourself a descriptive placeholder and keep writing. Come back later and drag and drop the image in to upload:
 
-{<2>}![A bowl of bananas]
+{<3>}![A bowl of bananas]
 
 
 ### Quoting
