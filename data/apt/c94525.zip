@@ -1,0 +1,255 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Apartment Rental Statistics for Zipcode 94525. Average Rent Data, Pricing Analysis & Statistics.</title>
+    <link rel="shortcut icon" type="image/x-icon" href="http://static.myapartmentmap.com/images/favicon.ico" />
+ 
+    <!-- META INFO -->
+    <meta name="description" content="MyApartmentMap provides rental data for apartments in 94525. Determine average rent and find out if you are paying too much for your next apartment." />
+    
+  <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW" />
+
+    
+    <link rel="stylesheet" href="http://static.myapartmentmap.com/cache/css/35192d485ea8.css" type="text/css" />
+    
+    <!--[if lt IE 7]><link rel="stylesheet" type="text/css" href="http://static.myapartmentmap.com/css/lt7.css" media="screen"/><![endif]-->
+    <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="http://static.myapartmentmap.com/css/lte7.css" media="screen"/><![endif]-->
+
+    
+    
+    
+    <script type="text/javascript" src="http://static.myapartmentmap.com/cache/js/010b153b436f.js" charset="utf-8"></script>
+    
+    <script type="text/javascript">
+      
+  
+        $(function() {
+          state_machine = new StateMachine();
+          state_machine.set_static_url("http://static.myapartmentmap.com/");
+          
+          //Sets all our inputs to empty on focus
+          init_interface();
+        });
+      
+  properties_base_lightbox_ready();
+
+    </script>
+  </head>
+  <body>
+    <div class="page">
+      <div id="wrapper">
+        <div id="header">
+          <div class="holder">
+            <h2 class="logo"><a href="/">MyApartmentMap</a></h2>
+              <ul class="top-nav">
+                <li><a href="/experts/">Experts</a></li>
+                
+                  <li><a href="/list_apartment/">List</a></li>
+                
+                <li><a href="/blog/">Blog</a></li>
+                <li><a href="/mobile_app/">iPhone / Android / iPad</a></li>
+                
+                  <li><a href="/accounts/login/">Sign In</a></li>
+                
+                <li>
+                  <g:plusone size="small" annotation="none"></g:plusone>
+                  <script type="text/javascript">
+                    (function() {
+                      var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+                      po.src = 'https://apis.google.com/js/plusone.js';
+                      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+                    })();
+                  </script>
+                </li>
+              </ul>
+            </div>
+
+            
+</div>
+<a name="filter_top"></a>
+<div id="main">
+  <div class="active-block3 slide-block">
+    <div class="t">
+      <div class="holder">
+        <form class="location-form3" action="/search/" method="get">
+	  <fieldset>
+	    <legend class="hidden">Location Form</legend>
+	    <div class="text">
+              <input id="search" type="text" value="94525" title="Search" name="query" />
+            </div>
+            <input class="submit focus-dummy" type="submit" value="Go" />
+          </fieldset>
+        </form>
+        <div class="slide-holder">
+          
+
+          
+
+          
+
+        </div>
+      </div>
+    </div> <!-- END t -->
+
+    
+
+    <div class="b">
+      <div class="holder">
+        
+        <ul class="breadcrumbs">
+          
+  <!-- <li><a href="/zip_codes/">Zip Codes</a></li>-->
+  <li>Rental Data and Statistics from 94525</li>
+
+        </ul>
+        <ul class="drops-nav">
+          <li>
+            <div id="neighborhood_drop" class="popup-holder hidden">
+             <a id="neighborhood_link" class="open" href="#">Neighborhoods</a>
+              
+            </div>
+          </li>
+
+          <li>
+            <div id="nearby_cities_drop" class="popup-holder hidden">
+              <a id="nearby_cities_link" class="open" href="#">Nearby Cities</a>
+              
+            </div>
+          </li>
+          <li>&nbsp;</li><!-- for validation -->
+        </ul>
+      </div>
+    </div>
+  </div>
+  <!-- ENDS FILTER -->
+
+  <div id="content">
+    <div class="content-t"></div>
+      <div class="content-m">
+        <ul class="tabset">
+          <li class="first"><a class="tab list-link " href="/list/zip_code/94525/">list</a></li>
+          <li><a class="tab images-link " href="/images/zip_code/94525/" rel="nofollow">images</a></li>
+          <li><a class="tab map-link " href="/map/zip_code/94525/" rel="nofollow">map</a></li>
+          <li><a class="tab active" href="#" rel="nofollow">rental data</a></li>
+          <li class="last"><a class="tab " href="/deals/zip_code/94525/">deals and specials</a></li>
+        </ul>
+        <div id="tab1" class="tab-holder">
+          
+  <div class="data-block">
+    <div class="text-holder">
+      <h2>Average Rental Rates in Zip Code 94525</h2>
+      <p>
+  
+    Rental properties of varying dimensions are available throughout zip code 94525, so in order to help guide you to the apartment you want the most, here are statistics regarding average rental rates as of March in that area. The following rental rate averages were generated by using 6 relevant apartment listings posted this month in 94525. If it’s two bedroom rentals you are looking for, then on average it will cost you about $1,500.
+  
+</p>
+    </div>
+    <div class="graph-holder">
+      <img id="avg_graph_url" src="/data/z/39568/a/" alt=" Average Rent"/>
+      <div class="notes">
+        <p>updated <b>today</b> - <a id="use_average" href="#">use average rents graph on your website</a></p>
+      </div>
+
+    </div>
+
+    <div class="row-spacer">&nbsp;</div>
+  
+    <div class="text-holder">
+      <h2>Average Cost of Rental Rates in Zip Codes Near 94525</h2>
+      <p>
+  
+    As you conduct your search for possible rentals located in zip code 94525, you may also want to take a look at what’s available to rent in other area zip codes. In order to help expand your search and give you vital data about March rental rate averages, the following summary offers information generated by using hundreds of applicable rental listings from local zip codes near 94525. The average rental rate of a two bedroom apartment in zip code 94525, where you began you search, is about $1,500 on average. In the local zip code 94510, you on average can rent a two bedroom apartment for $1,556. Neighboring zip code 94591 can offers two bedroom rentals for an average cost of $1,365, while 94547 two bedroom rentals will on average go for $1,687. In 94590, the average cost of renting a two bedroom apartment is $1,296. But, you also might want to check out two bedroom apartments in zip code 94503, where the average price is $1,562. Also relatively close by are two bedroom apartments in zip code 94553, where the on average rental rate for that kind of residence is $1,781. Over in 94564, you can get a two bedroom rental for about $2,158.
+  
+</p>
+    </div>
+    <div class="graph-holder">
+      <img id="nearby_graph_url" src="/data/z/39568/n/" alt=" nearby rents" />
+      <div class="notes">
+        <p>updated <b>today</b> - <a id="use_nearby" href="#">use nearby rents graph on your website</a></p>
+      </div>
+    </div>
+
+    <div class="row-spacer">&nbsp;</div>
+  
+    <div class="text-holder">
+      <h2>Zip Code 94525 Trends and Rental History</h2>
+      <p>
+  
+    We're sorry but we do not have enough apartment data for 94525 to generate statistics about rental trends.
+  
+</p>
+    </div>
+    <div class="graph-holder">
+      <img id="trend_graph_url" src="/data/z/39568/t/" alt=" rental trends" />
+      <div class="notes">
+        <p>updated <b>today</b> - <a id="use_trend" href="#">use rental trends graph on your website</a></p>
+      </div>
+    </div>
+
+    <div class="row-spacer">&nbsp;</div>
+  </div>
+
+          
+          
+        </div>
+      </div>
+      <div class="content-b"></div>
+    </div>
+    
+  </div>
+</div> <!-- END MAIN -->
+
+
+</div>
+<div class="footer-holder">
+<div id="footer">
+
+
+        <ul class="bottom-nav right-bottom-nav">
+          <li>Legal:</li>
+          <li><a rel="nofollow" href="/equal_opportunity_housing.html">Equal Opportunity</a></li>
+          <li><a rel="nofollow" href="/privacy_policy.html">Privacy Policy</a></li>
+        </ul>
+        <ul class="bottom-nav">
+          <li><a rel="nofollow" href="/about/">About</a></li>
+          <li><a rel="nofollow" href="/contact/">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    
+  <div id="data_link_dialog" class="popup-holder">
+  <a class="open" href="#"></a>
+  <div class="popup popup7">
+    <div class="corner"></div>
+    <div class="box">
+      <div class="t"><span></span><em></em></div>
+      <div class="area">
+        <span class="l"></span>
+        <span class="r"></span>
+        <div class="content">
+          <div class="box-main">
+            <div class="inside">
+              <div class="data-content-text">
+                <h2>Use this graph on your website</h2>
+                <p>You may display this graph on your website by copying and pasting the following HTML code.</p>
+                <p class="code hidden avg"><code>&lt;div style = &quot;width:390px;&quot;&gt; &lt;img src = &quot;http://www.myapartmentmap.com/data/z/39568/a/&quot; /&gt; &lt;div style = &quot;text-align:right;font-size:10px&quot;&gt; Data provided by &lt;a href = &quot;http://www.myapartmentmap.com/list/zip_code/94525/&quot; &gt;MyApartmentMap 94525&lt;/a&gt; &lt;/div&gt; &lt;/div&gt;</code></p>
+                <p class="code hidden nearby"><code>&lt;div style = &quot;width:390px;&quot;&gt; &lt;img src = &quot;http://www.myapartmentmap.com/data/z/39568/n/&quot; /&gt; &lt;div style = &quot;text-align:right;font-size:10px&quot;&gt; Data provided by &lt;a href = &quot;http://www.myapartmentmap.com/list/zip_code/94525/&quot; &gt;MyApartmentMap 94525&lt;/a&gt; &lt;/div&gt; &lt;/div&gt;</code></p>
+                <p class="code hidden trend"><code>&lt;div style = &quot;width:390px;&quot;&gt; &lt;img src = &quot;http://www.myapartmentmap.com/data/z/39568/t/&quot; /&gt; &lt;div style = &quot;text-align:right;font-size:10px&quot;&gt; Data provided by &lt;a href = &quot;http://www.myapartmentmap.com/list/zip_code/94525/&quot; &gt;MyApartmentMap 94525&lt;/a&gt; &lt;/div&gt; &lt;/div&gt;</code></p>
+                <p>This graph will automatically update and display the most recent statistics for this location.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="b"><span></span><em></em></div>
+    </div>
+  </div>
+</div>
+
+
+
+  </body>
+</html>
