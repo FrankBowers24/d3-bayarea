@@ -3,7 +3,8 @@ var fs = require('fs');
 var files = fs.readdirSync('.');
 
 var aptRefs = ["studio", "one bedroom", "two bedroom", "three bedroom"];
-
+var rentObj = {};
+var fileCount = 0;
 
 function getRentData(filename) {
   var zip;
@@ -15,7 +16,7 @@ function getRentData(filename) {
 
     if (line.match(/Average Rental Rates in Zip Code/)) {
       zip = line.match(/[0-9]{5}/g)[0];
-      console.log('file: ', filename, 'zip: ', zip);
+      // console.log('file: ', filename, 'zip: ', zip);
       inRentData = true;
     }
     if (inRentData) {
@@ -24,7 +25,7 @@ function getRentData(filename) {
         for (var i = 0; i < aptRefs.length; i++) {
           index = buffer.search(new RegExp(aptRefs[i], 'i'));
           if (index >= 0) {
-            values[i] = buffer.slice(index).match(/\d{0,1},[0-9]{3}/)[0];
+            values[i] = +buffer.slice(index).match(/\d{0,1},[0-9]{3}/)[0].replace(',', '');
           }
         }
       } else {
@@ -33,37 +34,28 @@ function getRentData(filename) {
     }
 
     if (line.match(/avg_graph_url/)) {
-    	values[aptRefs.length] = line.match(/(src=\")([^\"]*\")/)[2];
+    	values[aptRefs.length] = line.match(/(src=\")([^\"]*\")/)[2].slice(0, -1);
     }
 
     if (last) {
-      // var index = buffer.search(/studio/);
-      // if (index >= 0) {
-      //   var studio = buffer.slice(index).match(/\d{0,1},[0-9]{3}/)[0];
-      //   console.log('STUDIO: ', studio);
-      //   console.log('-----------------------');
-      // }
-      // index = buffer.search(/One bedroom apartments/i);
-      // if (index > 0) {
-      // 	var oneBr = buffer.slice(index).match(/\d{0,1},[0-9]{3}/);
-      // 	console.log('ONE BR: ', oneBr);
-      //
-      console.log('prices: ', values);
+    	rentObj[zip] = values;
+      // console.log('prices: ', values);
+      if (--fileCount === 0) {
+      	 console.log('count: ', Object.keys(rentObj).length);
+      	fs.appendFile('rent.json', JSON.stringify(rentObj, null, '\t'), function (err) {
+          if (err) throw err;
+          });
+      }
     }
-
-    //console.log(buffer);
-
   });
+
 }
 
-
-
-var found = false;
 for (var i in files) {
 
-  if (files[i].match(/.zip/) && !found) {
-    found = true;
+  if (files[i].match(/.zip/)) {
     getRentData(files[i]);
-    // console.log(files[i]);
+    fileCount++;
   }
 }
+
