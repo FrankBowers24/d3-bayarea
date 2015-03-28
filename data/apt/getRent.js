@@ -38,6 +38,7 @@ function getRentData(filename) {
     }
 
     if (last) {
+      values.unshift(null);
     	rentObj[zip] = values;
       // console.log('prices: ', values);
       if (--fileCount === 0) {

@@ -38,6 +38,8 @@
 
     var statData;
 
+    var detailCode;
+
     var geometry;
 
     var getPropertyValues = function () {
@@ -60,11 +62,23 @@
       statIndex = newStatIndex;
     };
 
+    /*
+     Detail Codes
+     0: statIndex / 0
+     1: 0
+     2: statIndex
+     */
+
+    var setDetailCode = function (newDetailCode) {
+      detailCode = newDetailCode;
+    };
+
     function getStatValue(d, stats) {
       var zip = d.properties.GEOID10;
       var counts = stats[zip][statType];
       if (counts) {
-        if (statIndex === -1) return +counts[0];
+        if (detailCode === 2) return +counts[statIndex];
+        if (detailCode === 1) return +counts[0];
         return +counts[statIndex] / +counts[0];
       } else {
         return null;
@@ -78,7 +92,7 @@
     function setToolTip(d, stats, values) {
       values = values || stats[d.properties.GEOID10][statType];
       var counts = values.slice(1);
-      showDetails(statIndex, values, counts);
+      showDetails(statIndex, values, counts, detailCode);
     }
 
     var updateColorDomain = function () {
@@ -143,7 +157,9 @@
         });
         title = (matches.length > 1) ? fieldValue : getTitle(matches[0]);
         d3.select(".tip-location").text(title);
-        if (statIndex === -1 && dataCount > 0) {
+        if (detailCode === 2 && dataCount > 0) {
+          aggregate[statIndex] = (+aggregate[statIndex] / dataCount).toFixed(0);
+        } else if (detailCode === 1 && dataCount > 0) {
           aggregate[0] = (+aggregate[0] / dataCount).toFixed(0);
         }
         setToolTip(null, statData, aggregate);
@@ -295,6 +311,7 @@
       getPropertyValues: getPropertyValues,
       setStatType: setStatType,
       setStatIndex: setStatIndex,
+      setDetailCode: setDetailCode,
       updateStats: updateStats,
       selectByData: selectByData,
       zoomOut: zoomOut
