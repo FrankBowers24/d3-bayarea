@@ -10,7 +10,7 @@ var sfr = JSON.parse(fs.readFileSync('sfr.json', 'utf8'));
 var condo = JSON.parse(fs.readFileSync('condo.json', 'utf8'));
 var ownRent = JSON.parse(fs.readFileSync('ownRent.json', 'utf8'));
 var housingUnits = JSON.parse(fs.readFileSync('housingUnits.json', 'utf8'));
-var employment = JSON.parse(fs.readFileSync('employment.json', 'utf8'));
+var rent = JSON.parse(fs.readFileSync('rent.json', 'utf8'));
 
 var mergedTotal = {};
 
@@ -29,7 +29,7 @@ for (var key in irs) {
     condo: condo[key],
     ownRent: ownRent[key],
     housingUnits: housingUnits[key],
-    employment: employment[key]
+    rent: rent[key]
   }
   mergedTotal[key] = merged;
 }
