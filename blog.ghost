@@ -77,11 +77,13 @@ The data in Bay Area Stats was extracted from five csv files each of which is mo
 
 ## Sources
 
-Used node.js scripts to do format conversion. As a node.js newbie the first thing I learned is that built in classes don't provide the basic functionality that you would expect from a programming enviromnet.  It is a hassle to read from a file a line at a time.  However, there is an open source package "read-line" which makes this easy.
+I Used node.js scripts to do format conversion. As a node.js newbie the first thing I learned is that built in classes don't provide the basic functionality that you would expect from a programming environment.  It is a hassle to read from a file a line at a time.  However, there is an open source package "line-reader" which makes this easy.
 
-Node.js out of the box does not facilitate reading lines from a file.  I found the "read-line" package to handle this for me.  There are thousands(?) of public node packages that make node a manageable system.
+http://factfinder.census.gov/  (csv files)
 
-http://factfinder.census.gov/
+http://www.zillow.com/research/data/ (csv files)
+
+http://www.myapartmentmap.com/ (acquired by webscraping using node.js script)
 
 
 
