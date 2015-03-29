@@ -149,7 +149,11 @@
         matches.forEach(function (d) {
           zip = d.properties.GEOID10;
           values = statData[zip][statType];
-          dataCount = (+values[0] > 0) ? dataCount + 1 : dataCount;
+          if (detailCode === 2) {
+            dataCount = (+values[statIndex] > 0) ? dataCount + 1 : dataCount;
+          } else {
+            dataCount = (+values[0] > 0) ? dataCount + 1 : dataCount;
+          }
           for (i = 0; i < values.length; i++) {
             aggregate[i] = aggregate[i] || 0;
             aggregate[i] += +values[i];

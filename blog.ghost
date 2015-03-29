@@ -15,7 +15,7 @@ Are you new to the Bay Area?  Are you curious about where to find affordable hou
 
 ## Inspirations and How To
 
-I started learning D3 by reading [Visual Storytelling with D3 by Ritchie S. King](http://www.amazon.com/Visual-Storytelling-Introduction-Visualization-Addison-Wesley-ebook/dp/B00MZ6Q4QG/ref=pd_sim_kstore_3?ie=UTF8&refRID=1A1PV48AMXCCR7N3YMZA).  This is a fine introduction, but its scope is narrow, only covering how to make one type of bar chart.
+I started learning JavaScript library D3 by reading [Visual Storytelling with D3 by Ritchie S. King](http://www.amazon.com/Visual-Storytelling-Introduction-Visualization-Addison-Wesley-ebook/dp/B00MZ6Q4QG/ref=pd_sim_kstore_3?ie=UTF8&refRID=1A1PV48AMXCCR7N3YMZA).  This is a fine introduction, but its scope is narrow, only covering how to make one type of bar chart.
 
 I highly recommend reading [Scott Murray's online D3 tutorial](http://alignedleft.com/tutorials/d3).  Then read the book-length version of the tutorials: [Interactive Data Visualization for the Web](http://www.amazon.com/Interactive-Data-Visualization-Scott-Murray-ebook/dp/B00BSG68UQ/ref=pd_sim_kstore_1?ie=UTF8&refRID=1A1PV48AMXCCR7N3YMZA).  Murray's book covers a broad range of D3 applications.  
 
@@ -44,7 +44,9 @@ I found the code for #1 to be the most straightforward, but I liked the fade in/
 
 I then tackled the problem of overlapping labels.  This occurs when you have multiple adjacent narrow wedges.  If a wedge is too narrow you might omit the label, but this is not always the best solution.  I found a couple examples where the overlapping label problem was addressed for static data, but none with animated transitions. 
 
-The solution I chose was to keep all the labels in columns on either side of the pie as in example #1.  After the dataset transition is complete I check for overlaps.  I address the labels on each side separately starting from the bottom.  If label text bounding boxes I calculate a new position just above the previous label.  Then I animate the transition to the new position.  I also had to reposition the lines to each label.
+The solution I chose was to keep all the labels in columns on either side of the pie as in example #1.  After the dataset transition is complete I check for overlaps.  I address the labels on each side separately starting from the bottom.  If label bounding boxes overlap I calculate a new position just above the previous label.  Then I animate the transition to the new position.  I also had to reposition the lines to each label.
+
+TODO: SHOW BEFORE AND AFTER SCREEN SHOTS OF OVERLAP CORRECTION
 
 Aggregation when selecting by city name
 
@@ -77,13 +79,17 @@ The data in Bay Area Stats was extracted from five csv files each of which is mo
 
 ## Sources
 
-I Used node.js scripts to do format conversion. As a node.js newbie the first thing I learned is that built in classes don't provide the basic functionality that you would expect from a programming environment.  It is a hassle to read from a file a line at a time.  However, there is an open source package "line-reader" which makes this easy.
+I Used node.js scripts to do format conversion. As a node.js newbie the first thing I learned is that the built in classes don't provide the basic functionality that you would expect from a programming environment.  It is a hassle to read from a file a line at a time using node.js alone.  However, there are enumerable open source node.js libraries that provide almost any functionality you might want.  In this case the npm package "line-reader" did the trick.
+
+http://www.irs.gov/uac/SOI-Tax-Stats-Individual-Income-Tax-Statistics-ZIP-Code-Data-%28SOI%29 (tsv files)
 
 http://factfinder.census.gov/  (csv files)
 
 http://www.zillow.com/research/data/ (csv files)
 
 http://www.myapartmentmap.com/ (acquired by webscraping using node.js script)
+
+I acquired city names for each zip code using the ziptasticapi.com webservice.
 
 
 
