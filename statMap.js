@@ -286,7 +286,7 @@ var ZipCodeMap;
     }
   };
 
-  enableVoiceCommands();
+  //enableVoiceCommands();
 
   var menuMap = {
     name: "stat",
