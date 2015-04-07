@@ -15,7 +15,7 @@ var d3;
   }
 }(this, function () {
 
-  var LabeledPie = function (parent) {
+  var LabeledPie = function (parent, config) {
 
     var svg = d3.select(parent)
       .append("svg")
@@ -23,8 +23,8 @@ var d3;
 
     this.svg = svg;
 
-    this.svgWidth = 450;
-    this.svgHeight = 190;
+    this.svgWidth = config.svgWidth;
+    this.svgHeight = config.svgHeight;
 
     d3.select(parent).select("svg").attr("width", this.svgWidth).attr("height", this.svgHeight);
 
@@ -37,30 +37,28 @@ var d3;
     this.svg.append("g")
       .attr("class", "lines");
 
-    this.width = 160;
-    this.height = 160;
-    this.radius = Math.min(this.width, this.height) / 2;
+    this.radius = config.pieRadius;
 
     this.pie = d3.layout.pie()
       .sort(null);
 
     this.arc = d3.svg.arc()
-      .outerRadius(this.radius * 0.8)
-      .innerRadius(this.radius * 0.4);
+      .outerRadius(this.radius * config.outerRadiusFactor)
+      .innerRadius(this.radius * config.innerRadiusFactor);
 
     this.outerArc = d3.svg.arc()
-      .innerRadius(this.radius * 0.85)
-      .outerRadius(this.radius * 0.85);
+      .innerRadius(this.radius * config.outerArcFactor)
+      .outerRadius(this.radius * config.outerArcFactor);
 
     this.edgeArc = d3.svg.arc()
-      .innerRadius(this.radius * 0.8)
-      .outerRadius(this.radius * 0.8);
+      .innerRadius(this.radius * config.outerRadiusFactor)
+      .outerRadius(this.radius * config.outerRadiusFactor);
 
-    this.minimumDisplayedPercentage = 6;
+    this.minimumDisplayedPercentage = config.minimumDisplayedPercentage;
 
     this.svg.attr("transform", "translate(" + this.svgWidth / 2 + "," + this.svgHeight / 2 + ")");
 
-    this.minimumDisplayedLabel = 3;
+    this.minimumDisplayedLabel = config.minimumDisplayedLabel;
 
     function pointToArray(point) {
       return [point.x, point.y];
@@ -114,11 +112,12 @@ var d3;
       var lastY = Infinity; // matrix.f is y
       var matrix;
       var currentY;
+      var height;
       var i;
       for (i = 0; i < labels.length; i++) {
         matrix = labels[i].transform.baseVal.getItem(0).matrix;
         currentY = matrix.f;
-        var height = labels[i].getBBox().height;
+        height = labels[i].getBBox().height;
         if (currentY > (lastY - height)) {
           currentY = lastY - height;
           transitionOverlappingLabel(labels[i], currentY);
@@ -147,21 +146,18 @@ var d3;
         adjustOverlappingLabels(leftLabels);
         adjustOverlappingLabels(rightLabels.reverse());
       } catch (e) {
-
+        console.log(e);
       }
       return true; // return true to stop timer from firing again
     }
 
-
     LabeledPie.prototype.setLabels = function (labels) {
       this.labels = labels;
-    }
+    };
 
     LabeledPie.prototype.setColorScale = function (color) {
       this.color = color;
-    }
-
-
+    };
 
     LabeledPie.prototype.change = function (data) {
 
@@ -170,21 +166,15 @@ var d3;
       var minimumDisplayedPercentage = this.minimumDisplayedPercentage;
       var arc = this.arc;
       var outerArc = this.outerArc;
-      var edgeArc = this.edgeArc;
       var svg = this.svg;
       var pie = this.pie;
       var color = this.color;
       var minimumDisplayedLabel = this.minimumDisplayedLabel;
 
-
       var sum = d3.sum(data);
 
       function getPercentage(d) {
         return Math.round(d.value / sum * 100);
-      }
-
-      function getTitle(d, i) {
-        return labels[i] + ": " + d.value + ", " + getPercentage(d);
       }
 
       /* ------- PIE SLICES -------*/
@@ -197,12 +187,6 @@ var d3;
           return color(i);
         })
         .attr("class", "slice");
-
-      /*
-          slice.append("svg:title")
-                 .text(function(d, i) { 
-                  return getTitle(d, i); })
-      */
 
       slice
         .transition().duration(1000)
@@ -273,6 +257,7 @@ var d3;
       polyline.enter()
         .append("polyline");
 
+      var edgeArc = this.edgeArc
       polyline.transition().duration(1000)
         .style("opacity", function (d) {
           return getPercentage(d) < minimumDisplayedLabel ? 0 : 0.3;
@@ -331,14 +316,12 @@ var d3;
             var d2 = interpolate(t);
             var pos = arc.centroid(d2);
             pos[0] = pos[0] - bbox.width / 2;
-            //pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
             return "translate(" + pos + ")";
           };
         });
 
       percent.exit()
         .remove();
-
 
     };
   };

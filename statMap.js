@@ -1,4 +1,3 @@
-var annyang;
 var d3;
 var LabeledPie;
 var window;
@@ -6,7 +5,18 @@ var ZipCodeMap;
 
 (function() {
 
-  var incomePie = new LabeledPie(".tip-info");
+  var pieConfig = {
+    svgWidth: 450,
+    svgHeight: 190,
+    pieRadius: 80,
+    outerRadiusFactor: 0.8,
+    innerRadiusFactor: 0.4,
+    outerArcFactor: 0.85,  // for break in label lines
+    minimumDisplayedPercentage: 6,
+    minimumDisplayedLabel: 3
+  };
+
+  var incomePie = new LabeledPie(".tip-info", pieConfig);
 
   var statLabels = {
     //stat: ["Income", "Race/Ethnicity", "Place of Birth", "Age", "Housing"],
@@ -73,7 +83,7 @@ var ZipCodeMap;
   var setPieLabels = function(labelConfig, key) {
     // reset income pie
     d3.select(".tip-info").select("svg").remove();
-    incomePie = new LabeledPie(".tip-info");
+    incomePie = new LabeledPie(".tip-info", pieConfig);
 
     var color = d3.scale.ordinal()
       .domain(labelConfig[key].domain)
