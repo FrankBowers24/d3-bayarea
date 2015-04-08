@@ -1,15 +1,16 @@
-
+var d3;
+var topojson;
 
 (function () {
 
-  var ZipCodeMap = function (createLegend, showDetails) {
-    var width = 650;
-    var height = 1000;
-    var minZoom = 0.6 * (1 << 16);
-    var maxZoom = 0.7 * (1 << 17);
+  var ZipCodeMap = function (parent, createLegend, showDetails, zipConfig) {
+    var width = zipConfig.width;
+    var height = zipConfig.height;
+    var minZoom = zipConfig.minZoom;
+    var maxZoom = zipConfig.maxZoom;
 
     var projection = d3.geo.albersUsa()
-      .scale(0.6 * (1 << 16))
+      .scale(zipConfig.minZoom)
       .translate([width / 2, height / 2]);
 
     var path = d3.geo.path()
@@ -23,23 +24,19 @@
 
     //Define quantize scale to sort data values into buckets of color
     var color = d3.scale.quantize()
-      .range(["#a50026", "#d73027", "#f46d43", "#fdae61", "#fee08b", "#ffffbf", "#d9ef8b", "#a6d96a", "#66bd63", "#1a9850", "#006837"]);
+      .range(zipConfig.range);
 
     //Create SVG element
-    var svg = d3.select(".right-side")
+    var svg = d3.select(parent)
       .append("svg")
       .attr("width", width)
       .attr("height", height)
       .call(zoom);
 
-    var statIndex = 6;
-
-    var statType = "income";
-
+    var statIndex = zipConfig.statIndex;
+    var statType = zipConfig.statType;
     var statData;
-
     var detailCode;
-
     var geometry;
 
     var getPropertyValues = function () {
@@ -184,25 +181,22 @@
     };
 
     function centerZip(ba) {
-
       var zips = topojson.feature(ba, ba.objects.Bay_Area),
         zip = zips.features.filter(function (d) {
 
           return d.properties.GEOID10 === "94560";
         })[0];
-
       center(zip);
     }
-
 
     function center(d, transition) {
       var centroid = path.centroid(d),
         translate = projection.translate();
 
       projection.translate([
-      translate[0] - centroid[0] + width / 2,
-      translate[1] - centroid[1] + height / 2
-    ]);
+        translate[0] - centroid[0] + width / 2,
+        translate[1] - centroid[1] + height / 2
+      ]);
 
       zoom.translate(projection.translate());
 
@@ -242,12 +236,8 @@
     }
 
     function zoomOut() {
-
       var test = d3.select(".selected");
-
       var d = d3.select(".selected").datum();
-
-
       var bounds = path.bounds(d),
         dx = bounds[1][0] - bounds[0][0],
         dy = bounds[1][1] - bounds[0][1],

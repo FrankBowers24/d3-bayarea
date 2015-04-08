@@ -42,10 +42,12 @@ var d3;
     this.pie = d3.layout.pie()
       .sort(null);
 
+    // pie slices
     this.arc = d3.svg.arc()
       .outerRadius(this.radius * config.outerRadiusFactor)
       .innerRadius(this.radius * config.innerRadiusFactor);
 
+    // edge arc and outer arc are for lines to labels
     this.outerArc = d3.svg.arc()
       .innerRadius(this.radius * config.outerArcFactor)
       .outerRadius(this.radius * config.outerArcFactor);

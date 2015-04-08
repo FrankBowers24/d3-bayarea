@@ -228,7 +228,17 @@ var ZipCodeMap;
     }
   };
 
-  var statMap = new ZipCodeMap(createLegend, showDetails);
+  var zipCodeMapConfig = {
+    width: 650,
+    height: 1000,
+    minZoom: 0.6 * (1 << 16),
+    maxZoom: 0.7 * (1 << 17),
+    range: ["#a50026", "#d73027", "#f46d43", "#fdae61", "#fee08b", "#ffffbf", "#d9ef8b", "#a6d96a", "#66bd63", "#1a9850", "#006837"],
+    statIndex: 6,
+    statType: "income"
+  }
+
+  var statMap = new ZipCodeMap(".right-side", createLegend, showDetails, zipCodeMapConfig);
   setPieLabels(pieLabelConfig, "income");
 
   var getSelectionTitle = function() {
