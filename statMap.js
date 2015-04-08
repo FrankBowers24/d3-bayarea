@@ -503,12 +503,24 @@ var ZipCodeMap;
     };
   })(jQuery);*/
 
+  var getNames = function () {
+      var result = [];
+      statMap.forEach(function(data) {
+        for (var key in data.properties) {
+          if (data.properties.hasOwnProperty(key)) {
+            result[data.properties[key]] = true;
+          }
+        }
+      });
+      return Object.keys(result);
+    }
+
   $("#select-input").autoComplete({
     minChars: 1,
     source: function(term, suggest) {
       term = term.toLowerCase();
       var i;
-      var choices = statMap.getPropertyValues();
+      var choices = getNames();
       var matches = [];
       for (i = 0; i < choices.length; i++) {
         if (~choices[i].toLowerCase().indexOf(term)) {

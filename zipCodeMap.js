@@ -39,16 +39,11 @@ var topojson;
     var detailCode;
     var geometry;
 
-    var getPropertyValues = function () {
-      var key;
-      var valueMap = {};
+    var forEach = function(callback) {
       var zips = topojson.feature(geometry, geometry.objects.Bay_Area);
       zips.features.forEach(function (d) {
-        for (key in d.properties) {
-          valueMap[d.properties[key]] = true;
-        }
+        callback(d);
       });
-      return Object.keys(valueMap);
     };
 
     var setStatType = function (newStatType) {
@@ -302,7 +297,7 @@ var topojson;
     // setPieLabels(pieLabelConfig, "income");
 
     return {
-      getPropertyValues: getPropertyValues,
+      forEach: forEach,
       setStatType: setStatType,
       setStatIndex: setStatIndex,
       setDetailCode: setDetailCode,
