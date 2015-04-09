@@ -205,45 +205,9 @@ var topojson;
       }
     }
 
-    function formatLocation(p, k) {
-      var format = d3.format("." + Math.floor(Math.log(k) / 2 - 2) + "f");
-      return (p[1] < 0 ? format(-p[1]) + "°S" : format(p[1]) + "°N") + " " + (p[0] < 0 ? format(-p[0]) + "°W" : format(p[0]) + "°E");
-    }
-
-    function mousemoved() {
-      // console.log("mouse: " + d3.mouse(this));
-      // console.log("lat/long: " + formatLocation(projection.invert(d3.mouse(this)), zoom.scale()));
-    }
-
     function zoomed() {
       projection.translate(d3.event.translate).scale(d3.event.scale);
       svg.selectAll("path").attr("d", path);
-    }
-
-    function location(p, translate, scale) {
-      return [(p[0] - translate[0]) / scale, (p[1] - translate[1]) / scale];
-    }
-
-    function translateTo(p, l) {
-      l = point(l);
-      translate[0] += p[0] - l[0];
-      translate[1] += p[1] - l[1];
-    }
-
-    function zoomOut() {
-      var test = d3.select(".selected");
-      var d = d3.select(".selected").datum();
-      var bounds = path.bounds(d),
-        dx = bounds[1][0] - bounds[0][0],
-        dy = bounds[1][1] - bounds[0][1],
-        x = (bounds[0][0] + bounds[1][0]) / 2,
-        y = (bounds[0][1] + bounds[1][1]) / 2,
-        scale = maxZoom, //.9 / Math.max(dx / width, dy / height),
-        translate = [width / 2 - scale * x, height / 2 - scale * y];
-
-      svg.transition()
-        .duration(750)
-        .call(zoom.translate(translate).scale(scale).event);
     }
 
     d3.json("data/allStats.json", function (stats) {
@@ -273,7 +237,6 @@ var topojson;
             setToolTip(d, statData);
             lastZipClick = [d3.event.x, d3.event.y];
           })
-          .on("mousemove", mousemoved)
           .append("svg:title")
           .text(function (d) {
             return getTitle(d);
@@ -294,8 +257,6 @@ var topojson;
       });
     });
 
-    // setPieLabels(pieLabelConfig, "income");
-
     return {
       forEach: forEach,
       setStatType: setStatType,
@@ -303,7 +264,6 @@ var topojson;
       setDetailCode: setDetailCode,
       updateStats: updateStats,
       selectByData: selectByData,
-      zoomOut: zoomOut
     };
   }
 
