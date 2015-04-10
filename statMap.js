@@ -212,19 +212,17 @@ var ZipCodeMap;
   };
 
   var showDetails = function(statIndex, values, counts, detailCode) {
+    d3.select(".tip-description").classed("hidden", false);
     if (detailCode > 0) {
       d3.select(".tooltip-overlay").classed("hidden", false);
-      d3.select(".tip-description").classed("hidden", false);
       var value = (detailCode === 2) ? values[statIndex] : values[0];
       value = value ? "$" + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : value;
       d3.select(".tooltip-overlay-text").text(value || "No Data");
     } else if (+values[0] > 0) {
       d3.select(".tip-info").classed("hidden", false);
-      d3.select(".tip-description").classed("hidden", false);
       incomePie.change(counts);
     } else {
       d3.select(".tip-info").classed("hidden", true);
-      d3.select(".tip-description").classed("hidden", false);
     }
   };
 

@@ -56,9 +56,9 @@ var topojson;
 
     /*
      Detail Codes
-     0: statIndex / 0
-     1: 0
-     2: statIndex
+     0: counts[statIndex] / counts[0]
+     1: counts[0]
+     2: counts[statIndex]
      */
 
     var setDetailCode = function (newDetailCode) {
@@ -69,9 +69,9 @@ var topojson;
       var zip = d.properties.GEOID10;
       var counts = stats[zip][statType];
       if (counts) {
-        if (detailCode === 2) return +counts[statIndex];
-        if (detailCode === 1) return +counts[0];
-        return +counts[statIndex] / +counts[0];
+        if (detailCode === 2) return +counts[statIndex];  // apt rents
+        if (detailCode === 1) return +counts[0];  // house and condo prices
+        return +counts[statIndex] / +counts[0];  //  pie data: ratio of count at statIndex to total at counts[0]
       } else {
         return null;
       }
@@ -121,6 +121,8 @@ var topojson;
         });
     };
 
+
+    // refactor to always keep dataCount
     var selectByData = function (field, fieldValue) {
       var matches = [];
       var aggregate = [];
@@ -132,36 +134,36 @@ var topojson;
 
       var zips = topojson.feature(geometry, geometry.objects.Bay_Area);
       zips.features.forEach(function (d) {
-        if (d.properties[field] === fieldValue) {
+        if (d.properties[field] === fieldValue) {              // collect data with matching field values
           matches.push(d);
         }
       });
       if (matches.length > 0) {
-        d3.selectAll(".selected").classed("selected", false);
-        matches.forEach(function (d) {
+        d3.selectAll(".selected").classed("selected", false);  // clear the selection if matches
+        matches.forEach(function (d) {                         // get aggregated values
           zip = d.properties.GEOID10;
           values = statData[zip][statType];
-          if (detailCode === 2) {
+          if (detailCode === 2) {                              // apt rents: value at statIndex
             dataCount = (+values[statIndex] > 0) ? dataCount + 1 : dataCount;
           } else {
             dataCount = (+values[0] > 0) ? dataCount + 1 : dataCount;
-          }
+          }                                                    // add up all the values
           for (i = 0; i < values.length; i++) {
             aggregate[i] = aggregate[i] || 0;
             aggregate[i] += +values[i];
           }
         });
-        title = (matches.length > 1) ? fieldValue : getTitle(matches[0]);
+        title = (matches.length > 1) ? fieldValue : getTitle(matches[0]);  // set the title
         d3.select(".tip-location").text(title);
         if (detailCode === 2 && dataCount > 0) {
           aggregate[statIndex] = (+aggregate[statIndex] / dataCount).toFixed(0);
-        } else if (detailCode === 1 && dataCount > 0) {
+        } else if (detailCode === 1 && dataCount > 0) {            // house and condo prices
           aggregate[0] = (+aggregate[0] / dataCount).toFixed(0);
         }
-        setToolTip(null, statData, aggregate);
+        setToolTip(null, statData, aggregate);                     // update the details panel
       }
 
-      svg.selectAll("path")[0].forEach(function (path) {
+      svg.selectAll("path")[0].forEach(function (path) {        // set selected on each matching path
         path = d3.select(path);
         if (path.datum().properties[field] === fieldValue) {
           path.classed("selected", true);
@@ -171,7 +173,7 @@ var topojson;
       if (matches.length > 0) {
         aggregate = matches[0];
 
-        center(aggregate, true);
+        center(aggregate, true);                             // animate one matching path to center
       }
     };
 
