@@ -40,7 +40,7 @@ var topojson;
     var valueObject = zipConfig.valueObject;
     var geometry;
 
-    var forEach = function(callback) {
+    var forEach = function (callback) {
       var zips = topojson.feature(geometry, geometry.objects.Bay_Area);
       zips.features.forEach(function (d) {
         callback(d);
@@ -120,42 +120,45 @@ var topojson;
       var aggregate = [];
       var title;
       var zip;
+      var value;
       var values;
       var i;
       var dataCount = 0; // number of matches which have non-zero data
 
       var zips = topojson.feature(geometry, geometry.objects.Bay_Area);
       zips.features.forEach(function (d) {
-        if (d.properties[field] === fieldValue) {              // collect data with matching field values
+        if (d.properties[field] === fieldValue) { // collect data with matching field values
           matches.push(d);
         }
       });
       if (matches.length > 0) {
-        d3.selectAll(".selected").classed("selected", false);  // clear the selection if matches
-        matches.forEach(function (d) {                         // get aggregated values
+        d3.selectAll(".selected").classed("selected", false); // clear the selection if matches
+        matches.forEach(function (d) { // get aggregated values
           zip = d.properties.GEOID10;
           values = statData[zip][statType];
-          if (detailCode === 2) {                              // apt rents: value at statIndex
-            dataCount = (+values[statIndex] > 0) ? dataCount + 1 : dataCount;
-          } else {
-            dataCount = (+values[0] > 0) ? dataCount + 1 : dataCount;
-          }                                                    // add up all the values
+          value = valueObject.getValue(values, statIndex);
+          if (value > 0) dataCount++;
           for (i = 0; i < values.length; i++) {
             aggregate[i] = aggregate[i] || 0;
             aggregate[i] += +values[i];
           }
         });
-        title = (matches.length > 1) ? fieldValue : getTitle(matches[0]);  // set the title
+        title = (matches.length > 1) ? fieldValue : getTitle(matches[0]); // set the title
         d3.select(".tip-location").text(title);
-        if (detailCode === 2 && dataCount > 0) {
-          aggregate[statIndex] = (+aggregate[statIndex] / dataCount).toFixed(0);
-        } else if (detailCode === 1 && dataCount > 0) {            // house and condo prices
-          aggregate[0] = (+aggregate[0] / dataCount).toFixed(0);
+        // if (detailCode === 2 && dataCount > 0) {
+        //   aggregate[statIndex] = (+aggregate[statIndex] / dataCount).toFixed(0);
+        // } else if (detailCode === 1 && dataCount > 0) { // house and condo prices
+        //   aggregate[0] = (+aggregate[0] / dataCount).toFixed(0);
+        // }
+        if (dataCount > 0) {
+          for (i = 0; i < values.length; i++) {
+            aggregate[i] = (+aggregate[i] / dataCount).toFixed(0);
+          }
         }
-        setToolTip(null, statData, aggregate);                     // update the details panel
+        setToolTip(null, statData, aggregate); // update the details panel
       }
 
-      svg.selectAll("path")[0].forEach(function (path) {        // set selected on each matching path
+      svg.selectAll("path")[0].forEach(function (path) { // set selected on each matching path
         path = d3.select(path);
         if (path.datum().properties[field] === fieldValue) {
           path.classed("selected", true);
@@ -165,7 +168,7 @@ var topojson;
       if (matches.length > 0) {
         aggregate = matches[0];
 
-        center(aggregate, true);                             // animate one matching path to center
+        center(aggregate, true); // animate one matching path to center
       }
     };
 
