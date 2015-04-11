@@ -36,7 +36,8 @@ var topojson;
     var statIndex = zipConfig.statIndex;
     var statType = zipConfig.statType;
     var statData;
-    var detailCode;
+    var detailCode = zipConfig.valueObject.detailCode;
+    var valueObject = zipConfig.valueObject;
     var geometry;
 
     var forEach = function(callback) {
@@ -54,45 +55,16 @@ var topojson;
       statIndex = newStatIndex;
     };
 
-    /*
-     Detail Codes
-     0: counts[statIndex] / counts[0]
-     1: counts[0]
-     2: counts[statIndex]
-     */
-    
-    var ratioValueObject = {
-      getValue: function(values, statIndex) {
-        return +values[statIndex] / +values[0];
-      },
-      singleValue: false
-    };
-
-    var singleValueObject = {
-      getValue: function(values) {
-        return +values[0];
-      },
-      singleValue: true
-    };
-
-    var multiValueObject = {
-      getValue: function(values, statIndex) {
-        return +values[statIndex];
-      },
-      singleValue: true
-    }
-
-    var setDetailCode = function (newDetailCode) {
-      detailCode = newDetailCode;
+    var setDetailCode = function (newValueObject) {
+      detailCode = newValueObject.detailCode;
+      valueObject = newValueObject;
     };
 
     function getStatValue(d, stats) {
-      var zip = d.properties.GEOID10;
-      var counts = stats[zip][statType];
-      if (counts) {
-        if (detailCode === 2) return +counts[statIndex];  // apt rents
-        if (detailCode === 1) return +counts[0];  // house and condo prices
-        return +counts[statIndex] / +counts[0];  //  pie data: ratio of count at statIndex to total at counts[0]
+      var region = d.properties.GEOID10;
+      var values = stats[region][statType];
+      if (values) {
+        return valueObject.getValue(values, statIndex);
       } else {
         return null;
       }

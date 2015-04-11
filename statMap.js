@@ -3,7 +3,7 @@ var LabeledPie;
 var window;
 var ZipCodeMap;
 
-(function() {
+(function () {
 
   var pieConfig = {
     svgWidth: 450,
@@ -11,7 +11,7 @@ var ZipCodeMap;
     pieRadius: 80,
     outerRadiusFactor: 0.8,
     innerRadiusFactor: 0.4,
-    outerArcFactor: 0.85,  // for break in label lines
+    outerArcFactor: 0.85, // for break in label lines
     minimumDisplayedPercentage: 6,
     minimumDisplayedLabel: 3
   };
@@ -80,7 +80,7 @@ var ZipCodeMap;
     }
   };
 
-  var setPieLabels = function(labelConfig, key) {
+  var setPieLabels = function (labelConfig, key) {
     // reset income pie
     d3.select(".tip-info").select("svg").remove();
     incomePie = new LabeledPie(".tip-info", pieConfig);
@@ -94,7 +94,7 @@ var ZipCodeMap;
     d3.select(".tooltip-overlay").classed("hidden", true);
   };
 
-  var setLegendDescription = function(statType, statIndex) {
+  var setLegendDescription = function (statType, statIndex) {
     var mapLegends = {
       income: "Percentage of income tax returns with AGI greater than $200,000",
       race: "Percentage of # race/ethnicity",
@@ -146,25 +146,25 @@ var ZipCodeMap;
     }
   };
 
-  var getMenuId = function(name) {
-    name = name.replace(/[A-Z]/g, function(c) {
+  var getMenuId = function (name) {
+    name = name.replace(/[A-Z]/g, function (c) {
       return '-' + c.toLowerCase();
     });
     return '#' + name + '-list';
   };
 
-  var createComboBoxes = function() {
+  var createComboBoxes = function () {
     var fullListNames = ['foreign', 'asian'];
     var menuNames = Object.keys(statLabels);
-    menuNames.forEach(function(name) {
+    menuNames.forEach(function (name) {
       var omitFirst = fullListNames.indexOf(name) === -1;
       var menu = d3.select(getMenuId(name)).selectAll('option')
         .data(statLabels[name].slice(omitFirst ? 1 : 0));
       menu.enter().append('option')
-        .attr('value', function(d, i) {
+        .attr('value', function (d, i) {
           return omitFirst ? i + 1 : i;
         })
-        .text(function(d) {
+        .text(function (d) {
           return d;
         });
     });
@@ -172,7 +172,7 @@ var ZipCodeMap;
 
   createComboBoxes();
 
-  var createLegend = function(colors, statType, statIndex) {
+  var createLegend = function (colors, statType, statIndex) {
     var formats = {
       percent: d3.format('%'),
       percentPointOne: d3.format('2.1%'),
@@ -195,7 +195,7 @@ var ZipCodeMap;
     keys.enter().append('li')
       .attr('class', 'key')
       .style('border-top-color', String)
-      .text(function(d) {
+      .text(function (d) {
         var r = colors.invertExtent(d);
         var str;
         if (statType === "rent") {
@@ -211,7 +211,7 @@ var ZipCodeMap;
     setLegendDescription(statType, statIndex);
   };
 
-  var showDetails = function(statIndex, values, counts, detailCode) {
+  var showDetails = function (statIndex, values, counts, detailCode) {
     d3.select(".tip-description").classed("hidden", false);
     if (detailCode > 0) {
       d3.select(".tooltip-overlay").classed("hidden", false);
@@ -226,6 +226,30 @@ var ZipCodeMap;
     }
   };
 
+  var ratioValueObject = {
+    getValue: function (values, statIndex) {
+      return +values[statIndex] / +values[0];
+    },
+    singleValue: false,
+    detailCode: 0
+  };
+
+  var singleValueObject = {
+    getValue: function (values) {
+      return +values[0];
+    },
+    singleValue: true,
+    detailCode: 1
+  };
+
+  var multiValueObject = {
+    getValue: function (values, statIndex) {
+      return +values[statIndex];
+    },
+    singleValue: true,
+    detailCode: 2
+  }
+
   var zipCodeMapConfig = {
     width: 650,
     height: 1000,
@@ -233,34 +257,35 @@ var ZipCodeMap;
     maxZoom: 0.7 * (1 << 17),
     range: ["#a50026", "#d73027", "#f46d43", "#fdae61", "#fee08b", "#ffffbf", "#d9ef8b", "#a6d96a", "#66bd63", "#1a9850", "#006837"],
     statIndex: 6,
-    statType: "income"
+    statType: "income",
+    valueObject: ratioValueObject
   }
 
   var statMap = new ZipCodeMap(".right-side", createLegend, showDetails, zipCodeMapConfig);
   setPieLabels(pieLabelConfig, "income");
 
-  var getSelectionTitle = function() {
+  var getSelectionTitle = function () {
     var retVal = d3.select(".tip-location").text().split(':')[0];
     return retVal;
   };
 
-  var selectByData = function(value) {
+  var selectByData = function (value) {
     var key = value.match(/[0-9]/) ? "GEOID10" : "city";
     statMap.selectByData(key, value);
   };
 
   d3.select("#zoom-out")
-    .on("click", function() {
+    .on("click", function () {
       window.event.stopPropagation();
       statMap.zoomOut();
     });
 
-  var gotoVoiceCommand = function(place) {
+  var gotoVoiceCommand = function (place) {
     $('#select-input').val(place);
     selectByData(place);
   };
 
-  var showMeVoiceCommand = function(stat) {
+  var showMeVoiceCommand = function (stat) {
     var statIndex = 0;
     var housingIndex = -1;
     if (stat === "income") {
@@ -291,7 +316,7 @@ var ZipCodeMap;
     }
   };
 
-  var enableVoiceCommands = function() {
+  var enableVoiceCommands = function () {
     var commands = {
       'go to *place': gotoVoiceCommand,
       'show me *stat': showMeVoiceCommand
@@ -305,6 +330,7 @@ var ZipCodeMap;
   };
 
   //enableVoiceCommands();
+  //
 
   var menuMap = {
     name: "stat",
@@ -337,13 +363,13 @@ var ZipCodeMap;
       }],
       statTypes: ["", "sfr", "condo", "rent", "ownRent", "housingUnits"],
       statIndexes: [0, 0, 0, 0, 1, 0],
-      detailCodes: [0, 1, 1, 2, 0, 0],
+      detailCodes: [ratioValueObject, singleValueObject, singleValueObject, multiValueObject, ratioValueObject, ratioValueObject],
       pieLabels: ["", "ownRent", "ownRent", "ownRent", "ownRent", "housingUnits"]
     }]
   };
 
 
-  var getAllMenuNames = function() {
+  var getAllMenuNames = function () {
     var result = [];
     var menu;
     var subMenu;
@@ -365,14 +391,14 @@ var ZipCodeMap;
     return result;
   };
 
-  var respondToMenus = function() {
-    var configureMapAndPie = function(type, index, code, labelId) {
+  var respondToMenus = function () {
+    var configureMapAndPie = function (type, index, code, labelId) {
       statMap.setStatType(type);
       statMap.setStatIndex(index);
       statMap.setDetailCode(code);
       setPieLabels(pieLabelConfig, labelId);
     };
-    var getSubMenuforLiveIndex = function(subMenuArray, liveIndex) {
+    var getSubMenuforLiveIndex = function (subMenuArray, liveIndex) {
       if (subMenuArray) {
         for (var k = 0; k < subMenuArray.length; k++) {
           if (subMenuArray[k].index === liveIndex) {
@@ -417,20 +443,20 @@ var ZipCodeMap;
             configureMapAndPie(
               menu.name,
               liveIndex,
-              menu.detailCodes ? menu.detailCodes[liveIndex] : 0, 
+              menu.detailCodes ? menu.detailCodes[liveIndex] : ratioValueObject,
               menu.name);
           } else {
             configureMapAndPie(
               menu.statTypes ? menu.statTypes[liveIndex] : subMenu.name,
               subMenuLiveIndex,
-              menu.detailCodes ? menu.detailCodes[liveIndex] : 0,
+              menu.detailCodes ? menu.detailCodes[liveIndex] : ratioValueObject,
               menu.pieLabels ? menu.pieLabels[liveIndex] : subMenu.name);
           }
         } else {
           configureMapAndPie(
             menu.statTypes ? menu.statTypes[liveIndex] : menu.name,
             menu.statIndexes && menu.statIndexes[liveIndex] ? menu.statIndexes[liveIndex] : liveIndex,
-            menu.detailCodes ? menu.detailCodes[liveIndex] : 0,
+            menu.detailCodes ? menu.detailCodes[liveIndex] : ratioValueObject,
             menu.pieLabels ? menu.pieLabels[liveIndex] : menu.name);
         }
         selectByData(getSelectionTitle());
@@ -439,9 +465,9 @@ var ZipCodeMap;
     }
   };
 
-  var addMenuListeners = function() {
-    getAllMenuNames().forEach(function(menuId) {
-      $(getMenuId(menuId)).on("change", function() {
+  var addMenuListeners = function () {
+    getAllMenuNames().forEach(function (menuId) {
+      $(getMenuId(menuId)).on("change", function () {
         respondToMenus();
       });
     });
@@ -450,7 +476,7 @@ var ZipCodeMap;
   addMenuListeners();
 
   d3.select("#select-button")
-    .on("click", function() {
+    .on("click", function () {
       window.event.stopPropagation();
       var value = d3.select("#select-input").node().value;
       var key = value.match(/[0-9]/) ? "GEOID10" : "city";
@@ -458,7 +484,7 @@ var ZipCodeMap;
     });
 
   $("#select-input")
-    .on("propertychange", function() {
+    .on("propertychange", function () {
       window.event.stopPropagation();
       window.event.preventDefault();
       var value = d3.select("#select-input").node().value;
@@ -467,7 +493,7 @@ var ZipCodeMap;
       return false;
     });
 
-  $("#select-input").bind('input propertychange', function(event) {
+  $("#select-input").bind('input propertychange', function (event) {
     event.stopPropagation();
     window.event.preventDefault();
     var value = d3.select("#select-input").node().value;
@@ -476,15 +502,15 @@ var ZipCodeMap;
     return false;
   });
 
-  $("#select-input").on('val.changed', function(event) {
+  $("#select-input").on('val.changed', function (event) {
     event.stopPropagation();
     var value = d3.select("#select-input").node().value;
     var key = value.match(/[0-9]/) ? "GEOID10" : "city";
     statMap.selectByData(key, value);
   });
 
-  $(document).ready(function() {
-    $(window).keydown(function(event) {
+  $(document).ready(function () {
+    $(window).keydown(function (event) {
       if (event.keyCode === 13) {
         event.preventDefault();
         return false;
@@ -506,20 +532,20 @@ var ZipCodeMap;
   })(jQuery);*/
 
   var getNames = function () {
-      var result = [];
-      statMap.forEach(function(data) {
-        for (var key in data.properties) {
-          if (data.properties.hasOwnProperty(key)) {
-            result[data.properties[key]] = true;
-          }
+    var result = [];
+    statMap.forEach(function (data) {
+      for (var key in data.properties) {
+        if (data.properties.hasOwnProperty(key)) {
+          result[data.properties[key]] = true;
         }
-      });
-      return Object.keys(result);
-    }
+      }
+    });
+    return Object.keys(result);
+  }
 
   $("#select-input").autoComplete({
     minChars: 1,
-    source: function(term, suggest) {
+    source: function (term, suggest) {
       term = term.toLowerCase();
       var i;
       var choices = getNames();
