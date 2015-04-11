@@ -211,16 +211,15 @@ var ZipCodeMap;
     setLegendDescription(statType, statIndex);
   };
 
-  var showDetails = function (statIndex, values, counts, detailCode) {
+  var showDetails = function (value, values, valueObject) {
     d3.select(".tip-description").classed("hidden", false);
-    if (detailCode > 0) {
+    if (valueObject.singleValue) {
       d3.select(".tooltip-overlay").classed("hidden", false);
-      var value = (detailCode === 2) ? values[statIndex] : values[0];
       value = value ? "$" + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : value;
       d3.select(".tooltip-overlay-text").text(value || "No Data");
-    } else if (+values[0] > 0) {
+    } else if (value > 0) {
       d3.select(".tip-info").classed("hidden", false);
-      incomePie.change(counts);
+      incomePie.change(values.slice(1));
     } else {
       d3.select(".tip-info").classed("hidden", true);
     }

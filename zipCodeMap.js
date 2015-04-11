@@ -76,8 +76,7 @@ var topojson;
 
     function setToolTip(d, stats, values) {
       values = values || stats[d.properties.GEOID10][statType];
-      var counts = values.slice(1);
-      showDetails(statIndex, values, counts, detailCode);
+      showDetails(valueObject.getValue(values, statIndex), values, valueObject);
     }
 
     var updateColorDomain = function () {
