@@ -3,7 +3,7 @@ var topojson;
 
 (function () {
 
-  var ZipCodeMap = function (parent, createLegend, showDetails, config) {
+  var ZipCodeMap = function (parent, createLegend, showDetails, deselect, config) {
     var width = config.width;
     var height = config.height;
     var minZoom = config.minZoom;
@@ -235,10 +235,7 @@ var topojson;
         d3.select(".right-side").on("click", function () {
           if (d3.event.x !== lastZipClick[0] && d3.event.y !== lastZipClick[1]) {
             d3.selectAll(".selected").classed("selected", false);
-            d3.select(".tip-info").classed("hidden", true);
-            d3.select(".tip-description").classed("hidden", true);
-            d3.select(".tip-location").text('');
-            d3.select(".tooltip-overlay").classed("hidden", true);
+            deselect();
           }
           lastZipClick = [];
         });
@@ -251,7 +248,7 @@ var topojson;
       setStatIndex: setStatIndex,
       setValueObject: setValueObject,
       updateStats: updateStats,
-      selectByData: selectByData,
+      selectByData: selectByData
     };
   }
 

@@ -224,6 +224,13 @@ var ZipCodeMap;
       d3.select(".tip-info").classed("hidden", true);
     }
   };
+  
+  var deselectMap = function() {
+    d3.select(".tip-info").classed("hidden", true);
+    d3.select(".tip-description").classed("hidden", true);
+    d3.select(".tip-location").text('');
+    d3.select(".tooltip-overlay").classed("hidden", true);
+  }
 
   var ratioValueObject = {
     getValue: function (values, statIndex) {
@@ -257,7 +264,7 @@ var ZipCodeMap;
     valueObject: ratioValueObject
   }
 
-  var statMap = new ZipCodeMap(".right-side", createLegend, showDetails, zipCodeMapConfig);
+  var statMap = new ZipCodeMap(".right-side", createLegend, showDetails, deselectMap, zipCodeMapConfig);
   setPieLabels(pieLabelConfig, "income");
 
   var getSelectionTitle = function () {
