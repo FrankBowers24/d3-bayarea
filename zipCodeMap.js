@@ -3,14 +3,14 @@ var topojson;
 
 (function () {
 
-  var ZipCodeMap = function (parent, createLegend, showDetails, zipConfig) {
-    var width = zipConfig.width;
-    var height = zipConfig.height;
-    var minZoom = zipConfig.minZoom;
-    var maxZoom = zipConfig.maxZoom;
+  var ZipCodeMap = function (parent, createLegend, showDetails, config) {
+    var width = config.width;
+    var height = config.height;
+    var minZoom = config.minZoom;
+    var maxZoom = config.maxZoom;
 
     var projection = d3.geo.albersUsa()
-      .scale(zipConfig.minZoom)
+      .scale(config.minZoom)
       .translate([width / 2, height / 2]);
 
     var path = d3.geo.path()
@@ -24,7 +24,7 @@ var topojson;
 
     //Define quantize scale to sort data values into buckets of color
     var color = d3.scale.quantize()
-      .range(zipConfig.range);
+      .range(config.range);
 
     //Create SVG element
     var svg = d3.select(parent)
@@ -33,11 +33,10 @@ var topojson;
       .attr("height", height)
       .call(zoom);
 
-    var statIndex = zipConfig.statIndex;
-    var statType = zipConfig.statType;
+    var statIndex = config.statIndex;
+    var statType = config.statType;
     var statData;
-    var detailCode = zipConfig.valueObject.detailCode;
-    var valueObject = zipConfig.valueObject;
+    var valueObject = config.valueObject;
     var geometry;
 
     var forEach = function (callback) {
@@ -55,8 +54,7 @@ var topojson;
       statIndex = newStatIndex;
     };
 
-    var setDetailCode = function (newValueObject) {
-      detailCode = newValueObject.detailCode;
+    var setValueObject = function (newValueObject) {
       valueObject = newValueObject;
     };
 
@@ -113,8 +111,6 @@ var topojson;
         });
     };
 
-
-    // refactor to always keep dataCount
     var selectByData = function (field, fieldValue) {
       var matches = [];
       var aggregate = [];
@@ -145,11 +141,6 @@ var topojson;
         });
         title = (matches.length > 1) ? fieldValue : getTitle(matches[0]); // set the title
         d3.select(".tip-location").text(title);
-        // if (detailCode === 2 && dataCount > 0) {
-        //   aggregate[statIndex] = (+aggregate[statIndex] / dataCount).toFixed(0);
-        // } else if (detailCode === 1 && dataCount > 0) { // house and condo prices
-        //   aggregate[0] = (+aggregate[0] / dataCount).toFixed(0);
-        // }
         if (dataCount > 0) {
           for (i = 0; i < values.length; i++) {
             aggregate[i] = (+aggregate[i] / dataCount).toFixed(0);
@@ -258,7 +249,7 @@ var topojson;
       forEach: forEach,
       setStatType: setStatType,
       setStatIndex: setStatIndex,
-      setDetailCode: setDetailCode,
+      setValueObject: setValueObject,
       updateStats: updateStats,
       selectByData: selectByData,
     };

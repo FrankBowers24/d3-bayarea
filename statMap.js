@@ -230,7 +230,6 @@ var ZipCodeMap;
       return +values[statIndex] / +values[0];
     },
     singleValue: false,
-    detailCode: 0
   };
 
   var singleValueObject = {
@@ -238,7 +237,6 @@ var ZipCodeMap;
       return +values[0];
     },
     singleValue: true,
-    detailCode: 1
   };
 
   var multiValueObject = {
@@ -246,7 +244,6 @@ var ZipCodeMap;
       return +values[statIndex];
     },
     singleValue: true,
-    detailCode: 2
   }
 
   var zipCodeMapConfig = {
@@ -362,7 +359,7 @@ var ZipCodeMap;
       }],
       statTypes: ["", "sfr", "condo", "rent", "ownRent", "housingUnits"],
       statIndexes: [0, 0, 0, 0, 1, 0],
-      detailCodes: [ratioValueObject, singleValueObject, singleValueObject, multiValueObject, ratioValueObject, ratioValueObject],
+      valueObjects: [ratioValueObject, singleValueObject, singleValueObject, multiValueObject, ratioValueObject, ratioValueObject],
       pieLabels: ["", "ownRent", "ownRent", "ownRent", "ownRent", "housingUnits"]
     }]
   };
@@ -394,7 +391,7 @@ var ZipCodeMap;
     var configureMapAndPie = function (type, index, code, labelId) {
       statMap.setStatType(type);
       statMap.setStatIndex(index);
-      statMap.setDetailCode(code);
+      statMap.setValueObject(code);
       setPieLabels(pieLabelConfig, labelId);
     };
     var getSubMenuforLiveIndex = function (subMenuArray, liveIndex) {
@@ -442,20 +439,20 @@ var ZipCodeMap;
             configureMapAndPie(
               menu.name,
               liveIndex,
-              menu.detailCodes ? menu.detailCodes[liveIndex] : ratioValueObject,
+              menu.valueObjects ? menu.valueObjects[liveIndex] : ratioValueObject,
               menu.name);
           } else {
             configureMapAndPie(
               menu.statTypes ? menu.statTypes[liveIndex] : subMenu.name,
               subMenuLiveIndex,
-              menu.detailCodes ? menu.detailCodes[liveIndex] : ratioValueObject,
+              menu.valueObjects ? menu.valueObjects[liveIndex] : ratioValueObject,
               menu.pieLabels ? menu.pieLabels[liveIndex] : subMenu.name);
           }
         } else {
           configureMapAndPie(
             menu.statTypes ? menu.statTypes[liveIndex] : menu.name,
             menu.statIndexes && menu.statIndexes[liveIndex] ? menu.statIndexes[liveIndex] : liveIndex,
-            menu.detailCodes ? menu.detailCodes[liveIndex] : ratioValueObject,
+            menu.valueObjects ? menu.valueObjects[liveIndex] : ratioValueObject,
             menu.pieLabels ? menu.pieLabels[liveIndex] : menu.name);
         }
         selectByData(getSelectionTitle());
