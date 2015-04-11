@@ -414,7 +414,11 @@ var ZipCodeMap;
         if (subMenu && subMenu.index === liveIndex) {
           subMenuLiveIndex = +subMenu.liveIndex.node().value;
           if (subMenuLiveIndex === 0) {
-            configureMapAndPie(menu.name, liveIndex, menu.detailCodes ? menu.detailCodes[liveIndex] : 0, menu.name);
+            configureMapAndPie(
+              menu.name,
+              liveIndex,
+              menu.detailCodes ? menu.detailCodes[liveIndex] : 0, 
+              menu.name);
           } else {
             configureMapAndPie(
               menu.statTypes ? menu.statTypes[liveIndex] : subMenu.name,

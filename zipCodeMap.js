@@ -60,6 +60,27 @@ var topojson;
      1: counts[0]
      2: counts[statIndex]
      */
+    
+    var ratioValueObject = {
+      getValue: function(values, statIndex) {
+        return +values[statIndex] / +values[0];
+      },
+      singleValue: false
+    };
+
+    var singleValueObject = {
+      getValue: function(values) {
+        return +values[0];
+      },
+      singleValue: true
+    };
+
+    var multiValueObject = {
+      getValue: function(values, statIndex) {
+        return +values[statIndex];
+      },
+      singleValue: true
+    }
 
     var setDetailCode = function (newDetailCode) {
       detailCode = newDetailCode;
