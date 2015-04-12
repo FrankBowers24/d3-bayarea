@@ -87,7 +87,9 @@ var topojson;
       statType = type;
       statIndex = index;
       valueObject = obj;
+    }
 
+    var update = function() {
       updateColorDomain();
 
       svg.selectAll("path")
@@ -228,6 +230,7 @@ var topojson;
     return {
       forEach: forEach,
       changeData: changeData,
+      update: update,
       selectByData: selectByData
     };
   }

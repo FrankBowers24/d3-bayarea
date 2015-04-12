@@ -471,7 +471,7 @@ var annyang;
             menu.pieLabels ? menu.pieLabels[liveIndex] : menu.name);
         }
         selectByData(getSelectionTitle());
-        // statMap.changeData();
+        statMap.update();
       }
     }
   };
