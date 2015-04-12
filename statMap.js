@@ -220,7 +220,7 @@ var annyang;
       d3.select(".tooltip-overlay").classed("hidden", false);
       value = value ? "$" + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : value;
       d3.select(".tooltip-overlay-text").text(value || "No Data");
-    } else if (value > 0) {
+    } else if (values[0] > 0) {
       d3.select(".tip-info").classed("hidden", false);
       incomePie.change(values.slice(1));
     } else {
@@ -268,11 +268,21 @@ var annyang;
     range: ["#a50026", "#d73027", "#f46d43", "#fdae61", "#fee08b", "#ffffbf", "#d9ef8b", "#a6d96a", "#66bd63", "#1a9850", "#006837"],
     statIndex: 6,
     statType: "income",
-    valueObject: ratioValueObject
-  }
+    valueObject: ratioValueObject,
+    center: "94560",
+    pathKey: "Bay_Area",
+    dataKey: "GEOID10",
+    dataFilename: "data/allStats.json",
+    geoFilename: "Bay_Area_Cities_topo.json"
+  };
 
   var statMap = new ZipCodeMap(".right-side", createLegend, getTitle, showDetails, deselectMap, zipCodeMapConfig);
   setPieLabels(pieLabelConfig, "income");
+
+  d3.timer(function () {
+    statMap.selectByData("city", "San Jose");
+    return true;
+  }, 500);
 
   var getSelectionTitle = function () {
     var retVal = d3.select(".tip-location").text().split(':')[0];

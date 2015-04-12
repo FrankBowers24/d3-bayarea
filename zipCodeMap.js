@@ -38,38 +38,30 @@ var topojson;
     var statData;
     var geometry;
 
+    var getPathObjects = function() {
+      return geometry.objects[config.pathKey];
+    };
+
     var forEach = function (callback) {
-      var zips = topojson.feature(geometry, geometry.objects.Bay_Area);
+      var zips = topojson.feature(geometry, getPathObjects());
       zips.features.forEach(function (d) {
         callback(d);
       });
     };
 
-    // var setStatType = function (newStatType) {
-    //   statType = newStatType;
-    // };
-
-    // var setStatIndex = function (newStatIndex) {
-    //   statIndex = newStatIndex;
-    // };
-
-    // var setValueObject = function (newValueObject) {
-    //   valueObject = newValueObject;
-    // };
-
     var getStatValue = function (d, stats) {
-      var region = d.properties.GEOID10;
+      var region = d.properties[config.dataKey];
       var values = stats[region][statType];
       return values ? valueObject.getValue(values, statIndex) : null;
     };
 
     var setSelection = function (d, stats, values, selCount, fieldValue) {
-      values = values || stats[d.properties.GEOID10][statType];
+      values = values || stats[d.properties[config.dataKey]][statType];
       select(valueObject.getValue(values, statIndex), values, valueObject, selCount, d, fieldValue);
     };
 
     var updateColorDomain = function () {
-      var zips = topojson.feature(geometry, geometry.objects.Bay_Area);
+      var zips = topojson.feature(geometry, getPathObjects());
       color.domain(
         d3.extent(zips.features, function (d) {
           return getStatValue(d, statData);
@@ -108,7 +100,7 @@ var topojson;
       var i;
       var dataCount = 0; // number of matches which have non-zero data
 
-      var zips = topojson.feature(geometry, geometry.objects.Bay_Area);
+      var zips = topojson.feature(geometry, getPathObjects());
       zips.features.forEach(function (d) {
         if (d.properties[field] === fieldValue) { // collect data with matching field values
           matches.push(d);
@@ -117,7 +109,7 @@ var topojson;
       if (matches.length > 0) {
         d3.selectAll(".selected").classed("selected", false); // clear the selection if matches
         matches.forEach(function (d) { // get aggregated values
-          zip = d.properties.GEOID10;
+          zip = d.properties[config.dataKey];
           values = statData[zip][statType];
           value = valueObject.getValue(values, statIndex);
           if (value > 0) {
@@ -150,11 +142,11 @@ var topojson;
       }
     };
 
-    var centerZip = function (ba) {
-      var zips = topojson.feature(ba, ba.objects.Bay_Area),
+    var centerZip = function () {
+      var zips = topojson.feature(geometry, getPathObjects()),
         zip = zips.features.filter(function (d) {
 
-          return d.properties.GEOID10 === "94560";
+          return d.properties[config.dataKey] === config.center;
         })[0];
       center(zip);
     };
@@ -185,16 +177,16 @@ var topojson;
       svg.selectAll("path").attr("d", path);
     };
 
-    d3.json("data/allStats.json", function (stats) {
+    d3.json(config.dataFilename, function (stats) {
       statData = stats;
 
-      d3.json("Bay_Area_Cities_topo.json", function (json) {
-        geometry = json;
+      d3.json(config.geoFilename, function (topoData) {
+        geometry = topoData;
         var lastZipClick = [];
         updateColorDomain();
 
         svg.selectAll("path")
-          .data(topojson.feature(json, json.objects.Bay_Area).features)
+          .data(topojson.feature(geometry, getPathObjects()).features)
           .enter()
           .append("path")
           .attr("d", path)
@@ -215,7 +207,7 @@ var topojson;
             return getTitle(d);
           });
 
-        centerZip(json);
+        centerZip();
 
         d3.select(parent).on("click", function () {
           if (d3.event.x !== lastZipClick[0] && d3.event.y !== lastZipClick[1]) {
