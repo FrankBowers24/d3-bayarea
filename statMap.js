@@ -211,7 +211,9 @@ var ZipCodeMap;
     setLegendDescription(statType, statIndex);
   };
 
-  var showDetails = function (value, values, valueObject) {
+  var showDetails = function (value, values, valueObject, selCount, d, fieldValue) {
+    title = (selCount > 1) ? fieldValue : getTitle(d); // set the title
+    d3.select(".tip-location").text(title);
     d3.select(".tip-description").classed("hidden", false);
     if (valueObject.singleValue) {
       d3.select(".tooltip-overlay").classed("hidden", false);
@@ -224,13 +226,17 @@ var ZipCodeMap;
       d3.select(".tip-info").classed("hidden", true);
     }
   };
+
+  var getTitle = function (d) {
+    return d.properties.GEOID10 + ": " + d.properties.city;
+  };
   
   var deselectMap = function() {
     d3.select(".tip-info").classed("hidden", true);
     d3.select(".tip-description").classed("hidden", true);
     d3.select(".tip-location").text('');
     d3.select(".tooltip-overlay").classed("hidden", true);
-  }
+  };
 
   var ratioValueObject = {
     getValue: function (values, statIndex) {
@@ -264,7 +270,7 @@ var ZipCodeMap;
     valueObject: ratioValueObject
   }
 
-  var statMap = new ZipCodeMap(".right-side", createLegend, showDetails, deselectMap, zipCodeMapConfig);
+  var statMap = new ZipCodeMap(".right-side", createLegend, getTitle, showDetails, deselectMap, zipCodeMapConfig);
   setPieLabels(pieLabelConfig, "income");
 
   var getSelectionTitle = function () {

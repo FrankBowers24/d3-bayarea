@@ -3,7 +3,7 @@ var topojson;
 
 (function () {
 
-  var ZipCodeMap = function (parent, createLegend, showDetails, deselect, config) {
+  var ZipCodeMap = function (parent, createLegend, getTitle, showDetails, deselect, config) {
     var width = config.width;
     var height = config.height;
     var minZoom = config.minZoom;
@@ -26,7 +26,6 @@ var topojson;
     var color = d3.scale.quantize()
       .range(config.range);
 
-    //Create SVG element
     var svg = d3.select(parent)
       .append("svg")
       .attr("width", width)
@@ -68,13 +67,9 @@ var topojson;
       }
     }
 
-    function getTitle(d) {
-      return d.properties.GEOID10 + ": " + d.properties.city;
-    }
-
-    function setToolTip(d, stats, values) {
+    function setSelection(d, stats, values, selCount, fieldValue) {
       values = values || stats[d.properties.GEOID10][statType];
-      showDetails(valueObject.getValue(values, statIndex), values, valueObject);
+      showDetails(valueObject.getValue(values, statIndex), values, valueObject, selCount, d, fieldValue);
     }
 
     var updateColorDomain = function () {
@@ -114,7 +109,7 @@ var topojson;
     var selectByData = function (field, fieldValue) {
       var matches = [];
       var aggregate = [];
-      var title;
+      // var title;
       var zip;
       var value;
       var values;
@@ -133,20 +128,22 @@ var topojson;
           zip = d.properties.GEOID10;
           values = statData[zip][statType];
           value = valueObject.getValue(values, statIndex);
-          if (value > 0) dataCount++;
+          if (value > 0) {
+            dataCount++;
+          }
           for (i = 0; i < values.length; i++) {
             aggregate[i] = aggregate[i] || 0;
             aggregate[i] += +values[i];
           }
         });
-        title = (matches.length > 1) ? fieldValue : getTitle(matches[0]); // set the title
-        d3.select(".tip-location").text(title);
         if (dataCount > 0) {
           for (i = 0; i < values.length; i++) {
             aggregate[i] = (+aggregate[i] / dataCount).toFixed(0);
           }
         }
-        setToolTip(null, statData, aggregate); // update the details panel
+        // title = (matches.length > 1) ? fieldValue : getTitle(matches[0]); // set the title
+        // d3.select(".tip-location").text(title);
+        setSelection(matches[0], statData, aggregate, matches.length, fieldValue); // update the details panel
       }
 
       svg.selectAll("path")[0].forEach(function (path) { // set selected on each matching path
@@ -218,11 +215,10 @@ var topojson;
           .on("click", function (d) {
             // Find previously selected, unselect
             d3.selectAll(".selected").classed("selected", false);
-
             // Select current item
             d3.select(this).classed("selected", true);
-            d3.select(".tip-location").text(getTitle(d));
-            setToolTip(d, statData);
+            // d3.select(".tip-location").text(getTitle(d));
+            setSelection(d, statData, null, 1);
             lastZipClick = [d3.event.x, d3.event.y];
           })
           .append("svg:title")
