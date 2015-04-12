@@ -2,6 +2,7 @@ var d3;
 var LabeledPie;
 var window;
 var ZipCodeMap;
+var annyang;
 
 (function () {
 
@@ -401,10 +402,11 @@ var ZipCodeMap;
   };
 
   var respondToMenus = function () {
-    var configureMapAndPie = function (type, index, code, labelId) {
-      statMap.setStatType(type);
-      statMap.setStatIndex(index);
-      statMap.setValueObject(code);
+    var configureMapAndPie = function (type, index, obj, labelId) {
+      // statMap.setStatType(type);
+      // statMap.setStatIndex(index);
+      // statMap.setValueObject(code);
+      statMap.changeData(type, index, obj);
       setPieLabels(pieLabelConfig, labelId);
     };
     var getSubMenuforLiveIndex = function (subMenuArray, liveIndex) {
@@ -469,7 +471,7 @@ var ZipCodeMap;
             menu.pieLabels ? menu.pieLabels[liveIndex] : menu.name);
         }
         selectByData(getSelectionTitle());
-        statMap.updateStats();
+        // statMap.changeData();
       }
     }
   };

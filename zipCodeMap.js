@@ -3,7 +3,7 @@ var topojson;
 
 (function () {
 
-  var ZipCodeMap = function (parent, createLegend, getTitle, showDetails, deselect, config) {
+  var ZipCodeMap = function (parent, updateLegend, getTitle, select, deselect, config) {
     var width = config.width;
     var height = config.height;
     var minZoom = config.minZoom;
@@ -32,10 +32,10 @@ var topojson;
       .attr("height", height)
       .call(zoom);
 
-    var statIndex = config.statIndex;
     var statType = config.statType;
-    var statData;
+    var statIndex = config.statIndex;
     var valueObject = config.valueObject;
+    var statData;
     var geometry;
 
     var forEach = function (callback) {
@@ -45,58 +45,49 @@ var topojson;
       });
     };
 
-    var setStatType = function (newStatType) {
-      statType = newStatType;
-    };
+    // var setStatType = function (newStatType) {
+    //   statType = newStatType;
+    // };
 
-    var setStatIndex = function (newStatIndex) {
-      statIndex = newStatIndex;
-    };
+    // var setStatIndex = function (newStatIndex) {
+    //   statIndex = newStatIndex;
+    // };
 
-    var setValueObject = function (newValueObject) {
-      valueObject = newValueObject;
-    };
+    // var setValueObject = function (newValueObject) {
+    //   valueObject = newValueObject;
+    // };
 
-    function getStatValue(d, stats) {
+    var getStatValue = function (d, stats) {
       var region = d.properties.GEOID10;
       var values = stats[region][statType];
-      if (values) {
-        return valueObject.getValue(values, statIndex);
-      } else {
-        return null;
-      }
-    }
+      return values ? valueObject.getValue(values, statIndex) : null;
+    };
 
-    function setSelection(d, stats, values, selCount, fieldValue) {
+    var setSelection = function (d, stats, values, selCount, fieldValue) {
       values = values || stats[d.properties.GEOID10][statType];
-      showDetails(valueObject.getValue(values, statIndex), values, valueObject, selCount, d, fieldValue);
-    }
+      select(valueObject.getValue(values, statIndex), values, valueObject, selCount, d, fieldValue);
+    };
 
     var updateColorDomain = function () {
       var zips = topojson.feature(geometry, geometry.objects.Bay_Area);
-
       color.domain(
         d3.extent(zips.features, function (d) {
           return getStatValue(d, statData);
         })
       );
-
-      createLegend(color, statType, statIndex);
+      updateLegend(color, statType, statIndex);
     };
 
     var doFill = function (d) {
       var value = getStatValue(d, statData);
-
-      if (value) {
-        //If value exists…
-        return color(value);
-      } else {
-        //If value is undefined…
-        return "#ccc";
-      }
+      return value ? color(value) : "#ccc";
     };
 
-    var updateStats = function () {
+    var changeData = function (type, index, obj) {
+      statType = type;
+      statIndex = index;
+      valueObject = obj;
+
       updateColorDomain();
 
       svg.selectAll("path")
@@ -109,7 +100,6 @@ var topojson;
     var selectByData = function (field, fieldValue) {
       var matches = [];
       var aggregate = [];
-      // var title;
       var zip;
       var value;
       var values;
@@ -141,9 +131,7 @@ var topojson;
             aggregate[i] = (+aggregate[i] / dataCount).toFixed(0);
           }
         }
-        // title = (matches.length > 1) ? fieldValue : getTitle(matches[0]); // set the title
-        // d3.select(".tip-location").text(title);
-        setSelection(matches[0], statData, aggregate, matches.length, fieldValue); // update the details panel
+        setSelection(matches[0], statData, aggregate, matches.length, fieldValue);
       }
 
       svg.selectAll("path")[0].forEach(function (path) { // set selected on each matching path
@@ -160,16 +148,16 @@ var topojson;
       }
     };
 
-    function centerZip(ba) {
+    var centerZip = function (ba) {
       var zips = topojson.feature(ba, ba.objects.Bay_Area),
         zip = zips.features.filter(function (d) {
 
           return d.properties.GEOID10 === "94560";
         })[0];
       center(zip);
-    }
+    };
 
-    function center(d, transition) {
+    var center = function (d, transition) {
       var centroid = path.centroid(d),
         translate = projection.translate();
 
@@ -188,12 +176,12 @@ var topojson;
         svg.selectAll("path")
           .attr("d", path);
       }
-    }
+    };
 
-    function zoomed() {
+    function zoomed () {
       projection.translate(d3.event.translate).scale(d3.event.scale);
       svg.selectAll("path").attr("d", path);
-    }
+    };
 
     d3.json("data/allStats.json", function (stats) {
       statData = stats;
@@ -217,7 +205,6 @@ var topojson;
             d3.selectAll(".selected").classed("selected", false);
             // Select current item
             d3.select(this).classed("selected", true);
-            // d3.select(".tip-location").text(getTitle(d));
             setSelection(d, statData, null, 1);
             lastZipClick = [d3.event.x, d3.event.y];
           })
@@ -228,7 +215,7 @@ var topojson;
 
         centerZip(json);
 
-        d3.select(".right-side").on("click", function () {
+        d3.select(parent).on("click", function () {
           if (d3.event.x !== lastZipClick[0] && d3.event.y !== lastZipClick[1]) {
             d3.selectAll(".selected").classed("selected", false);
             deselect();
@@ -240,10 +227,7 @@ var topojson;
 
     return {
       forEach: forEach,
-      setStatType: setStatType,
-      setStatIndex: setStatIndex,
-      setValueObject: setValueObject,
-      updateStats: updateStats,
+      changeData: changeData,
       selectByData: selectByData
     };
   }
