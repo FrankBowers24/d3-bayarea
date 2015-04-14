@@ -8,7 +8,7 @@ var topojson;
    * 
    * @name ZipCodeMap
    * @constructor
-   * @param {String} parent - Selector for the parent element.
+   * @param {String} parent - Selector for the parent DOM element.
    * @param {Object} config - Configuration object
    * @param {Function} updateLegend - Update the map legend using the current color scale.
    * @param {Function} getTitle - Get the title for the selected region
@@ -55,7 +55,7 @@ var topojson;
     };
 
     /**
-     * @name  ZipCodeMap.forEach
+     * @name  ZipCodeMap#forEach
      * @method
      * @param {Function} callback - called for each data object
      */
@@ -110,7 +110,7 @@ var topojson;
     };
 
     /**
-     * @name  ZipCodeMap.changeData
+     * @name  ZipCodeMap#changeData
      * @method
      * @param {String} type - the key for current data type
      * @param {index} index - the index of the current data
@@ -124,7 +124,7 @@ var topojson;
 
     /**
      * Transition to the new data
-     * @name ZipCodeMap.update
+     * @name ZipCodeMap#update
      * @method
      */
     var update = function () {
@@ -140,7 +140,7 @@ var topojson;
     /**
      * Select all regions which match on the key/value pair
      * 
-     * @name  ZipCodeMap.selectByData
+     * @name  ZipCodeMap#selectByData
      * @method
      * @param {String} field - the key for the data property to match
      * @param {String} fieldValue - the value to match for the selected key

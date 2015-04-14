@@ -19,7 +19,7 @@ var d3;
    * 
    * @name  LabeledPie
    * @constructor
-   * @param {String} parent - Selector for the parent element.
+   * @param {String} parent - Selector for the parent DOM element.
    * @param {Object} config - Configuration object
    */
   var LabeledPie = function (parent, config) {
@@ -162,7 +162,7 @@ var d3;
 
 
     /**
-     * @name  LabeledPie.setLabels
+     * @name  LabeledPie#setLabels
      * @method
      * @param {Array} labels - Strings for wedge labels
      */
@@ -171,7 +171,7 @@ var d3;
     };
 
     /**
-     * @name  LabeledPie.setColorScale
+     * @name  LabeledPie#setColorScale
      * @method
      * @param {d3.scale} color - color scale for wedges
      */
@@ -182,7 +182,7 @@ var d3;
     /**
      * Transition the pie to the new data
      * 
-     * @name  LabeledPie.change
+     * @name  LabeledPie#change
      * @method
      * @param {Array} data - Array of integer pie data
      */
