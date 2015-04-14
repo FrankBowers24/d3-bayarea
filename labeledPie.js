@@ -15,6 +15,13 @@ var d3;
   }
 }(this, function () {
 
+  /**
+   * 
+   * @name  LabeledPie
+   * @constructor
+   * @param {String} parent - Selector for the parent element.
+   * @param {Object} config - Configuration object
+   */
   var LabeledPie = function (parent, config) {
 
     var svg = d3.select(parent)
@@ -153,14 +160,32 @@ var d3;
       return true; // return true to stop timer from firing again
     }
 
+
+    /**
+     * @name  LabeledPie.setLabels
+     * @method
+     * @param {Array} labels - Strings for wedge labels
+     */
     LabeledPie.prototype.setLabels = function (labels) {
       this.labels = labels;
     };
 
+    /**
+     * @name  LabeledPie.setColorScale
+     * @method
+     * @param {d3.scale} color - color scale for wedges
+     */
     LabeledPie.prototype.setColorScale = function (color) {
       this.color = color;
     };
 
+    /**
+     * Transition the pie to the new data
+     * 
+     * @name  LabeledPie.change
+     * @method
+     * @param {Array} data - Array of integer pie data
+     */
     LabeledPie.prototype.change = function (data) {
 
       var radius = this.radius;

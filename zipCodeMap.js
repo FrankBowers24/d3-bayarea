@@ -3,7 +3,19 @@ var topojson;
 
 (function () {
 
-  var ZipCodeMap = function (parent, updateLegend, getTitle, select, deselect, config) {
+  /**
+   * Represents a choropleth.
+   * 
+   * @name ZipCodeMap
+   * @constructor
+   * @param {String} parent - Selector for the parent element.
+   * @param {Object} config - Configuration object
+   * @param {Function} updateLegend - Update the map legend using the current color scale.
+   * @param {Function} getTitle - Get the title for the selected region
+   * @param {Function} select - Respond to a selection on the map
+   * @param {Function} deselect - Respond to a deselection of the map
+   */
+  var ZipCodeMap = function (parent, config, updateLegend, getTitle, select, deselect) {
     var width = config.width;
     var height = config.height;
     var minZoom = config.minZoom;
@@ -38,10 +50,15 @@ var topojson;
     var statData;
     var geometry;
 
-    var getPathObjects = function() {
+    var getPathObjects = function () {
       return geometry.objects[config.pathKey];
     };
 
+    /**
+     * @name  ZipCodeMap.forEach
+     * @method
+     * @param {Function} callback - called for each data object
+     */
     var forEach = function (callback) {
       var zips = topojson.feature(geometry, getPathObjects());
       zips.features.forEach(function (d) {
@@ -57,6 +74,16 @@ var topojson;
 
     var setSelection = function (d, stats, values, selCount, fieldValue) {
       values = values || stats[d.properties[config.dataKey]][statType];
+      /**
+       * @callback ZipCodeMap~select
+       * @name  ZipCodeMap~select
+       * @param {Integer} value - the value for the selected region 
+       * @param {Array} values - the values for the selected region in case of pie data
+       * @param {Object} valueObject - client data for interpreting the value
+       * @param {Integer} selCount - the number of selected regions
+       * @param {Object} d - the data object for the selected region
+       * @param {String} fieldValue - the string which matched for selectByData
+       */
       select(valueObject.getValue(values, statIndex), values, valueObject, selCount, d, fieldValue);
     };
 
@@ -67,6 +94,13 @@ var topojson;
           return getStatValue(d, statData);
         })
       );
+      /**
+       * @callback ZipCodeMap~updateLegend
+       * @name  ZipCodeMap~updateLegend
+       * @param {d3.scale} color - the color scale for the legend
+       * @param {string} statType - the key for the current data type
+       * @param {integer} statIndex - the index of the current data
+       */
       updateLegend(color, statType, statIndex);
     };
 
@@ -75,13 +109,25 @@ var topojson;
       return value ? color(value) : "#ccc";
     };
 
+    /**
+     * @name  ZipCodeMap.changeData
+     * @method
+     * @param {String} type - the key for current data type
+     * @param {index} index - the index of the current data
+     * @param {Object} valueObject - client data for interpreting the current data type
+     */
     var changeData = function (type, index, obj) {
       statType = type;
       statIndex = index;
       valueObject = obj;
     }
 
-    var update = function() {
+    /**
+     * Transition to the new data
+     * @name ZipCodeMap.update
+     * @method
+     */
+    var update = function () {
       updateColorDomain();
 
       svg.selectAll("path")
@@ -91,6 +137,14 @@ var topojson;
         });
     };
 
+    /**
+     * Select all regions which match on the key/value pair
+     * 
+     * @name  ZipCodeMap.selectByData
+     * @method
+     * @param {String} field - the key for the data property to match
+     * @param {String} fieldValue - the value to match for the selected key
+     */
     var selectByData = function (field, fieldValue) {
       var matches = [];
       var aggregate = [];
@@ -172,7 +226,7 @@ var topojson;
       }
     };
 
-    function zoomed () {
+    function zoomed() {
       projection.translate(d3.event.translate).scale(d3.event.scale);
       svg.selectAll("path").attr("d", path);
     };
@@ -204,6 +258,12 @@ var topojson;
           })
           .append("svg:title")
           .text(function (d) {
+            /**
+             * @callback ZipCodeMap~getTitle
+             * @name  ZipCodeMap~getTitle
+             * @param {Object} data - the data for the region
+             * 
+             */
             return getTitle(d);
           });
 
@@ -212,6 +272,11 @@ var topojson;
         d3.select(parent).on("click", function () {
           if (d3.event.x !== lastZipClick[0] && d3.event.y !== lastZipClick[1]) {
             d3.selectAll(".selected").classed("selected", false);
+            /**
+             * @callback ZipCodeMap~deselect
+             * @name  ZipCodeMap~deselect
+             * 
+             */
             deselect();
           }
           lastZipClick = [];
