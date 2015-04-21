@@ -269,7 +269,7 @@ var annyang;
     statIndex: 6,
     statType: "income",
     valueObject: ratioValueObject,
-    center: "94560",
+    center: "94111",
     pathKey: "Bay_Area",
     dataKey: "GEOID10",
     dataFilename: "data/allStats.json",

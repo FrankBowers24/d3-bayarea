@@ -197,11 +197,12 @@ var topojson;
     };
 
     var centerZip = function () {
-      var zips = topojson.feature(geometry, getPathObjects()),
-        zip = zips.features.filter(function (d) {
+      var zips = topojson.feature(geometry, getPathObjects());
+      var zip = zips.features.filter(function (d) {
 
           return d.properties[config.dataKey] === config.center;
         })[0];
+      setSelection(zip, statData, null, 1);
       center(zip);
     };
 
