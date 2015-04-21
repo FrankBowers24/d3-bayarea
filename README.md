@@ -4,6 +4,8 @@ Bay Area Data Visualization using D3
 
 [Read the blog post](http://frank-bowers.ghost.io/bay-area-stats/)
 
+[Try it out](http://frankbowers24.github.io/)
+
 This is a mashup of many D3 examples:
 
 1. Choropleth
