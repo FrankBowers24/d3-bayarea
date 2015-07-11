@@ -7,7 +7,7 @@ var sfrObj = {};
 var i = 0;
 var numZips = geom.features.length;
 console.log("numZips: " + numZips);
-for ( ;i < numZips; i++) {
+for (; i < numZips; i++) {
   //console.log(geom.features[i].properties.GEOID10); 
   sfrObj[geom.features[i].properties.GEOID10] = [];
 }
@@ -16,22 +16,20 @@ for ( ;i < numZips; i++) {
 
 
 lineReader.eachLine('Zip_Zhvi_SingleFamilyResidence.csv', function(line, last) {
-	var parts = line.split(',');
+  var parts = line.split(',');
   var zip = parts[0];
-	if (zip in sfrObj) {
-    sfrObj[zip] = [parts[5].replace(/\r/,'')];
+  if (zip in sfrObj) {
+    sfrObj[zip] = [parts[5].replace(/\r/, '')];
 
 
 
-	}
-    //console.log(line);
+  }
+  //console.log(line);
 
-  
-  if(last){
-  	fs.appendFile('sfr.json', JSON.stringify(sfrObj, null, '\t'), function (err) {
-          if (err) throw err;
-          });
+
+  if (last) {
+    fs.appendFile('sfr.json', JSON.stringify(sfrObj, null, '\t'), function(err) {
+      if (err) throw err;
+    });
   }
 });
-
-
