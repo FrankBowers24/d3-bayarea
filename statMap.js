@@ -296,7 +296,7 @@ var annyang;
 
   d3.select("#zoom-out")
     .on("click", function () {
-      window.event.stopPropagation();
+      d3.event.stopPropagation();
       statMap.zoomOut();
     });
 
@@ -498,7 +498,7 @@ var annyang;
 
   d3.select("#select-button")
     .on("click", function () {
-      window.event.stopPropagation();
+      d3.event.stopPropagation();
       var value = d3.select("#select-input").node().value;
       var key = value.match(/[0-9]/) ? "GEOID10" : "city";
       statMap.selectByData(key, value);
@@ -506,8 +506,8 @@ var annyang;
 
   $("#select-input")
     .on("propertychange", function () {
-      window.event.stopPropagation();
-      window.event.preventDefault();
+      d3.event.stopPropagation();
+      d3.event.preventDefault();
       var value = d3.select("#select-input").node().value;
       var key = value.match(/[0-9]/) ? "GEOID10" : "city";
       statMap.selectByData(key, value);
@@ -516,7 +516,7 @@ var annyang;
 
   $("#select-input").bind('input propertychange', function (event) {
     event.stopPropagation();
-    window.event.preventDefault();
+    d3.event.preventDefault();
     var value = d3.select("#select-input").node().value;
     var key = value.match(/[0-9]/) ? "GEOID10" : "city";
     statMap.selectByData(key, value);
